@@ -1,0 +1,114 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://augment_overlay/augment_overlay.gd" id="script"]
+[ext_resource type="Theme" path="res://augment_overlay/overlay_theme.tres" id="theme"]
+[ext_resource type="PackedScene" path="res://augment_overlay/augment_card.tscn" id="card"]
+
+[sub_resource type="ButtonGroup" id="choices"]
+
+[node name="AugmentOverlay" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme = ExtResource("theme")
+script = ExtResource("script")
+
+[node name="Presentation" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="Dimmer" type="ColorRect" parent="Presentation"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+color = Color(0.10, 0.07, 0.13, 0.28)
+
+[node name="Frame" type="VBoxContainer" parent="Presentation"]
+layout_mode = 0
+offset_right = 1080.0
+offset_bottom = 670.0
+theme_override_constants/separation = 16
+
+[node name="Heading" type="Label" parent="Presentation/Frame"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Upgrade a die"
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(1, 0.980392, 0.941176, 1)
+theme_override_colors/font_shadow_color = Color(0.188, 0.133, 0.239, 0.8)
+theme_override_constants/shadow_offset_y = 2
+autowrap_mode = 2
+
+[node name="Scroll" type="ScrollContainer" parent="Presentation/Frame"]
+focus_mode = 0
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+vertical_scroll_mode = 1
+
+[node name="Cards" type="GridContainer" parent="Presentation/Frame/Scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/h_separation = 20
+theme_override_constants/v_separation = 16
+columns = 3
+
+[node name="Spark" parent="Presentation/Frame/Scroll/Cards" instance=ExtResource("card")]
+layout_mode = 2
+button_group = SubResource("choices")
+upgrade_id = "lucky_spark"
+title = "Lucky spark"
+description = "A little bonus whenever this die lands on six."
+palette_color = "Butter"
+effect = "bolts"
+
+[node name="Wind" parent="Presentation/Frame/Scroll/Cards" instance=ExtResource("card")]
+layout_mode = 2
+button_group = SubResource("choices")
+upgrade_id = "second_wind"
+title = "Second wind"
+description = "Give this die another chance at a better face."
+palette_color = "Mint"
+effect = "orbit"
+
+[node name="Velvet" parent="Presentation/Frame/Scroll/Cards" instance=ExtResource("card")]
+layout_mode = 2
+button_group = SubResource("choices")
+upgrade_id = "velvet_touch"
+title = "Velvet touch"
+description = "Make holding this die a little more rewarding."
+palette_color = "Lavender"
+effect = "flowers"
+
+[node name="Inspect" type="Button" parent="Presentation/Frame"]
+focus_mode = 0
+layout_mode = 2
+size_flags_horizontal = 4
+custom_minimum_size = Vector2(180, 44)
+text = "Inspect deck"
+mouse_default_cursor_shape = 2
+
+[node name="Restore" type="Button" parent="."]
+focus_mode = 0
+visible = false
+layout_mode = 1
+anchor_left = 0.5
+anchor_right = 0.5
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = -90.0
+offset_top = -68.0
+offset_right = 90.0
+offset_bottom = -24.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "Show upgrades"
+mouse_default_cursor_shape = 2

@@ -1,0 +1,79 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://augment_overlay/augment_card.gd" id="script"]
+[ext_resource type="Theme" path="res://augment_overlay/card_theme.tres" id="theme"]
+[ext_resource type="PackedScene" path="res://die/die.tscn" id="die"]
+
+[node name="AugmentCard" type="Button"]
+custom_minimum_size = Vector2(0, 330)
+size_flags_horizontal = 3
+theme = ExtResource("theme")
+toggle_mode = true
+focus_mode = 0
+mouse_default_cursor_shape = 2
+script = ExtResource("script")
+
+[node name="Margin" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+theme_override_constants/margin_left = 22
+theme_override_constants/margin_right = 22
+theme_override_constants/margin_top = 22
+theme_override_constants/margin_bottom = 22
+
+[node name="Layout" type="BoxContainer" parent="Margin"]
+layout_mode = 2
+mouse_filter = 2
+vertical = true
+theme_override_constants/separation = 18
+
+[node name="Preview" type="SubViewportContainer" parent="Margin/Layout"]
+layout_mode = 2
+custom_minimum_size = Vector2(100, 246)
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+stretch = true
+
+[node name="Viewport" type="SubViewport" parent="Margin/Layout/Preview"]
+transparent_bg = true
+own_world_3d = true
+handle_input_locally = false
+size = Vector2i(300, 246)
+render_target_update_mode = 2
+msaa_3d = 3
+gui_disable_input = true
+
+[node name="Camera" type="Camera3D" parent="Margin/Layout/Preview/Viewport"]
+position = Vector3(0, 8, 7)
+rotation = Vector3(-0.7853982, 0, 0)
+projection = 1
+size = 6.8
+current = true
+
+[node name="Die" parent="Margin/Layout/Preview/Viewport" instance=ExtResource("die")]
+face_value = 6
+effect = "bolts"
+
+[node name="Copy" type="VBoxContainer" parent="Margin/Layout"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+mouse_filter = 2
+theme_override_constants/separation = 10
+
+[node name="Title" type="Label" parent="Margin/Layout/Copy"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_font_sizes/font_size = 25
+text = "Lucky spark"
+autowrap_mode = 2
+
+[node name="Description" type="Label" parent="Margin/Layout/Copy"]
+layout_mode = 2
+mouse_filter = 2
+text = "A little bonus whenever this die lands on six."
+autowrap_mode = 2

@@ -1,0 +1,46 @@
+[gd_resource type="Resource" script_class="UpgradeDefinition" format=3 uid="uid://btdmoy1ue7vgx"]
+
+[ext_resource type="Script" uid="uid://bmdljge4q6mi1" path="res://mechanics/rules/effect_action.gd" id="2_5lfnn"]
+[ext_resource type="Script" uid="uid://dk7hofsta88bs" path="res://mechanics/rules/score_action.gd" id="action"]
+[ext_resource type="Script" uid="uid://dh0angqdrpqtp" path="res://mechanics/rules/effect_amount.gd" id="amount"]
+[ext_resource type="Script" uid="uid://dswki4ga84gr" path="res://mechanics/rules/dice_count_condition.gd" id="condition"]
+[ext_resource type="Script" uid="uid://dgho3icajanpt" path="res://mechanics/definitions/effect_definition.gd" id="effect"]
+[ext_resource type="Script" uid="uid://jfdjel75efjk" path="res://mechanics/definitions/upgrade_definition.gd" id="owner"]
+[ext_resource type="Script" uid="uid://bv1pja2c6pwth" path="res://mechanics/rules/die_query.gd" id="query"]
+
+[sub_resource type="Resource" id="count_query"]
+script = ExtResource("query")
+scope = 2
+validated = 1
+parity = 1
+
+[sub_resource type="Resource" id="amount"]
+script = ExtResource("amount")
+per_die = 3
+query = SubResource("count_query")
+
+[sub_resource type="Resource" id="action"]
+script = ExtResource("action")
+channel = 1
+amount = SubResource("amount")
+
+[sub_resource type="Resource" id="owner_query"]
+script = ExtResource("query")
+validated = 1
+
+[sub_resource type="Resource" id="condition"]
+script = ExtResource("condition")
+query = SubResource("owner_query")
+
+[sub_resource type="Resource" id="effect"]
+script = ExtResource("effect")
+id = &"odd_validated"
+condition = SubResource("condition")
+actions = Array[ExtResource("2_5lfnn")]([SubResource("action")])
+
+[resource]
+script = ExtResource("owner")
+palette_color = &"Lavender"
+vfx_id = &"crescents"
+id = &"odd_master"
+effects = Array[ExtResource("effect")]([SubResource("effect")])

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" fill="none">
+  <title>Missing Link — Joker icon study</title>
+  <desc>Two chunky lavender chain links separated by a golden spark, suggesting a connection across a missing piece.</desc>
+  <!-- Palette: Ink, Lavender, Periwinkle, Butter, Chalk. No background. -->
+  <g transform="rotate(-36 256 256)" stroke="#30223d" stroke-width="13" stroke-linejoin="round" stroke-linecap="round">
+    <!-- Even-odd paths cut real transparent holes through both links. -->
+    <path fill-rule="evenodd" d="M135 209h36c38 0 69 31 69 69s-31 69-69 69h-36c-38 0-69-31-69-69s31-69 69-69Zm0 42c-15 0-27 12-27 27s12 27 27 27h36c15 0 27-12 27-27s-12-27-27-27Z" fill="#929cdd"/>
+    <path fill-rule="evenodd" d="M135 189h36c38 0 69 31 69 69s-31 69-69 69h-36c-38 0-69-31-69-69s31-69 69-69Zm0 42c-15 0-27 12-27 27s12 27 27 27h36c15 0 27-12 27-27s-12-27-27-27Z" fill="#b7a3d7"/>
+    <path fill-rule="evenodd" d="M341 209h36c38 0 69 31 69 69s-31 69-69 69h-36c-38 0-69-31-69-69s31-69 69-69Zm0 42c-15 0-27 12-27 27s12 27 27 27h36c15 0 27-12 27-27s-12-27-27-27Z" fill="#929cdd"/>
+    <path fill-rule="evenodd" d="M341 189h36c38 0 69 31 69 69s-31 69-69 69h-36c-38 0-69-31-69-69s31-69 69-69Zm0 42c-15 0-27 12-27 27s12 27 27 27h36c15 0 27-12 27-27s-12-27-27-27Z" fill="#b7a3d7"/>
+    <!-- Short cream bevel highlights, kept away from the central gap. -->
+    <path d="M111 215q10-7 24-7h24M317 215q10-7 24-7h24" stroke="#f4eddc" stroke-width="9"/>
+  </g>
+  <!-- The absent connecting link is represented by a single warm spark. -->
+  <path d="m254 201 13 34 34 13-34 13-13 34-13-34-34-13 34-13Z" fill="#edcc63" stroke="#30223d" stroke-width="10" stroke-linejoin="round"/>
+  <path d="m208 171-9-20m101 173 9 20" stroke="#30223d" stroke-width="10" stroke-linecap="round"/>
+</svg>

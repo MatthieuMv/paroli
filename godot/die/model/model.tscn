@@ -1,0 +1,322 @@
+[gd_scene format=3]
+
+[ext_resource type="ArrayMesh" path="res://die/model/body_mesh.tres" id="1_qkltx"]
+[ext_resource type="Script" path="res://die/palette/die_palette_mesh.gd" id="2_2lewr"]
+[ext_resource type="ArrayMesh" path="res://die/model/pip_mesh.tres" id="3_bbg8j"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4nd60"]
+resource_local_to_scene = true
+cull_mode = 2
+shading_mode = 0
+albedo_color = Color(0.95686275, 0.5254902, 0.39607844, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_xjeuh"]
+resource_local_to_scene = true
+cull_mode = 1
+shading_mode = 0
+albedo_color = Color(0.1882353, 0.13333334, 0.23921569, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_a6r6v"]
+resource_local_to_scene = true
+cull_mode = 2
+shading_mode = 0
+albedo_color = Color(0.1882353, 0.13333334, 0.23921569, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_thiy6"]
+resource_local_to_scene = true
+cull_mode = 2
+shading_mode = 0
+albedo_color = Color(0.1882353, 0.13333334, 0.23921569, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kg6sg"]
+resource_local_to_scene = true
+cull_mode = 2
+shading_mode = 0
+albedo_color = Color(0.1882353, 0.13333334, 0.23921569, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_xh66c"]
+resource_local_to_scene = true
+cull_mode = 2
+shading_mode = 0
+albedo_color = Color(0.1882353, 0.13333334, 0.23921569, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0vmko"]
+resource_local_to_scene = true
+cull_mode = 2
+shading_mode = 0
+albedo_color = Color(0.1882353, 0.13333334, 0.23921569, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fh7kq"]
+resource_local_to_scene = true
+cull_mode = 2
+shading_mode = 0
+albedo_color = Color(0.1882353, 0.13333334, 0.23921569, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fgt6q"]
+resource_local_to_scene = true
+cull_mode = 2
+shading_mode = 0
+albedo_color = Color(0.1882353, 0.13333334, 0.23921569, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_iy562"]
+resource_local_to_scene = true
+cull_mode = 2
+shading_mode = 0
+albedo_color = Color(0.1882353, 0.13333334, 0.23921569, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2jjap"]
+resource_local_to_scene = true
+cull_mode = 2
+shading_mode = 0
+albedo_color = Color(0.1882353, 0.13333334, 0.23921569, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_xi3c8"]
+resource_local_to_scene = true
+cull_mode = 2
+shading_mode = 0
+albedo_color = Color(0.1882353, 0.13333334, 0.23921569, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_m16hk"]
+resource_local_to_scene = true
+cull_mode = 2
+shading_mode = 0
+albedo_color = Color(0.1882353, 0.13333334, 0.23921569, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_xjiou"]
+resource_local_to_scene = true
+cull_mode = 2
+shading_mode = 0
+albedo_color = Color(0.1882353, 0.13333334, 0.23921569, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_8yvm1"]
+resource_local_to_scene = true
+cull_mode = 2
+shading_mode = 0
+albedo_color = Color(0.1882353, 0.13333334, 0.23921569, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6cy8d"]
+resource_local_to_scene = true
+cull_mode = 2
+shading_mode = 0
+albedo_color = Color(0.1882353, 0.13333334, 0.23921569, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7rmmx"]
+resource_local_to_scene = true
+cull_mode = 2
+shading_mode = 0
+albedo_color = Color(0.1882353, 0.13333334, 0.23921569, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ss3nq"]
+resource_local_to_scene = true
+cull_mode = 2
+shading_mode = 0
+albedo_color = Color(0.1882353, 0.13333334, 0.23921569, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_04h4l"]
+resource_local_to_scene = true
+cull_mode = 2
+shading_mode = 0
+albedo_color = Color(0.1882353, 0.13333334, 0.23921569, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_v5omo"]
+resource_local_to_scene = true
+cull_mode = 2
+shading_mode = 0
+albedo_color = Color(0.1882353, 0.13333334, 0.23921569, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_oygox"]
+resource_local_to_scene = true
+cull_mode = 2
+shading_mode = 0
+albedo_color = Color(0.1882353, 0.13333334, 0.23921569, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_il36h"]
+resource_local_to_scene = true
+cull_mode = 2
+shading_mode = 0
+albedo_color = Color(0.1882353, 0.13333334, 0.23921569, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_y32tf"]
+resource_local_to_scene = true
+cull_mode = 2
+shading_mode = 0
+albedo_color = Color(0.1882353, 0.13333334, 0.23921569, 1)
+
+[node name="Model" type="Node3D" unique_id=1461738828]
+
+[node name="Body" type="MeshInstance3D" parent="." unique_id=403715405]
+material_override = SubResource("StandardMaterial3D_4nd60")
+mesh = ExtResource("1_qkltx")
+script = ExtResource("2_2lewr")
+
+[node name="Outline" type="MeshInstance3D" parent="." unique_id=562796099]
+transform = Transform3D(1.065, 0, 0, 0, 1.065, 0, 0, 0, 1.065, 0, 0, 0)
+material_override = SubResource("StandardMaterial3D_xjeuh")
+mesh = ExtResource("1_qkltx")
+script = ExtResource("2_2lewr")
+tone = "ink"
+
+[node name="Face1" type="Node3D" parent="." unique_id=1881156534]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 1.08, 0)
+
+[node name="Pip00" type="MeshInstance3D" parent="Face1" unique_id=2101232865]
+transform = Transform3D(0.9780309, -0.20845987, 0, 0.20845987, 0.9780309, 0, 0, 0, 1, 0, 0, 0)
+material_override = SubResource("StandardMaterial3D_a6r6v")
+mesh = ExtResource("3_bbg8j")
+script = ExtResource("2_2lewr")
+tone = "ink"
+
+[node name="Face6" type="Node3D" parent="." unique_id=1165406717]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, -1.08, 0)
+
+[node name="Pip00" type="MeshInstance3D" parent="Face6" unique_id=2082411508]
+transform = Transform3D(0.30581692, -0.9520903, 0, 0.9520903, 0.30581692, 0, 0, 0, 1, -0.45, 0.45, 0)
+material_override = SubResource("StandardMaterial3D_thiy6")
+mesh = ExtResource("3_bbg8j")
+script = ExtResource("2_2lewr")
+tone = "ink"
+
+[node name="Pip01" type="MeshInstance3D" parent="Face6" unique_id=871741539]
+transform = Transform3D(-0.15853202, -0.98735386, 0, 0.98735386, -0.15853202, 0, 0, 0, 1, 0.45, 0.45, 0)
+material_override = SubResource("StandardMaterial3D_kg6sg")
+mesh = ExtResource("3_bbg8j")
+script = ExtResource("2_2lewr")
+tone = "ink"
+
+[node name="Pip02" type="MeshInstance3D" parent="Face6" unique_id=890734296]
+transform = Transform3D(-0.58850116, -0.80849636, 0, 0.80849636, -0.58850116, 0, 0, 0, 1, -0.45, 0, 0)
+material_override = SubResource("StandardMaterial3D_xh66c")
+mesh = ExtResource("3_bbg8j")
+script = ExtResource("2_2lewr")
+tone = "ink"
+
+[node name="Pip03" type="MeshInstance3D" parent="Face6" unique_id=1127337410]
+transform = Transform3D(-0.8908459, -0.4543056, 0, 0.4543056, -0.8908459, 0, 0, 0, 1, 0.45, 0, 0)
+material_override = SubResource("StandardMaterial3D_0vmko")
+mesh = ExtResource("3_bbg8j")
+script = ExtResource("2_2lewr")
+tone = "ink"
+
+[node name="Pip04" type="MeshInstance3D" parent="Face6" unique_id=1816957243]
+transform = Transform3D(-0.99999875, -0.001592548, 0, 0.001592548, -0.99999875, 0, 0, 0, 1, -0.45, -0.45, 0)
+material_override = SubResource("StandardMaterial3D_fh7kq")
+mesh = ExtResource("3_bbg8j")
+script = ExtResource("2_2lewr")
+tone = "ink"
+
+[node name="Pip05" type="MeshInstance3D" parent="Face6" unique_id=923120778]
+transform = Transform3D(-0.89228845, 0.45146573, 0, -0.45146573, -0.89228845, 0, 0, 0, 1, 0.45, -0.45, 0)
+material_override = SubResource("StandardMaterial3D_fgt6q")
+mesh = ExtResource("3_bbg8j")
+script = ExtResource("2_2lewr")
+tone = "ink"
+
+[node name="Face2" type="Node3D" parent="." unique_id=48164394]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.08)
+
+[node name="Pip00" type="MeshInstance3D" parent="Face2" unique_id=1338055230]
+transform = Transform3D(0.9130889, -0.40776044, 0, 0.40776044, 0.9130889, 0, 0, 0, 1, -0.45, 0.45, 0)
+material_override = SubResource("StandardMaterial3D_iy562")
+mesh = ExtResource("3_bbg8j")
+script = ExtResource("2_2lewr")
+tone = "ink"
+
+[node name="Pip01" type="MeshInstance3D" parent="Face2" unique_id=945401354]
+transform = Transform3D(0.629412, -0.7770718, 0, 0.7770718, 0.629412, 0, 0, 0, 1, 0.45, -0.45, 0)
+material_override = SubResource("StandardMaterial3D_2jjap")
+mesh = ExtResource("3_bbg8j")
+script = ExtResource("2_2lewr")
+tone = "ink"
+
+[node name="Face5" type="Node3D" parent="." unique_id=1589475721]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, -1.08)
+
+[node name="Pip00" type="MeshInstance3D" parent="Face5" unique_id=897137482]
+transform = Transform3D(0.49757108, -0.8674232, 0, 0.8674232, 0.49757108, 0, 0, 0, 1, -0.45, 0.45, 0)
+material_override = SubResource("StandardMaterial3D_xi3c8")
+mesh = ExtResource("3_bbg8j")
+script = ExtResource("2_2lewr")
+tone = "ink"
+
+[node name="Pip01" type="MeshInstance3D" parent="Face5" unique_id=1910256213]
+transform = Transform3D(0.050774503, -0.99871016, 0, 0.99871016, 0.050774503, 0, 0, 0, 1, 0.45, 0.45, 0)
+material_override = SubResource("StandardMaterial3D_m16hk")
+mesh = ExtResource("3_bbg8j")
+script = ExtResource("2_2lewr")
+tone = "ink"
+
+[node name="Pip02" type="MeshInstance3D" parent="Face5" unique_id=1671449009]
+transform = Transform3D(-0.40703312, -0.9134134, 0, 0.9134134, -0.40703312, 0, 0, 0, 1, 0, 0, 0)
+material_override = SubResource("StandardMaterial3D_xjiou")
+mesh = ExtResource("3_bbg8j")
+script = ExtResource("2_2lewr")
+tone = "ink"
+
+[node name="Pip03" type="MeshInstance3D" parent="Face5" unique_id=2011375442]
+transform = Transform3D(-0.7765703, -0.6300306, 0, 0.6300306, -0.7765703, 0, 0, 0, 1, -0.45, -0.45, 0)
+material_override = SubResource("StandardMaterial3D_8yvm1")
+mesh = ExtResource("3_bbg8j")
+script = ExtResource("2_2lewr")
+tone = "ink"
+
+[node name="Pip04" type="MeshInstance3D" parent="Face5" unique_id=2092240768]
+transform = Transform3D(-0.9776977, -0.21001723, 0, 0.21001723, -0.9776977, 0, 0, 0, 1, 0.45, -0.45, 0)
+material_override = SubResource("StandardMaterial3D_6cy8d")
+mesh = ExtResource("3_bbg8j")
+script = ExtResource("2_2lewr")
+tone = "ink"
+
+[node name="Face3" type="Node3D" parent="." unique_id=509156985]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 1.08, 0, 0)
+
+[node name="Pip00" type="MeshInstance3D" parent="Face3" unique_id=1541167994]
+transform = Transform3D(0.8080275, -0.58914477, 0, 0.58914477, 0.8080275, 0, 0, 0, 1, -0.45, 0.45, 0)
+material_override = SubResource("StandardMaterial3D_7rmmx")
+mesh = ExtResource("3_bbg8j")
+script = ExtResource("2_2lewr")
+tone = "ink"
+
+[node name="Pip01" type="MeshInstance3D" parent="Face3" unique_id=945177522]
+transform = Transform3D(0.4535961, -0.8912074, 0, 0.8912074, 0.4535961, 0, 0, 0, 1, 0, 0, 0)
+material_override = SubResource("StandardMaterial3D_ss3nq")
+mesh = ExtResource("3_bbg8j")
+script = ExtResource("2_2lewr")
+tone = "ink"
+
+[node name="Pip02" type="MeshInstance3D" parent="Face3" unique_id=662886221]
+transform = Transform3D(0.0007962743, -0.9999997, 0, 0.9999997, 0.0007962743, 0, 0, 0, 1, 0.45, -0.45, 0)
+material_override = SubResource("StandardMaterial3D_04h4l")
+mesh = ExtResource("3_bbg8j")
+script = ExtResource("2_2lewr")
+tone = "ink"
+
+[node name="Face4" type="Node3D" parent="." unique_id=442998773]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -1.08, 0, 0)
+
+[node name="Pip00" type="MeshInstance3D" parent="Face4" unique_id=2042220427]
+transform = Transform3D(0.6674628, -0.74464315, 0, 0.74464315, 0.6674628, 0, 0, 0, 1, -0.45, 0.45, 0)
+material_override = SubResource("StandardMaterial3D_v5omo")
+mesh = ExtResource("3_bbg8j")
+script = ExtResource("2_2lewr")
+tone = "ink"
+
+[node name="Pip01" type="MeshInstance3D" parent="Face4" unique_id=640465012]
+transform = Transform3D(0.25784996, -0.966185, 0, 0.966185, 0.25784996, 0, 0, 0, 1, 0.45, 0.45, 0)
+material_override = SubResource("StandardMaterial3D_oygox")
+mesh = ExtResource("3_bbg8j")
+script = ExtResource("2_2lewr")
+tone = "ink"
+
+[node name="Pip02" type="MeshInstance3D" parent="Face4" unique_id=965691957]
+transform = Transform3D(-0.20768109, -0.97819656, 0, 0.97819656, -0.20768109, 0, 0, 0, 1, -0.45, -0.45, 0)
+material_override = SubResource("StandardMaterial3D_il36h")
+mesh = ExtResource("3_bbg8j")
+script = ExtResource("2_2lewr")
+tone = "ink"
+
+[node name="Pip03" type="MeshInstance3D" parent="Face4" unique_id=1959245569]
+transform = Transform3D(-0.62817365, -0.7780732, 0, 0.7780732, -0.62817365, 0, 0, 0, 1, 0.45, -0.45, 0)
+material_override = SubResource("StandardMaterial3D_y32tf")
+mesh = ExtResource("3_bbg8j")
+script = ExtResource("2_2lewr")
+tone = "ink"

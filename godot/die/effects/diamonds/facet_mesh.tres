@@ -1,0 +1,13 @@
+[gd_resource type="ArrayMesh" format=3]
+
+[resource]
+_surfaces = [{
+"aabb": AABB(-0.7, 0, 0, 0.7, 1, 1e-05),
+"format": 34359742471,
+"index_count": 3,
+"index_data": PackedByteArray(1, 0, 2, 0, 0, 0),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 3,
+"vertex_data": PackedByteArray(0, 0, 0, 0, 0, 0, 128, 63, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 51, 51, 51, 191, 0, 0, 0, 0, 0, 0, 0, 0, 255, 127, 255, 127, 255, 127, 0, 128, 255, 127, 255, 127, 255, 127, 0, 128, 255, 127, 255, 127, 255, 127, 0, 128)
+}]

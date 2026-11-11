@@ -1,0 +1,193 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://score_widget/score_widget.gd" id="1"]
+
+[ext_resource type="PackedScene" path="res://score_widget/overdrive/overdrive.tscn" id="2"]
+
+[sub_resource type="StyleBoxFlat" id="Points"]
+bg_color = Color(0.818039, 0.887843, 0.91451, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 4
+border_color = Color(0.188235, 0.133333, 0.239216, 1)
+corner_radius_top_left = 22
+corner_radius_top_right = 22
+corner_radius_bottom_left = 22
+corner_radius_bottom_right = 22
+corner_detail = 12
+shadow_color = Color(0.545098, 0.74902, 0.87451, 1)
+shadow_size = 3
+shadow_offset = Vector2(0, 3)
+
+[sub_resource type="StyleBoxFlat" id="Mult"]
+bg_color = Color(0.962353, 0.778039, 0.771765, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 4
+border_color = Color(0.188235, 0.133333, 0.239216, 1)
+corner_radius_top_left = 22
+corner_radius_top_right = 22
+corner_radius_bottom_left = 22
+corner_radius_bottom_right = 22
+corner_detail = 12
+shadow_color = Color(0.905882, 0.47451, 0.517647, 1)
+shadow_size = 3
+shadow_offset = Vector2(0, 3)
+
+[node name="ScoreWidget" type="Control"]
+custom_minimum_size = Vector2(320, 220)
+layout_mode = 3
+mouse_filter = 2
+script = ExtResource("1")
+
+[node name="Overdrive" parent="." instance=ExtResource("2")]
+unique_name_in_owner = true
+layout_mode = 1
+
+[node name="PointsTile" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchor_left = 0
+anchor_right = 0.44
+offset_top = 64.0
+offset_bottom = 174.0
+mouse_filter = 2
+
+[node name="Face" type="Panel" parent="PointsTile"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("Points")
+
+[node name="Highlight" type="Line2D" parent="PointsTile"]
+points = PackedVector2Array(16, 18, 20, 13, 27, 11, 48, 11)
+width = 3.0
+default_color = Color(1, 0.980392, 0.941176, 0.85)
+begin_cap_mode = 2
+end_cap_mode = 2
+antialiased = true
+
+[node name="PointsTitle" type="Label" parent="PointsTile"]
+unique_name_in_owner = true
+theme_override_colors/font_color = Color(0.366667, 0.441176, 0.556863, 1)
+layout_mode = 1
+anchor_right = 1.0
+offset_top = 18.0
+offset_bottom = 37.0
+theme_override_font_sizes/font_size = 14
+text = "Points"
+horizontal_alignment = 1
+mouse_filter = 2
+
+[node name="Points" type="Label" parent="PointsTile"]
+unique_name_in_owner = true
+theme_override_colors/font_color = Color(0.366667, 0.441176, 0.556863, 1)
+layout_mode = 1
+anchor_right = 1.0
+offset_left = 10.0
+offset_top = 38.0
+offset_right = -10.0
+offset_bottom = 94.0
+theme_override_font_sizes/font_size = 42
+text = "0"
+horizontal_alignment = 1
+vertical_alignment = 1
+text_overrun_behavior = 3
+mouse_filter = 2
+
+[node name="PointsDelta" type="Label" parent="PointsTile"]
+unique_name_in_owner = true
+theme_override_colors/font_color = Color(0.366667, 0.441176, 0.556863, 1)
+layout_mode = 1
+anchor_right = 1.0
+offset_top = -32.0
+offset_bottom = -5.0
+modulate = Color(1, 1, 1, 0)
+theme_override_font_sizes/font_size = 22
+text = "+6"
+horizontal_alignment = 1
+mouse_filter = 2
+
+[node name="MultTile" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchor_left = 0.56
+anchor_right = 1
+offset_top = 64.0
+offset_bottom = 174.0
+mouse_filter = 2
+
+[node name="Face" type="Panel" parent="MultTile"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("Mult")
+
+[node name="Highlight" type="Line2D" parent="MultTile"]
+points = PackedVector2Array(16, 18, 20, 13, 27, 11, 48, 11)
+width = 3.0
+default_color = Color(1, 0.980392, 0.941176, 0.85)
+begin_cap_mode = 2
+end_cap_mode = 2
+antialiased = true
+
+[node name="MultTitle" type="Label" parent="MultTile"]
+unique_name_in_owner = true
+theme_override_colors/font_color = Color(0.547059, 0.303922, 0.378431, 1)
+layout_mode = 1
+anchor_right = 1.0
+offset_top = 18.0
+offset_bottom = 37.0
+theme_override_font_sizes/font_size = 14
+text = "Mult"
+horizontal_alignment = 1
+mouse_filter = 2
+
+[node name="Mult" type="Label" parent="MultTile"]
+unique_name_in_owner = true
+theme_override_colors/font_color = Color(0.547059, 0.303922, 0.378431, 1)
+layout_mode = 1
+anchor_right = 1.0
+offset_left = 10.0
+offset_top = 38.0
+offset_right = -10.0
+offset_bottom = 94.0
+theme_override_font_sizes/font_size = 42
+text = "1"
+horizontal_alignment = 1
+vertical_alignment = 1
+text_overrun_behavior = 3
+mouse_filter = 2
+
+[node name="MultDelta" type="Label" parent="MultTile"]
+unique_name_in_owner = true
+theme_override_colors/font_color = Color(0.547059, 0.303922, 0.378431, 1)
+layout_mode = 1
+anchor_right = 1.0
+offset_top = -32.0
+offset_bottom = -5.0
+modulate = Color(1, 1, 1, 0)
+theme_override_font_sizes/font_size = 22
+text = "+6"
+horizontal_alignment = 1
+mouse_filter = 2
+
+[node name="Times" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchor_left = 0.44
+anchor_right = 0.56
+offset_top = 64.0
+offset_bottom = 174.0
+theme_override_colors/font_color = Color(0.188235, 0.133333, 0.239216, 1)
+theme_override_font_sizes/font_size = 32
+text = "×"
+horizontal_alignment = 1
+vertical_alignment = 1
+mouse_filter = 2

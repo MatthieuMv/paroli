@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="DieEffectDefinition" format=3]
+
+[ext_resource type="Animation" path="res://die/effects/starburst/activation.tres" id="1_8v7ny"]
+[ext_resource type="PackedScene" path="res://die/effects/starburst/starburst.tscn" id="2_wqch3"]
+[ext_resource type="Script" path="res://die/effects/die_effect_definition.gd" id="3_rswir"]
+
+[resource]
+script = ExtResource("3_rswir")
+id = "starburst"
+scene = ExtResource("2_wqch3")
+recipe = Dictionary[String, float]({
+"brakingSeconds": 0.3,
+"count": 12.0,
+"cruiseSpeed": 0.6981317007977318,
+"expansionSeconds": 0.14,
+"initialRadius": 1.05,
+"launchSpeed": 4.6,
+"leadSeconds": 0.08,
+"radius": 2.35,
+"revealSeconds": 0.06,
+"riseSeconds": 0.24,
+"spawnHeight": 0.1
+})
+activation = ExtResource("1_8v7ny")

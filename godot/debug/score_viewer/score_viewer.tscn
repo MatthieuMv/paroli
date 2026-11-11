@@ -1,0 +1,126 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://debug/score_viewer/score_viewer.gd" id="1"]
+[ext_resource type="PackedScene" path="res://score_widget/score_widget.tscn" id="2"]
+[ext_resource type="Theme" path="res://debug/table_viewer/table_viewer_theme.tres" id="3"]
+
+[node name="ScoreViewer" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("3")
+script = ExtResource("1")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+color = Color(0.933333, 0.913725, 0.886275, 1)
+
+[node name="Scroll" type="ScrollContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = 28.0
+offset_right = -16.0
+offset_bottom = -28.0
+horizontal_scroll_mode = 0
+
+[node name="Content" type="VBoxContainer" parent="Scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 20
+
+[node name="Title" type="Label" parent="Scroll/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Score studio"
+horizontal_alignment = 1
+
+[node name="Hint" type="Label" parent="Scroll/Content"]
+layout_mode = 2
+text = "Trigger a source, or play the full scoring chain."
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="ScoreWidget" parent="Scroll/Content" instance=ExtResource("2")]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(320, 220)
+size_flags_horizontal = 4
+
+[node name="Controls" type="HFlowContainer" parent="Scroll/Content"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
+
+[node name="DieHit" type="Button" parent="Scroll/Content/Controls"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(0, 44)
+text = "Die · +6 Points"
+
+[node name="BonusHit" type="Button" parent="Scroll/Content/Controls"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(0, 44)
+text = "Bonus · +2 Mult"
+
+[node name="JokerHit" type="Button" parent="Scroll/Content/Controls"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(0, 44)
+text = "Joker · ×1.5 Mult"
+
+[node name="Chain" type="Button" parent="Scroll/Content/Controls"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(0, 44)
+text = "Play chain"
+
+[node name="Large" type="Button" parent="Scroll/Content/Controls"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(0, 44)
+text = "Large values"
+
+[node name="Reset" type="Button" parent="Scroll/Content/Controls"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(0, 44)
+text = "Reset"
+
+[node name="Reduced" type="CheckButton" parent="Scroll/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Reduced motion"
+
+[node name="RatioLabel" type="Label" parent="Scroll/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Score / target  0.20×"
+horizontal_alignment = 1
+
+[node name="Ratio" type="HSlider" parent="Scroll/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(280, 32)
+size_flags_horizontal = 4
+max_value = 4.0
+step = 0.05
+value = 0.2
+
+[node name="RatioHint" type="Label" parent="Scroll/Content"]
+layout_mode = 2
+text = "Above 1×: stars build. At 3×: full celebration."
+horizontal_alignment = 1
+autowrap_mode = 2

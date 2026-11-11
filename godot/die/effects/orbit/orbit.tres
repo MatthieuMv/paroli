@@ -1,0 +1,29 @@
+[gd_resource type="Resource" script_class="DieEffectDefinition" format=3]
+
+[ext_resource type="Animation" path="res://die/effects/orbit/activation.tres" id="1_0kdlj"]
+[ext_resource type="PackedScene" path="res://die/effects/orbit/orbit.tscn" id="2_0qc0h"]
+[ext_resource type="Script" path="res://die/effects/die_effect_definition.gd" id="3_va5by"]
+
+[resource]
+script = ExtResource("3_va5by")
+id = "orbit"
+scene = ExtResource("2_0qc0h")
+recipe = Dictionary[String, float]({
+"arcAngle": 4.241150082346221,
+"arcOpacity": 1.0,
+"brakingSeconds": 0.38,
+"cruiseSpeed": 1.121997376282069,
+"expansionSeconds": 0.12,
+"initialScale": 0.82,
+"launchSpeed": 5.5,
+"leadSeconds": 0.08,
+"outlineScale": 1.14,
+"radius": 2.58,
+"revealSeconds": 0.06,
+"segments": 80.0,
+"starSize": 0.27,
+"tracks": 3.0,
+"trailFalloff": 1.6,
+"width": 0.2
+})
+activation = ExtResource("1_0kdlj")

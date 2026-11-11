@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="DieEffectDefinition" format=3]
+
+[ext_resource type="Animation" path="res://die/effects/hearts/activation.tres" id="1_y616g"]
+[ext_resource type="PackedScene" path="res://die/effects/hearts/hearts.tscn" id="2_63x8s"]
+[ext_resource type="Script" path="res://die/effects/die_effect_definition.gd" id="3_re61q"]
+
+[resource]
+script = ExtResource("3_re61q")
+id = "hearts"
+scene = ExtResource("2_63x8s")
+recipe = Dictionary[String, float]({
+"brakingSeconds": 0.32,
+"count": 8.0,
+"cruiseSpeed": 0.5235987755982988,
+"expansionSeconds": 0.16,
+"initialRadius": 1.05,
+"launchSpeed": 3.8,
+"leadSeconds": 0.08,
+"radius": 2.15,
+"revealSeconds": 0.06,
+"riseSeconds": 0.42,
+"spawnHeight": 0.1
+})
+activation = ExtResource("1_y616g")

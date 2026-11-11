@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="DieEffectDefinition" format=3]
+
+[ext_resource type="Animation" path="res://die/effects/fire/activation.tres" id="1_nabrc"]
+[ext_resource type="PackedScene" path="res://die/effects/fire/fire.tscn" id="2_mg30i"]
+[ext_resource type="Script" path="res://die/effects/die_effect_definition.gd" id="3_252py"]
+
+[resource]
+script = ExtResource("3_252py")
+id = "fire"
+scene = ExtResource("2_mg30i")
+recipe = Dictionary[String, float]({
+"braking": 0.28,
+"count": 10.0,
+"expansion": 0.14,
+"height": 0.0,
+"launch": 4.2,
+"radius": 2.1,
+"rise": 0.2,
+"speed": 0.3490658503988659
+})
+activation = ExtResource("1_nabrc")

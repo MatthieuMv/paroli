@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" fill="none">
+  <title>Pocket Money — bonus icon study</title>
+  <desc>A gold coin tucked into a mint pocket, with plum outlines and cream stitching.</desc>
+  <!-- Palette: Ink, Mint, Honey, Butter, Chalk. Transparent outside the silhouette. -->
+  <g stroke="#30223d" stroke-width="14" stroke-linejoin="round" stroke-linecap="round">
+    <!-- The coin has a small offset rim for the same chunky depth as the dice. -->
+    <path d="M333 108c47 23 66 79 43 125s-79 65-126 42-65-79-42-125 78-65 125-42Z" fill="#dcb34e"/>
+    <circle cx="280" cy="175" r="92" fill="#edcc63"/>
+    <circle cx="280" cy="175" r="66" stroke="#dcb34e" stroke-width="10"/>
+    <!-- A single diamond stamp remains readable at small sizes. -->
+    <path d="m280 131 30 44-30 44-30-44Z" fill="#f4eddc" stroke-width="10"/>
+    <path d="m231 119 13-9" stroke="#f4eddc" stroke-width="11"/>
+    <!-- The folded top edge catches the coin; the lower flap is gently faceted. -->
+    <path d="M111 220h290l-20 153c-4 27-20 45-45 55l-72 29-81-30c-26-10-42-30-46-57Z" fill="#93b99b"/>
+    <path d="m111 220 21 45h248l21-45Z" fill="#bed17d"/>
+    <path d="m136 266 20 103c4 22 15 34 35 42l73 27 65-27c20-8 31-21 35-42l16-103" stroke="#f4eddc" stroke-width="8" stroke-dasharray="12 17"/>
+    <path d="M132 265h248" stroke-width="11"/>
+  </g>
+  <!-- One restrained glint, echoing the die finishes. -->
+  <path d="m120 108 9 26 26 9-26 9-9 26-9-26-26-9 26-9Z" fill="#f4eddc" stroke="#30223d" stroke-width="9" stroke-linejoin="round"/>
+</svg>

@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+<title>Shortcut — Bonus</title>
+<desc>Raccourci. Paroli icon with chunky plum outlines and a transparent background.</desc>
+<rect x="91" y="104" width="330" height="304" rx="29" fill="#f4eddc" stroke="#30223d" stroke-width="12"/><path d="M148 340V167H362" fill="none" stroke="#bc9683" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="15 25"/><path d="M153 338 342 191" fill="none" stroke="#30223d" stroke-width="29" stroke-linecap="round" stroke-linejoin="round" /><path d="M153 338 342 191" fill="none" stroke="#68bbb2" stroke-width="15" stroke-linecap="round" stroke-linejoin="round" /><path d="M290 187 360 178 345 246" fill="none" stroke="#30223d" stroke-width="27" stroke-linecap="round" stroke-linejoin="round" /><path d="M290 187 360 178 345 246" fill="none" stroke="#68bbb2" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" /><ellipse cx="148" cy="342" rx="18" ry="18" fill="#edcc63" stroke="#30223d" stroke-width="9"/>
+</svg>

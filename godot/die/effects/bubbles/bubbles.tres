@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="DieEffectDefinition" format=3]
+
+[ext_resource type="Animation" path="res://die/effects/bubbles/activation.tres" id="1_lwwd3"]
+[ext_resource type="PackedScene" path="res://die/effects/bubbles/bubbles.tscn" id="2_yhn2h"]
+[ext_resource type="Script" path="res://die/effects/die_effect_definition.gd" id="3_k2m74"]
+
+[resource]
+script = ExtResource("3_k2m74")
+id = "bubbles"
+scene = ExtResource("2_yhn2h")
+recipe = Dictionary[String, float]({
+"brakingSeconds": 0.32,
+"count": 10.0,
+"cruiseSpeed": 0.8377580409572781,
+"expansionSeconds": 0.18,
+"initialRadius": 1.05,
+"launchSpeed": 5.0,
+"leadSeconds": 0.08,
+"radius": 2.15,
+"revealSeconds": 0.06,
+"riseSeconds": 0.55,
+"segments": 40.0,
+"spawnHeight": 0.1
+})
+activation = ExtResource("1_lwwd3")

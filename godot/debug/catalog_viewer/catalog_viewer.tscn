@@ -1,0 +1,104 @@
+[gd_scene format=3 uid="uid://bggsikdxfnshu"]
+
+[ext_resource type="Script" uid="uid://5qfo1xurtowh" path="res://debug/catalog_viewer/catalog_viewer.gd" id="script"]
+[ext_resource type="Theme" path="res://debug/catalog_viewer/catalog_theme.tres" id="theme"]
+
+[node name="CatalogViewer" type="Control" unique_id=1975458549]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("theme")
+script = ExtResource("script")
+
+[node name="Background" type="ColorRect" parent="." unique_id=35740040]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.933333, 0.913725, 0.886275, 1)
+
+[node name="Margin" type="MarginContainer" parent="." unique_id=1183323329]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 24
+
+[node name="Layout" type="VBoxContainer" parent="Margin" unique_id=1251753769]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Header" type="HBoxContainer" parent="Margin/Layout" unique_id=1186520701]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="Margin/Layout/Header" unique_id=1268440316]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 28
+text = "Catalog"
+
+[node name="Language" type="OptionButton" parent="Margin/Layout/Header" unique_id=1892914833]
+layout_mode = 2
+focus_mode = 0
+selected = 0
+item_count = 2
+popup/item_0/text = "English"
+popup/item_0/id = 0
+popup/item_1/text = "Français"
+popup/item_1/id = 1
+
+[node name="Families" type="HFlowContainer" parent="Margin/Layout" unique_id=562641897]
+layout_mode = 2
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 8
+
+[node name="Upgrades" type="Button" parent="Margin/Layout/Families" unique_id=1920055799]
+layout_mode = 2
+focus_mode = 0
+toggle_mode = true
+text = "Upgrades"
+
+[node name="Bonuses" type="Button" parent="Margin/Layout/Families" unique_id=589155972]
+layout_mode = 2
+focus_mode = 0
+toggle_mode = true
+text = "Bonuses"
+
+[node name="Jokers" type="Button" parent="Margin/Layout/Families" unique_id=1272441153]
+layout_mode = 2
+focus_mode = 0
+toggle_mode = true
+text = "Jokers"
+
+[node name="Search" type="LineEdit" parent="Margin/Layout" unique_id=1830212050]
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+placeholder_text = "Search name, ID, or effect…"
+
+[node name="Count" type="Label" parent="Margin/Layout" unique_id=1328085968]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+autowrap_mode = 2
+
+[node name="Scroll" type="ScrollContainer" parent="Margin/Layout" unique_id=595851034]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="Cards" type="GridContainer" parent="Margin/Layout/Scroll" unique_id=1997751761]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/h_separation = 16
+theme_override_constants/v_separation = 16
+columns = 3

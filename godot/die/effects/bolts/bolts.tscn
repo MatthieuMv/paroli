@@ -1,0 +1,244 @@
+[gd_scene format=3]
+
+[ext_resource type="Shader" path="res://die/effects/particle.gdshader" id="1_lbba1"]
+[ext_resource type="ArrayMesh" path="res://die/effects/bolts/bolt_mesh.tres" id="2_1ijp8"]
+[ext_resource type="Script" path="res://die/palette/die_palette_mesh.gd" id="3_dnesr"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_rhr4v"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("1_lbba1")
+shader_parameter/tint = Color(0.95686275, 0.5254902, 0.39607844, 1)
+shader_parameter/vertex_color = false
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ovqvj"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("1_lbba1")
+shader_parameter/tint = Color(0.1882353, 0.13333334, 0.23921569, 1)
+shader_parameter/vertex_color = false
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_7qs3t"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("1_lbba1")
+shader_parameter/tint = Color(0.9456653, 0.74521154, 0.6891718, 1)
+shader_parameter/vertex_color = false
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_uxqyu"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("1_lbba1")
+shader_parameter/tint = Color(0.1882353, 0.13333334, 0.23921569, 1)
+shader_parameter/vertex_color = false
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_c0lp5"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("1_lbba1")
+shader_parameter/tint = Color(0.7424677, 0.40768346, 0.33640248, 1)
+shader_parameter/vertex_color = false
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_s726u"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("1_lbba1")
+shader_parameter/tint = Color(0.1882353, 0.13333334, 0.23921569, 1)
+shader_parameter/vertex_color = false
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_1jye4"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("1_lbba1")
+shader_parameter/tint = Color(0.95686275, 0.5254902, 0.39607844, 1)
+shader_parameter/vertex_color = false
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_o1fnq"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("1_lbba1")
+shader_parameter/tint = Color(0.1882353, 0.13333334, 0.23921569, 1)
+shader_parameter/vertex_color = false
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_u42af"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("1_lbba1")
+shader_parameter/tint = Color(0.9456653, 0.74521154, 0.6891718, 1)
+shader_parameter/vertex_color = false
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ydw81"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("1_lbba1")
+shader_parameter/tint = Color(0.1882353, 0.13333334, 0.23921569, 1)
+shader_parameter/vertex_color = false
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_6qxab"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("1_lbba1")
+shader_parameter/tint = Color(0.7424677, 0.40768346, 0.33640248, 1)
+shader_parameter/vertex_color = false
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_iha3c"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("1_lbba1")
+shader_parameter/tint = Color(0.1882353, 0.13333334, 0.23921569, 1)
+shader_parameter/vertex_color = false
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_qkx3l"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("1_lbba1")
+shader_parameter/tint = Color(0.95686275, 0.5254902, 0.39607844, 1)
+shader_parameter/vertex_color = false
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_8mrya"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("1_lbba1")
+shader_parameter/tint = Color(0.1882353, 0.13333334, 0.23921569, 1)
+shader_parameter/vertex_color = false
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_2fik8"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("1_lbba1")
+shader_parameter/tint = Color(0.9456653, 0.74521154, 0.6891718, 1)
+shader_parameter/vertex_color = false
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_a74hq"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("1_lbba1")
+shader_parameter/tint = Color(0.1882353, 0.13333334, 0.23921569, 1)
+shader_parameter/vertex_color = false
+
+[node name="Bolts" type="Node3D" unique_id=1691257495]
+
+[node name="Particle00" type="MeshInstance3D" parent="." unique_id=754643476]
+transform = Transform3D(0.2726944, -0.078543805, 0, 0.07854224, 0.27269986, 0, 0, 0, 1.5, -2.5730567, 0.08135758, 0.40746024)
+sorting_use_aabb_center = false
+material_override = SubResource("ShaderMaterial_rhr4v")
+mesh = ExtResource("2_1ijp8")
+script = ExtResource("3_dnesr")
+
+[node name="Ink00" type="MeshInstance3D" parent="Particle00" unique_id=1754824849]
+transform = Transform3D(1.14, 0, 0, 0, 1.14, 0, 0, 0, 1.14, 0, 0, -0.012)
+sorting_use_aabb_center = false
+material_override = SubResource("ShaderMaterial_ovqvj")
+mesh = ExtResource("2_1ijp8")
+script = ExtResource("3_dnesr")
+tone = "ink"
+
+[node name="Particle01" type="MeshInstance3D" parent="." unique_id=1674003835]
+transform = Transform3D(0.32110128, -0.103594154, 0, 0.10359208, 0.32110772, 0, 0, 0, 1.5, -2.1166859, 0.908982, -1.5133227)
+sorting_use_aabb_center = false
+material_override = SubResource("ShaderMaterial_7qs3t")
+mesh = ExtResource("2_1ijp8")
+script = ExtResource("3_dnesr")
+tone = "light"
+
+[node name="Ink00" type="MeshInstance3D" parent="Particle01" unique_id=560775805]
+transform = Transform3D(1.14, 0, 0, 0, 1.14, 0, 0, 0, 1.14, 0, 0, -0.012)
+sorting_use_aabb_center = false
+material_override = SubResource("ShaderMaterial_uxqyu")
+mesh = ExtResource("2_1ijp8")
+script = ExtResource("3_dnesr")
+tone = "ink"
+
+[node name="Particle02" type="MeshInstance3D" parent="." unique_id=27436148]
+transform = Transform3D(0.38463315, -0.058668837, 0, 0.058667663, 0.38464084, 0, 0, 0, 1.5, -0.41133916, 0.21858907, -2.5476217)
+sorting_use_aabb_center = false
+material_override = SubResource("ShaderMaterial_c0lp5")
+mesh = ExtResource("2_1ijp8")
+script = ExtResource("3_dnesr")
+tone = "star"
+
+[node name="Ink00" type="MeshInstance3D" parent="Particle02" unique_id=1558777003]
+transform = Transform3D(1.14, 0, 0, 0, 1.14, 0, 0, 0, 1.14, 0, 0, -0.012)
+sorting_use_aabb_center = false
+material_override = SubResource("ShaderMaterial_s726u")
+mesh = ExtResource("2_1ijp8")
+script = ExtResource("3_dnesr")
+tone = "ink"
+
+[node name="Particle03" type="MeshInstance3D" parent="." unique_id=1313624593]
+transform = Transform3D(0.3076943, 0.040249854, 0, -0.04024905, 0.30770043, 0, 0, 0, 1.5, 1.5362586, 0.4909402, -2.0895584)
+sorting_use_aabb_center = false
+material_override = SubResource("ShaderMaterial_1jye4")
+mesh = ExtResource("2_1ijp8")
+script = ExtResource("3_dnesr")
+
+[node name="Ink00" type="MeshInstance3D" parent="Particle03" unique_id=2108764955]
+transform = Transform3D(1.14, 0, 0, 0, 1.14, 0, 0, 0, 1.14, 0, 0, -0.012)
+sorting_use_aabb_center = false
+material_override = SubResource("ShaderMaterial_o1fnq")
+mesh = ExtResource("2_1ijp8")
+script = ExtResource("3_dnesr")
+tone = "ink"
+
+[node name="Particle04" type="MeshInstance3D" parent="." unique_id=884903880]
+transform = Transform3D(0.30713147, 0.115749516, 0, -0.115747206, 0.3071376, 0, 0, 0, 1.5, 2.5762851, 0.08135758, -0.40746024)
+sorting_use_aabb_center = false
+material_override = SubResource("ShaderMaterial_u42af")
+mesh = ExtResource("2_1ijp8")
+script = ExtResource("3_dnesr")
+tone = "light"
+
+[node name="Ink00" type="MeshInstance3D" parent="Particle04" unique_id=2064816906]
+transform = Transform3D(1.14, 0, 0, 0, 1.14, 0, 0, 0, 1.14, 0, 0, -0.012)
+sorting_use_aabb_center = false
+material_override = SubResource("ShaderMaterial_ydw81")
+mesh = ExtResource("2_1ijp8")
+script = ExtResource("3_dnesr")
+tone = "ink"
+
+[node name="Particle05" type="MeshInstance3D" parent="." unique_id=1135198418]
+transform = Transform3D(0.3213008, 0.12635747, 0, -0.12635495, 0.32130724, 0, 0, 0, 1.5, 2.0975964, 0.908982, 1.5133227)
+sorting_use_aabb_center = false
+material_override = SubResource("ShaderMaterial_6qxab")
+mesh = ExtResource("2_1ijp8")
+script = ExtResource("3_dnesr")
+tone = "star"
+
+[node name="Ink00" type="MeshInstance3D" parent="Particle05" unique_id=1848617439]
+transform = Transform3D(1.14, 0, 0, 0, 1.14, 0, 0, 0, 1.14, 0, 0, -0.012)
+sorting_use_aabb_center = false
+material_override = SubResource("ShaderMaterial_iha3c")
+mesh = ExtResource("2_1ijp8")
+script = ExtResource("3_dnesr")
+tone = "ink"
+
+[node name="Particle06" type="MeshInstance3D" parent="." unique_id=1587819045]
+transform = Transform3D(0.2775605, 0.038845237, 0, -0.03884446, 0.27756605, 0, 0, 0, 1.5, 0.38748267, 0.21858907, 2.5476217)
+sorting_use_aabb_center = false
+material_override = SubResource("ShaderMaterial_qkx3l")
+mesh = ExtResource("2_1ijp8")
+script = ExtResource("3_dnesr")
+
+[node name="Ink00" type="MeshInstance3D" parent="Particle06" unique_id=620574853]
+transform = Transform3D(1.14, 0, 0, 0, 1.14, 0, 0, 0, 1.14, 0, 0, -0.012)
+sorting_use_aabb_center = false
+material_override = SubResource("ShaderMaterial_8mrya")
+mesh = ExtResource("2_1ijp8")
+script = ExtResource("3_dnesr")
+tone = "ink"
+
+[node name="Particle07" type="MeshInstance3D" parent="." unique_id=878139087]
+transform = Transform3D(0.3244863, -0.067803465, 0, 0.06780211, 0.32449275, 0, 0, 0, 1.5, -1.5429486, 0.4909402, 2.0895584)
+sorting_use_aabb_center = false
+material_override = SubResource("ShaderMaterial_2fik8")
+mesh = ExtResource("2_1ijp8")
+script = ExtResource("3_dnesr")
+tone = "light"
+
+[node name="Ink00" type="MeshInstance3D" parent="Particle07" unique_id=952497630]
+transform = Transform3D(1.14, 0, 0, 0, 1.14, 0, 0, 0, 1.14, 0, 0, -0.012)
+sorting_use_aabb_center = false
+material_override = SubResource("ShaderMaterial_a74hq")
+mesh = ExtResource("2_1ijp8")
+script = ExtResource("3_dnesr")
+tone = "ink"

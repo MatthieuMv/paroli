@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="DieEffectDefinition" format=3]
+
+[ext_resource type="Animation" path="res://die/effects/ribbons/activation.tres" id="1_3s1pf"]
+[ext_resource type="PackedScene" path="res://die/effects/ribbons/ribbons.tscn" id="2_566ce"]
+[ext_resource type="Script" path="res://die/effects/die_effect_definition.gd" id="3_4bppp"]
+
+[resource]
+script = ExtResource("3_4bppp")
+id = "ribbons"
+scene = ExtResource("2_566ce")
+recipe = Dictionary[String, float]({
+"brakingSeconds": 0.32,
+"count": 6.0,
+"cruiseSpeed": 0.6981317007977318,
+"expansionSeconds": 0.2,
+"initialRadius": 1.05,
+"launchSpeed": 5.5,
+"leadSeconds": 0.08,
+"radius": 2.05,
+"revealSeconds": 0.06,
+"riseSeconds": 0.38,
+"spawnHeight": 0.1
+})
+activation = ExtResource("1_3s1pf")

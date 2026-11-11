@@ -1,0 +1,401 @@
+[
+  {
+    "family": "Bonus",
+    "id": "solo_talent",
+    "en": "Top Hat",
+    "fr": "Haut-de-forme",
+    "file": "bonuses/solo_talent.svg"
+  },
+  {
+    "family": "Bonus",
+    "id": "pair_partner",
+    "en": "Sock Mate",
+    "fr": "Chaussettes",
+    "file": "bonuses/pair_partner.svg"
+  },
+  {
+    "family": "Bonus",
+    "id": "double_partner",
+    "en": "Double Vision",
+    "fr": "Vision double",
+    "file": "bonuses/double_partner.svg"
+  },
+  {
+    "family": "Bonus",
+    "id": "triple_bond",
+    "en": "Peas in a Pod",
+    "fr": "Petits pois",
+    "file": "bonuses/triple_bond.svg"
+  },
+  {
+    "family": "Bonus",
+    "id": "sure_footing",
+    "en": "Shortcut",
+    "fr": "Raccourci",
+    "file": "bonuses/sure_footing.svg"
+  },
+  {
+    "family": "Bonus",
+    "id": "house_guest",
+    "en": "Couch Surfer",
+    "fr": "Squatteur",
+    "file": "bonuses/house_guest.svg"
+  },
+  {
+    "family": "Bonus",
+    "id": "last_mile",
+    "en": "Finish Line",
+    "fr": "Ligne d’arrivée",
+    "file": "bonuses/last_mile.svg"
+  },
+  {
+    "family": "Bonus",
+    "id": "four_together",
+    "en": "Four-leaf Clover",
+    "fr": "Trèfle à quatre feuilles",
+    "file": "bonuses/four_together.svg"
+  },
+  {
+    "family": "Bonus",
+    "id": "family_bond",
+    "en": "High Five",
+    "fr": "Tape m’en cinq",
+    "file": "bonuses/family_bond.svg"
+  },
+  {
+    "family": "Bonus",
+    "id": "family_spirit",
+    "en": "Copycat",
+    "fr": "Copieur",
+    "file": "bonuses/family_spirit.svg"
+  },
+  {
+    "family": "Bonus",
+    "id": "one_or_nothing",
+    "en": "One or Nothing",
+    "fr": "Un ou rien",
+    "file": "bonuses/one_or_nothing.svg"
+  },
+  {
+    "family": "Bonus",
+    "id": "six_addict",
+    "en": "Six Addict",
+    "fr": "Accro au six",
+    "file": "bonuses/six_addict.svg"
+  },
+  {
+    "family": "Bonus",
+    "id": "odd_charm",
+    "en": "Odd Button",
+    "fr": "Bouton impair",
+    "file": "bonuses/odd_charm.svg"
+  },
+  {
+    "family": "Bonus",
+    "id": "even_charm",
+    "en": "Even Button",
+    "fr": "Bouton pair",
+    "file": "bonuses/even_charm.svg"
+  },
+  {
+    "family": "Bonus",
+    "id": "lucky_seven",
+    "en": "Lucky Seven",
+    "fr": "Sept porte-bonheur",
+    "file": "bonuses/lucky_seven.svg"
+  },
+  {
+    "family": "Bonus",
+    "id": "unique",
+    "en": "Black Sheep",
+    "fr": "Mouton noir",
+    "file": "bonuses/unique.svg"
+  },
+  {
+    "family": "Bonus",
+    "id": "small_circle",
+    "en": "Me Time",
+    "fr": "Ma petite pause",
+    "file": "bonuses/small_circle.svg"
+  },
+  {
+    "family": "Bonus",
+    "id": "squad",
+    "en": "Four-wheel Drive",
+    "fr": "Quatre roues motrices",
+    "file": "bonuses/squad.svg"
+  },
+  {
+    "family": "Bonus",
+    "id": "quiet_strength",
+    "en": "Power Reserve",
+    "fr": "Réserve de puissance",
+    "file": "bonuses/quiet_strength.svg"
+  },
+  {
+    "family": "Bonus",
+    "id": "pocket_money",
+    "en": "Payday",
+    "fr": "Jour de paye",
+    "file": "bonuses/pocket_money.svg"
+  },
+  {
+    "family": "Bonus",
+    "id": "paid_leave",
+    "en": "Paid Leave",
+    "fr": "Congé payé",
+    "file": "bonuses/paid_leave.svg"
+  },
+  {
+    "family": "Bonus",
+    "id": "rolling_income",
+    "en": "Side Hustle",
+    "fr": "Petit boulot",
+    "file": "bonuses/rolling_income.svg"
+  },
+  {
+    "family": "Bonus",
+    "id": "extremities",
+    "en": "Borderline",
+    "fr": "La frontière",
+    "file": "bonuses/extremities.svg"
+  },
+  {
+    "family": "Bonus",
+    "id": "neighbours",
+    "en": "Sandwiched",
+    "fr": "En sandwich",
+    "file": "bonuses/neighbours.svg"
+  },
+  {
+    "family": "Bonus",
+    "id": "first_instinct",
+    "en": "First Instinct",
+    "fr": "Premier instinct",
+    "file": "bonuses/first_instinct.svg"
+  },
+  {
+    "family": "Bonus",
+    "id": "persistence",
+    "en": "Loyalty Card",
+    "fr": "Carte de fidélité",
+    "file": "bonuses/persistence.svg"
+  },
+  {
+    "family": "Bonus",
+    "id": "opening_act",
+    "en": "Opening Act",
+    "fr": "Lever de rideau",
+    "file": "bonuses/opening_act.svg"
+  },
+  {
+    "family": "Bonus",
+    "id": "grand_finale",
+    "en": "Grand Finale",
+    "fr": "Bouquet final",
+    "file": "bonuses/grand_finale.svg"
+  },
+  {
+    "family": "Bonus",
+    "id": "echo",
+    "en": "Echo",
+    "fr": "Écho",
+    "file": "bonuses/echo.svg"
+  },
+  {
+    "family": "Joker",
+    "id": "solo_act",
+    "en": "One-man Band",
+    "fr": "Homme-orchestre",
+    "file": "jokers/solo_act.svg"
+  },
+  {
+    "family": "Joker",
+    "id": "better_together",
+    "en": "Lovebirds",
+    "fr": "Inséparables",
+    "file": "jokers/better_together.svg"
+  },
+  {
+    "family": "Joker",
+    "id": "double_date",
+    "en": "Double Date",
+    "fr": "Double date",
+    "file": "jokers/double_date.svg"
+  },
+  {
+    "family": "Joker",
+    "id": "three_company",
+    "en": "Trio",
+    "fr": "Trio",
+    "file": "jokers/three_company.svg"
+  },
+  {
+    "family": "Joker",
+    "id": "short_journey",
+    "en": "Conga Line",
+    "fr": "Chenille",
+    "file": "jokers/short_journey.svg"
+  },
+  {
+    "family": "Joker",
+    "id": "open_house",
+    "en": "Sardine Tin",
+    "fr": "Boîte de sardines",
+    "file": "jokers/open_house.svg"
+  },
+  {
+    "family": "Joker",
+    "id": "long_journey",
+    "en": "Road Trip",
+    "fr": "Road-trip",
+    "file": "jokers/long_journey.svg"
+  },
+  {
+    "family": "Joker",
+    "id": "four_corners",
+    "en": "Four Corners",
+    "fr": "Quatre coins",
+    "file": "jokers/four_corners.svg"
+  },
+  {
+    "family": "Joker",
+    "id": "family_reunion",
+    "en": "Family Reunion",
+    "fr": "Réunion de famille",
+    "file": "jokers/family_reunion.svg"
+  },
+  {
+    "family": "Joker",
+    "id": "match_master",
+    "en": "Matchmaker",
+    "fr": "Entremetteur",
+    "file": "jokers/match_master.svg"
+  },
+  {
+    "family": "Joker",
+    "id": "bipolarity",
+    "en": "Highs and Lows",
+    "fr": "Des hauts et des bas",
+    "file": "jokers/bipolarity.svg"
+  },
+  {
+    "family": "Joker",
+    "id": "mathmind",
+    "en": "Bean Counter",
+    "fr": "Compteur de haricots",
+    "file": "jokers/mathmind.svg"
+  },
+  {
+    "family": "Joker",
+    "id": "odd_squad",
+    "en": "Odd Squad",
+    "fr": "Drôle de brigade",
+    "file": "jokers/odd_squad.svg"
+  },
+  {
+    "family": "Joker",
+    "id": "even_squad",
+    "en": "Even Squad",
+    "fr": "Brigade paire",
+    "file": "jokers/even_squad.svg"
+  },
+  {
+    "family": "Joker",
+    "id": "variety_show",
+    "en": "Pick ’n’ Mix",
+    "fr": "Bonbons en vrac",
+    "file": "jokers/variety_show.svg"
+  },
+  {
+    "family": "Joker",
+    "id": "less_is_more",
+    "en": "Lazy Bones",
+    "fr": "Roi de la sieste",
+    "file": "jokers/less_is_more.svg"
+  },
+  {
+    "family": "Joker",
+    "id": "backup",
+    "en": "Bench Warmers",
+    "fr": "Banc de touche",
+    "file": "jokers/backup.svg"
+  },
+  {
+    "family": "Joker",
+    "id": "stonks",
+    "en": "Stonks",
+    "fr": "Stonks",
+    "file": "jokers/stonks.svg"
+  },
+  {
+    "family": "Joker",
+    "id": "window_shopper",
+    "en": "Roulette",
+    "fr": "Roulette",
+    "file": "jokers/window_shopper.svg"
+  },
+  {
+    "family": "Joker",
+    "id": "portfolio",
+    "en": "Nest Egg",
+    "fr": "Pécule",
+    "file": "jokers/portfolio.svg"
+  },
+  {
+    "family": "Joker",
+    "id": "alignment",
+    "en": "Ducks in a Row",
+    "fr": "À la queue leu leu",
+    "file": "jokers/alignment.svg"
+  },
+  {
+    "family": "Joker",
+    "id": "missing_link",
+    "en": "Missing Link",
+    "fr": "Chaînon manquant",
+    "file": "jokers/missing_link.svg"
+  },
+  {
+    "family": "Joker",
+    "id": "last_chance",
+    "en": "Last Straw",
+    "fr": "Dernière goutte",
+    "file": "jokers/last_chance.svg"
+  },
+  {
+    "family": "Joker",
+    "id": "extra_time",
+    "en": "Overtime",
+    "fr": "Heures sup’",
+    "file": "jokers/extra_time.svg"
+  },
+  {
+    "family": "Joker",
+    "id": "second_chance",
+    "en": "Do-over",
+    "fr": "On recommence",
+    "file": "jokers/second_chance.svg"
+  },
+  {
+    "family": "Joker",
+    "id": "momentum",
+    "en": "Snowball",
+    "fr": "Boule de neige",
+    "file": "jokers/momentum.svg"
+  },
+  {
+    "family": "Joker",
+    "id": "habit",
+    "en": "Broken Record",
+    "fr": "Disque rayé",
+    "file": "jokers/habit.svg"
+  },
+  {
+    "family": "Joker",
+    "id": "variety",
+    "en": "Plot Twist",
+    "fr": "Coup de théâtre",
+    "file": "jokers/variety.svg"
+  }
+]

@@ -1,0 +1,31 @@
+[gd_resource type="Resource" script_class="JokerDefinition" format=3 uid="uid://clmxakssj8u0r"]
+
+[ext_resource type="Script" uid="uid://bmdljge4q6mi1" path="res://mechanics/rules/effect_action.gd" id="2_p1bom"]
+[ext_resource type="Script" uid="uid://dk7hofsta88bs" path="res://mechanics/rules/score_action.gd" id="action"]
+[ext_resource type="Script" uid="uid://dh0angqdrpqtp" path="res://mechanics/rules/effect_amount.gd" id="amount"]
+[ext_resource type="Script" uid="uid://3dl3ik4hkg3k" path="res://mechanics/rules/combination_condition.gd" id="combo"]
+[ext_resource type="Script" uid="uid://dgho3icajanpt" path="res://mechanics/definitions/effect_definition.gd" id="effect"]
+[ext_resource type="Script" uid="uid://ofb7pu23k7w3" path="res://mechanics/definitions/joker_definition.gd" id="owner"]
+
+[sub_resource type="Resource" id="amount"]
+script = ExtResource("amount")
+constant = 20
+
+[sub_resource type="Resource" id="action"]
+script = ExtResource("action")
+amount = SubResource("amount")
+
+[sub_resource type="Resource" id="condition"]
+script = ExtResource("combo")
+combinations = Array[StringName]([&"short_straight", &"long_straight"])
+
+[sub_resource type="Resource" id="effect"]
+script = ExtResource("effect")
+id = &"straight_points"
+condition = SubResource("condition")
+actions = Array[ExtResource("2_p1bom")]([SubResource("action")])
+
+[resource]
+script = ExtResource("owner")
+id = &"example_straight_joker"
+effects = Array[ExtResource("effect")]([SubResource("effect")])

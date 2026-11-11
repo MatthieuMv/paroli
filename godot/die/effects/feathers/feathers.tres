@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="DieEffectDefinition" format=3]
+
+[ext_resource type="Animation" path="res://die/effects/feathers/activation.tres" id="1_a2r20"]
+[ext_resource type="PackedScene" path="res://die/effects/feathers/feathers.tscn" id="2_vpjuc"]
+[ext_resource type="Script" path="res://die/effects/die_effect_definition.gd" id="3_7gfeb"]
+
+[resource]
+script = ExtResource("3_7gfeb")
+id = "feathers"
+scene = ExtResource("2_vpjuc")
+recipe = Dictionary[String, float]({
+"braking": 0.5,
+"count": 6.0,
+"expansion": 0.24,
+"height": 0.45,
+"launch": 4.2,
+"radius": 2.25,
+"rise": 0.55,
+"speed": 0.41887902047863906
+})
+activation = ExtResource("1_a2r20")

@@ -1,0 +1,92 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://debug/catalog_viewer/catalog_entry.gd" id="script"]
+
+[ext_resource type="PackedScene" path="res://keyword_text/keyword_text.tscn" id="keywords"]
+
+[ext_resource type="PackedScene" path="res://die/die.tscn" id="die"]
+
+[sub_resource type="StyleBoxFlat" id="card"]
+content_margin_left = 22.0
+content_margin_top = 22.0
+content_margin_right = 22.0
+content_margin_bottom = 22.0
+bg_color = Color(1, 0.980392, 0.941176, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 3
+border_color = Color(0.188235, 0.133333, 0.239216, 1)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_left = 14
+corner_radius_bottom_right = 14
+
+[node name="CatalogEntry" type="PanelContainer"]
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("card")
+script = ExtResource("script")
+
+[node name="Content" type="VBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Header" type="HBoxContainer" parent="Content"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Copy" type="VBoxContainer" parent="Content/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="Title" type="Label" parent="Content/Header/Copy"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 23
+autowrap_mode = 2
+
+[node name="Identity" type="Label" parent="Content/Header/Copy"]
+layout_mode = 2
+modulate = Color(1, 1, 1, 0.65)
+theme_override_font_sizes/font_size = 13
+autowrap_mode = 3
+
+[node name="Artwork" type="TextureRect" parent="Content/Header"]
+texture_filter = 4
+custom_minimum_size = Vector2(112, 112)
+layout_mode = 2
+size_flags_vertical = 0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Preview" type="SubViewportContainer" parent="Content/Header"]
+custom_minimum_size = Vector2(112, 112)
+layout_mode = 2
+size_flags_vertical = 0
+mouse_filter = 2
+stretch = true
+
+[node name="Viewport" type="SubViewport" parent="Content/Header/Preview"]
+transparent_bg = true
+own_world_3d = true
+handle_input_locally = false
+size = Vector2i(112, 112)
+render_target_update_mode = 2
+msaa_3d = 3
+gui_disable_input = true
+
+[node name="Camera" type="Camera3D" parent="Content/Header/Preview/Viewport"]
+position = Vector3(0, 8, 7)
+rotation = Vector3(-0.7853982, 0, 0)
+projection = 1
+size = 7.8
+current = true
+
+[node name="Die" parent="Content/Header/Preview/Viewport" instance=ExtResource("die")]
+interaction_enabled = false
+face_value = 6
+
+[node name="Description" parent="Content" instance=ExtResource("keywords")]
+layout_mode = 2
+autowrap_mode = 2

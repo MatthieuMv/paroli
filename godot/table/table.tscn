@@ -1,0 +1,244 @@
+[gd_scene format=3 uid="uid://1y58ffgsagft"]
+
+[ext_resource type="ArrayMesh" uid="uid://bmmykgr0ajr85" path="res://table/model/base_mesh.tres" id="base"]
+[ext_resource type="ArrayMesh" uid="uid://by745nisw8q8b" path="res://table/model/field_mesh.tres" id="field"]
+[ext_resource type="ArrayMesh" uid="uid://bjy4syfnm0mms" path="res://table/model/foot_mesh.tres" id="foot"]
+[ext_resource type="ArrayMesh" uid="uid://b5nxbwfbeigrf" path="res://table/model/foot_cap_mesh.tres" id="foot_cap"]
+[ext_resource type="ArrayMesh" uid="uid://sxrlpf3ov2me" path="res://table/model/inlay_mesh.tres" id="inlay"]
+[ext_resource type="ArrayMesh" uid="uid://cmk18f71otpuu" path="res://table/model/piping_mesh.tres" id="piping"]
+[ext_resource type="ArrayMesh" uid="uid://ctukgbvan10l7" path="res://table/model/rail_mesh.tres" id="rail"]
+[ext_resource type="ArrayMesh" path="res://table/model/rail_outline_mesh.tres" id="rail_outline"]
+[ext_resource type="Script" uid="uid://dsk41rut4vmxx" path="res://table/table.gd" id="script"]
+[ext_resource type="Shader" uid="uid://cxbxrlqqntvjc" path="res://table/table_toon.gdshader" id="shader"]
+[ext_resource type="ArrayMesh" uid="uid://wv618tlio4dv" path="res://table/model/stitch_mesh.tres" id="stitch"]
+
+[sub_resource type="ShaderMaterial" id="wood"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("shader")
+shader_parameter/tint = Color(0.7372549, 0.5882353, 0.5137255, 1)
+
+[sub_resource type="ShaderMaterial" id="rail"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("shader")
+shader_parameter/tint = Color(0.95686275, 0.5254902, 0.39607844, 1)
+
+[sub_resource type="ShaderMaterial" id="felt"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("shader")
+shader_parameter/tint = Color(0.5764706, 0.7254902, 0.60784316, 1)
+
+[sub_resource type="ShaderMaterial" id="trim"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("shader")
+shader_parameter/tint = Color(0.95686275, 0.92941177, 0.8627451, 1)
+
+[sub_resource type="StandardMaterial3D" id="ink"]
+resource_local_to_scene = true
+cull_mode = 1
+shading_mode = 0
+albedo_color = Color(0.1882353, 0.13333334, 0.23921569, 1)
+
+[sub_resource type="StandardMaterial3D" id="edge_ink"]
+resource_local_to_scene = true
+cull_mode = 2
+shading_mode = 0
+albedo_color = Color(0.1882353, 0.13333334, 0.23921569, 1)
+
+[sub_resource type="ShaderMaterial" id="accent"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("shader")
+shader_parameter/tint = Color(0.92941177, 0.8, 0.3882353, 1)
+
+[sub_resource type="BoxShape3D" id="floor"]
+size = Vector3(21.28, 0.2, 14.28)
+
+[sub_resource type="BoxShape3D" id="long_wall"]
+size = Vector3(24, 0.6, 1.3)
+
+[sub_resource type="BoxShape3D" id="short_wall"]
+size = Vector3(1.3, 0.6, 14.4)
+
+[node name="Table" type="Node3D" unique_id=928620713]
+script = ExtResource("script")
+
+[node name="Base" type="MeshInstance3D" parent="." unique_id=504551072]
+material_override = SubResource("wood")
+mesh = ExtResource("base")
+
+[node name="Rail" type="MeshInstance3D" parent="." unique_id=173938293]
+material_override = SubResource("rail")
+mesh = ExtResource("rail")
+
+[node name="Surface" type="MeshInstance3D" parent="." unique_id=943099196]
+material_override = SubResource("felt")
+mesh = ExtResource("field")
+
+[node name="Piping" type="MeshInstance3D" parent="." unique_id=2100977911]
+material_override = SubResource("trim")
+mesh = ExtResource("piping")
+
+[node name="Stitching" type="MeshInstance3D" parent="." unique_id=332000317]
+material_override = SubResource("trim")
+mesh = ExtResource("stitch")
+
+[node name="Outlines" type="Node3D" parent="." unique_id=496043590]
+
+[node name="Base" type="MeshInstance3D" parent="Outlines" unique_id=2121588087]
+transform = Transform3D(1.012, 0, 0, 0, 1.08, 0, 0, 0, 1.016, 0, 0, 0)
+material_override = SubResource("ink")
+mesh = ExtResource("base")
+
+[node name="Rail" type="MeshInstance3D" parent="Outlines" unique_id=1610283257]
+material_override = SubResource("edge_ink")
+mesh = ExtResource("rail_outline")
+
+[node name="Leg1" type="MeshInstance3D" parent="Outlines" unique_id=450546043]
+transform = Transform3D(1.06, 0, 0, 0, 1.015, 0, 0, 0, 1.06, -9.2, 0, -5.8)
+material_override = SubResource("ink")
+mesh = ExtResource("foot")
+
+[node name="Leg2" type="MeshInstance3D" parent="Outlines" unique_id=1271563060]
+transform = Transform3D(1.06, 0, 0, 0, 1.015, 0, 0, 0, 1.06, 9.2, 0, -5.8)
+material_override = SubResource("ink")
+mesh = ExtResource("foot")
+
+[node name="Leg3" type="MeshInstance3D" parent="Outlines" unique_id=111746719]
+transform = Transform3D(1.06, 0, 0, 0, 1.015, 0, 0, 0, 1.06, -9.2, 0, 5.8)
+material_override = SubResource("ink")
+mesh = ExtResource("foot")
+
+[node name="Leg4" type="MeshInstance3D" parent="Outlines" unique_id=1318304536]
+transform = Transform3D(1.06, 0, 0, 0, 1.015, 0, 0, 0, 1.06, 9.2, 0, 5.8)
+material_override = SubResource("ink")
+mesh = ExtResource("foot")
+
+[node name="Legs" type="Node3D" parent="." unique_id=1880187900]
+
+[node name="Leg1" type="MeshInstance3D" parent="Legs" unique_id=52658793]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.2, 0, -5.8)
+material_override = SubResource("wood")
+mesh = ExtResource("foot")
+
+[node name="Leg2" type="MeshInstance3D" parent="Legs" unique_id=769751152]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.2, 0, -5.8)
+material_override = SubResource("wood")
+mesh = ExtResource("foot")
+
+[node name="Leg3" type="MeshInstance3D" parent="Legs" unique_id=1242491458]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.2, 0, 5.8)
+material_override = SubResource("wood")
+mesh = ExtResource("foot")
+
+[node name="Leg4" type="MeshInstance3D" parent="Legs" unique_id=1700905326]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.2, 0, 5.8)
+material_override = SubResource("wood")
+mesh = ExtResource("foot")
+
+[node name="FootCaps" type="Node3D" parent="." unique_id=711622829]
+
+[node name="Cap1" type="MeshInstance3D" parent="FootCaps" unique_id=341881078]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.2, 0, -5.8)
+material_override = SubResource("accent")
+mesh = ExtResource("foot_cap")
+
+[node name="Cap2" type="MeshInstance3D" parent="FootCaps" unique_id=1799375413]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.2, 0, -5.8)
+material_override = SubResource("accent")
+mesh = ExtResource("foot_cap")
+
+[node name="Cap3" type="MeshInstance3D" parent="FootCaps" unique_id=103309282]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.2, 0, 5.8)
+material_override = SubResource("accent")
+mesh = ExtResource("foot_cap")
+
+[node name="Cap4" type="MeshInstance3D" parent="FootCaps" unique_id=969660870]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.2, 0, 5.8)
+material_override = SubResource("accent")
+mesh = ExtResource("foot_cap")
+
+[node name="Inlays" type="Node3D" parent="." unique_id=1079917766]
+
+[node name="Star1" type="MeshInstance3D" parent="Inlays" unique_id=1878804571]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.8, 0.315, -7.3)
+material_override = SubResource("accent")
+mesh = ExtResource("inlay")
+
+[node name="Star2" type="MeshInstance3D" parent="Inlays" unique_id=2094576898]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.8, 0.315, -7.3)
+material_override = SubResource("accent")
+mesh = ExtResource("inlay")
+
+[node name="Star3" type="MeshInstance3D" parent="Inlays" unique_id=670660206]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.8, 0.315, 7.3)
+material_override = SubResource("accent")
+mesh = ExtResource("inlay")
+
+[node name="Star4" type="MeshInstance3D" parent="Inlays" unique_id=1435019472]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.8, 0.315, 7.3)
+material_override = SubResource("accent")
+mesh = ExtResource("inlay")
+
+[node name="RollingSurface" type="Marker3D" parent="." unique_id=2027146492]
+
+[node name="RollPositions" type="Node3D" parent="." unique_id=1237148832]
+
+[node name="Die1" type="Marker3D" parent="RollPositions" unique_id=200941991]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 0.02, 2.5)
+
+[node name="Die2" type="Marker3D" parent="RollPositions" unique_id=1956798361]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.5, 0.02, 4.5)
+
+[node name="Die3" type="Marker3D" parent="RollPositions" unique_id=1679077297]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, 2.5)
+
+[node name="Die4" type="Marker3D" parent="RollPositions" unique_id=137467451]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.5, 0.02, 4.5)
+
+[node name="Die5" type="Marker3D" parent="RollPositions" unique_id=1390907884]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 0.02, 2.5)
+
+[node name="HoldPositions" type="Node3D" parent="." unique_id=1896982132]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -6)
+
+[node name="Die1" type="Marker3D" parent="HoldPositions" unique_id=907535331]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 0.02, 1.5)
+
+[node name="Die2" type="Marker3D" parent="HoldPositions" unique_id=1326448262]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.5, 0.02, 3.5)
+
+[node name="Die3" type="Marker3D" parent="HoldPositions" unique_id=2138459589]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, 1.5)
+
+[node name="Die4" type="Marker3D" parent="HoldPositions" unique_id=1128788199]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.5, 0.02, 3.5)
+
+[node name="Die5" type="Marker3D" parent="HoldPositions" unique_id=166355442]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 0.02, 1.5)
+
+[node name="Collision" type="StaticBody3D" parent="." unique_id=192795090]
+collision_mask = 0
+
+[node name="Floor" type="CollisionShape3D" parent="Collision" unique_id=1249849197]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0)
+shape = SubResource("floor")
+
+[node name="Back" type="CollisionShape3D" parent="Collision" unique_id=263473910]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -7.85)
+shape = SubResource("long_wall")
+
+[node name="Front" type="CollisionShape3D" parent="Collision" unique_id=350685123]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 7.85)
+shape = SubResource("long_wall")
+
+[node name="Left" type="CollisionShape3D" parent="Collision" unique_id=209780774]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.3, 0, 0)
+shape = SubResource("short_wall")
+
+[node name="Right" type="CollisionShape3D" parent="Collision" unique_id=1577370384]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.3, 0, 0)
+shape = SubResource("short_wall")

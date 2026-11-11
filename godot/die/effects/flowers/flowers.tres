@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="DieEffectDefinition" format=3]
+
+[ext_resource type="Animation" path="res://die/effects/flowers/activation.tres" id="1_xr6i4"]
+[ext_resource type="PackedScene" path="res://die/effects/flowers/flowers.tscn" id="2_fhrj4"]
+[ext_resource type="Script" path="res://die/effects/die_effect_definition.gd" id="3_d1not"]
+
+[resource]
+script = ExtResource("3_d1not")
+id = "flowers"
+scene = ExtResource("2_fhrj4")
+recipe = Dictionary[String, float]({
+"braking": 0.4,
+"count": 7.0,
+"expansion": 0.2,
+"height": 0.3,
+"launch": 3.6,
+"radius": 2.2,
+"rise": 0.45,
+"speed": 0.483321946706122
+})
+activation = ExtResource("1_xr6i4")

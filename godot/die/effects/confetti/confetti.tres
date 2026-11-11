@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="DieEffectDefinition" format=3]
+
+[ext_resource type="Animation" path="res://die/effects/confetti/activation.tres" id="1_rjpqy"]
+[ext_resource type="PackedScene" path="res://die/effects/confetti/confetti.tscn" id="2_3wh3d"]
+[ext_resource type="Script" path="res://die/effects/die_effect_definition.gd" id="3_mu1nv"]
+
+[resource]
+script = ExtResource("3_mu1nv")
+id = "confetti"
+scene = ExtResource("2_3wh3d")
+recipe = Dictionary[String, float]({
+"brakingSeconds": 0.35,
+"count": 18.0,
+"cruiseSpeed": 0.5711986642890533,
+"expansionSeconds": 0.16,
+"initialRadius": 1.05,
+"launchSpeed": 3.8,
+"leadSeconds": 0.08,
+"radius": 2.2,
+"revealSeconds": 0.06,
+"riseSeconds": 0.32,
+"spawnHeight": 0.1,
+"tumbleBrakingSeconds": 0.28,
+"tumbleCruiseSpeed": 1.2,
+"tumbleLaunchSpeed": 8.0
+})
+activation = ExtResource("1_rjpqy")

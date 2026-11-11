@@ -1,0 +1,184 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://debug/table_viewer/table_viewer.gd" id="script"]
+
+[ext_resource type="Theme" path="res://debug/table_viewer/table_viewer_theme.tres" id="theme"]
+
+[ext_resource type="PackedScene" path="res://table/table.tscn" id="table"]
+
+[ext_resource type="PackedScene" path="res://die/die.tscn" id="die"]
+
+[ext_resource type="PackedScene" path="res://dice_hold/dice_hold_controller.tscn" id="hold_controller"]
+
+[ext_resource type="PackedScene" path="res://augment_overlay/augment_overlay.tscn" id="augment"]
+
+[sub_resource type="Environment" id="environment"]
+background_mode = 1
+background_color = Color(0.933333, 0.913725, 0.886275, 1)
+
+[sub_resource type="CylinderMesh" id="shadow_mesh"]
+top_radius = 12.4
+bottom_radius = 12.4
+height = 0.01
+radial_segments = 64
+
+[sub_resource type="StandardMaterial3D" id="shadow_mat"]
+shading_mode = 0
+transparency = 1
+albedo_color = Color(0.188235, 0.133333, 0.239216, 0.13)
+
+[sub_resource type="ButtonGroup" id="felt_group"]
+
+[node name="TableViewer" type="Node3D"]
+script = ExtResource("script")
+
+[node name="Environment" type="WorldEnvironment" parent="."]
+environment = SubResource("environment")
+
+[node name="Camera" type="Camera3D" parent="."]
+position = Vector3(0, 25.980762, 14.45)
+rotation = Vector3(-1.0471976, 0, 0)
+projection = 1
+size = 34.0
+keep_aspect = 0
+
+[node name="GroundShadow" type="MeshInstance3D" parent="."]
+position = Vector3(0.3, -3.48, 0.3)
+scale = Vector3(1, 1, 0.74)
+mesh = SubResource("shadow_mesh")
+material_override = SubResource("shadow_mat")
+
+[node name="Table" parent="." instance=ExtResource("table")]
+
+
+[node name="Dice" type="Node3D" parent="."]
+
+
+[node name="Die1" parent="Dice" instance=ExtResource("die")]
+palette_color = "Peach"
+face_value = 1
+shine_enabled = false
+
+[node name="Die2" parent="Dice" instance=ExtResource("die")]
+palette_color = "Butter"
+face_value = 2
+shine_enabled = false
+
+[node name="Die3" parent="Dice" instance=ExtResource("die")]
+palette_color = "Chalk"
+face_value = 3
+shine_enabled = true
+
+[node name="Die4" parent="Dice" instance=ExtResource("die")]
+palette_color = "Lavender"
+face_value = 4
+shine_enabled = false
+
+[node name="Die5" parent="Dice" instance=ExtResource("die")]
+palette_color = "Sky"
+face_value = 5
+shine_enabled = false
+
+[node name="Interface" type="CanvasLayer" parent="."]
+
+
+[node name="Header" type="MarginContainer" parent="Interface"]
+offset_left = 36.0
+offset_top = 28.0
+offset_right = 650.0
+offset_bottom = 115.0
+theme = ExtResource("theme")
+
+[node name="Text" type="VBoxContainer" parent="Interface/Header"]
+layout_mode = 2
+theme_override_constants/separation = 7
+
+[node name="Eyebrow" type="Label" parent="Interface/Header/Text"]
+layout_mode = 2
+text = "P A R O L I   /   T A B L E   S T U D I O"
+theme_override_font_sizes/font_size = 13
+
+[node name="Title" type="Label" parent="Interface/Header/Text"]
+layout_mode = 2
+text = "A little room for luck."
+theme_override_font_sizes/font_size = 32
+
+[node name="Subtitle" type="Label" parent="Interface/Header/Text"]
+layout_mode = 2
+text = "Press and sweep across dice to hold or release them."
+theme_override_font_sizes/font_size = 15
+
+[node name="Footer" type="MarginContainer" parent="Interface"]
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 36.0
+offset_top = -125.0
+offset_right = -36.0
+offset_bottom = -28.0
+grow_horizontal = 2
+grow_vertical = 0
+theme = ExtResource("theme")
+
+[node name="Rows" type="VBoxContainer" parent="Interface/Footer"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="Status" type="Label" parent="Interface/Footer/Rows"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Ready to roll"
+
+[node name="Controls" type="HFlowContainer" parent="Interface/Footer/Rows"]
+layout_mode = 2
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 8
+
+[node name="Roll" type="Button" parent="Interface/Footer/Rows/Controls"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Roll dice  ·  Space"
+
+[node name="Effects" type="Button" parent="Interface/Footer/Rows/Controls"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Upgrade VFX"
+toggle_mode = true
+
+[node name="Mint" type="Button" parent="Interface/Footer/Rows/Controls"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Mint felt"
+toggle_mode = true
+button_group = SubResource("felt_group")
+button_pressed = true
+
+[node name="Lavender" type="Button" parent="Interface/Footer/Rows/Controls"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Lavender felt"
+toggle_mode = true
+button_group = SubResource("felt_group")
+
+[node name="Chalk" type="Button" parent="Interface/Footer/Rows/Controls"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Chalk felt"
+toggle_mode = true
+button_group = SubResource("felt_group")
+
+[node name="HoldController" parent="." instance=ExtResource("hold_controller")]
+
+
+[node name="Upgrades" type="Button" parent="Interface/Footer/Rows/Controls"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Upgrade preview"
+
+[node name="OverlayLayer" type="CanvasLayer" parent="."]
+layer = 10
+
+[node name="AugmentOverlay" parent="OverlayLayer" instance=ExtResource("augment")]
+unique_name_in_owner = true
+visible = false

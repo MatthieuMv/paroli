@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="DieCatalog" format=3]
+
+[ext_resource type="ArrayMesh" path="res://die/model/body_mesh.tres" id="1_e3trk"]
+[ext_resource type="Script" path="res://die/effects/die_effect_definition.gd" id="2_ub4r8"]
+[ext_resource type="Resource" path="res://die/effects/none/none.tres" id="3_1nn4b"]
+[ext_resource type="Resource" path="res://die/effects/orbit/orbit.tres" id="4_6epsy"]
+[ext_resource type="Resource" path="res://die/effects/bubbles/bubbles.tres" id="5_imwco"]
+[ext_resource type="Resource" path="res://die/effects/starburst/starburst.tres" id="6_21eht"]
+[ext_resource type="Resource" path="res://die/effects/petals/petals.tres" id="7_65y46"]
+[ext_resource type="Resource" path="res://die/effects/confetti/confetti.tres" id="8_ju34g"]
+[ext_resource type="Resource" path="res://die/effects/bolts/bolts.tres" id="9_ocgje"]
+[ext_resource type="Resource" path="res://die/effects/ribbons/ribbons.tres" id="10_jgw51"]
+[ext_resource type="Resource" path="res://die/effects/hearts/hearts.tres" id="11_5ynpn"]
+[ext_resource type="Resource" path="res://die/effects/crescents/crescents.tres" id="12_bm7b3"]
+[ext_resource type="Resource" path="res://die/effects/diamonds/diamonds.tres" id="13_ajul7"]
+[ext_resource type="Resource" path="res://die/effects/flowers/flowers.tres" id="14_b0y02"]
+[ext_resource type="Resource" path="res://die/effects/feathers/feathers.tres" id="15_0qben"]
+[ext_resource type="Resource" path="res://die/effects/notes/notes.tres" id="16_0xmul"]
+[ext_resource type="Resource" path="res://die/effects/fire/fire.tres" id="17_aog2i"]
+[ext_resource type="PackedScene" path="res://die/model/model.tscn" id="18_d3eg3"]
+[ext_resource type="Script" path="res://die/die_catalog.gd" id="19_bgslh"]
+
+[resource]
+script = ExtResource("19_bgslh")
+model = ExtResource("18_d3eg3")
+body_mesh = ExtResource("1_e3trk")
+effects = Array[ExtResource("2_ub4r8")]([ExtResource("3_1nn4b"), ExtResource("4_6epsy"), ExtResource("5_imwco"), ExtResource("6_21eht"), ExtResource("7_65y46"), ExtResource("8_ju34g"), ExtResource("9_ocgje"), ExtResource("10_jgw51"), ExtResource("11_5ynpn"), ExtResource("12_bm7b3"), ExtResource("13_ajul7"), ExtResource("14_b0y02"), ExtResource("15_0qben"), ExtResource("16_0xmul"), ExtResource("17_aog2i")])

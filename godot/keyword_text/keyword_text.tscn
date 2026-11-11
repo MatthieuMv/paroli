@@ -1,0 +1,70 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://keyword_text/keyword_text.gd" id="script"]
+
+[ext_resource type="Theme" path="res://keyword_text/tooltip_theme.tres" id="theme"]
+
+[sub_resource type="FontVariation" id="keyword_weight"]
+resource_local_to_scene = true
+variation_embolden = 0.35
+
+[sub_resource type="StyleBoxFlat" id="popup"]
+content_margin_left = 18.0
+content_margin_top = 14.0
+content_margin_right = 18.0
+content_margin_bottom = 18.0
+bg_color = Color(1, 0.980392, 0.941176, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 3
+border_color = Color(0.188235, 0.133333, 0.239216, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_left = 12
+corner_radius_bottom_right = 12
+shadow_color = Color(0.188235, 0.133333, 0.239216, 0.2)
+shadow_size = 8
+
+[node name="KeywordText" type="RichTextLabel"]
+layout_mode = 2
+size_flags_horizontal = 3
+bbcode_enabled = true
+meta_underlined = false
+fit_content = true
+scroll_active = false
+mouse_filter = 0
+theme_override_colors/default_color = Color(0.188235, 0.133333, 0.239216, 1)
+theme_override_font_sizes/normal_font_size = 16
+theme_override_fonts/bold_font = SubResource("keyword_weight")
+script = ExtResource("script")
+
+[node name="TooltipLayer" type="CanvasLayer" parent="."]
+layer = 100
+
+[node name="Popup" type="PanelContainer" parent="TooltipLayer"]
+visible = false
+theme = ExtResource("theme")
+custom_minimum_size = Vector2(340, 0)
+theme_override_styles/panel = SubResource("popup")
+
+[node name="Content" type="VBoxContainer" parent="TooltipLayer/Popup"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Header" type="HBoxContainer" parent="TooltipLayer/Popup/Content"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="TooltipLayer/Popup/Content/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+autowrap_mode = 2
+theme_override_colors/font_color = Color(0.188235, 0.133333, 0.239216, 1)
+theme_override_font_sizes/font_size = 19
+
+[node name="Body" type="Label" parent="TooltipLayer/Popup/Content"]
+layout_mode = 2
+autowrap_mode = 2
+theme_override_colors/font_color = Color(0.188235, 0.133333, 0.239216, 1)
+theme_override_font_sizes/font_size = 16

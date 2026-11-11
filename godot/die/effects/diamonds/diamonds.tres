@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="DieEffectDefinition" format=3]
+
+[ext_resource type="Animation" path="res://die/effects/diamonds/activation.tres" id="1_4vyfk"]
+[ext_resource type="PackedScene" path="res://die/effects/diamonds/diamonds.tscn" id="2_vqf0e"]
+[ext_resource type="Script" path="res://die/effects/die_effect_definition.gd" id="3_d04ks"]
+
+[resource]
+script = ExtResource("3_d04ks")
+id = "diamonds"
+scene = ExtResource("2_vqf0e")
+recipe = Dictionary[String, float]({
+"braking": 0.25,
+"count": 8.0,
+"expansion": 0.12,
+"height": 0.35,
+"launch": 5.2,
+"radius": 2.15,
+"rise": 0.3,
+"speed": 0.6283185307179586
+})
+activation = ExtResource("1_4vyfk")

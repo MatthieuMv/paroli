@@ -12,7 +12,7 @@ class_name TableViewer
 @onready var _hold: DiceHoldController = $HoldController
 ## Readable feedback after rolling without introducing gameplay state.
 @onready var _status: Label = %Status
-## Presentation-only choice overlay; no upgrade model is connected.
+## Presentation-only choice overlay receives real definitions from this host.
 @onready var _augments: AugmentOverlay = %AugmentOverlay
 ## Incremented only to cycle deterministic preview faces.
 var _roll_index: int = 0
@@ -43,7 +43,7 @@ func _ready() -> void:
 	(%Mint as Button).pressed.connect(_set_felt.bind(GameColors.MINT))
 	(%Lavender as Button).pressed.connect(_set_felt.bind(GameColors.LAVENDER))
 	(%Chalk as Button).pressed.connect(_set_felt.bind(GameColors.CHALK))
-	(%Upgrades as Button).pressed.connect(_augments.open)
+	(%Upgrades as Button).pressed.connect(_show_upgrades)
 	_augments.presentation_changed.connect(_on_augment_presentation_changed)
 	_roll_all()
 
@@ -130,7 +130,10 @@ func _refresh_upgrade_preview() -> void:
 		settled = settled and _hold.can_mutate(die)
 		if not _hold.is_held(die):
 			selected.append(id)
-	UpgradePresentation.refresh(_preview_run, selected if settled else [], _views)
+	# Preserve the typed array when movement suppresses the pending selection.
+	if not settled:
+		selected.clear()
+	UpgradePresentation.refresh(_preview_run, selected, _views)
 
 ## Recolor only the table surface; the die palette stays independently editable.
 func _set_felt(color: Color) -> void:
@@ -141,3 +144,9 @@ func _set_felt(color: Color) -> void:
 func _on_augment_presentation_changed(blocking: bool) -> void:
 	($Interface/Header as Control).visible = not blocking
 	($Interface/Footer as Control).visible = not blocking
+
+
+## The debug host supplies a deterministic offer; the overlay never chooses its own content.
+func _show_upgrades() -> void:
+	var catalog: EffectsCatalog = EffectsCatalog.new()
+	_augments.open([catalog.upgrade(&"jackpot"), catalog.upgrade(&"guardian"), catalog.upgrade(&"crescendo")])

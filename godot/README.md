@@ -6,6 +6,31 @@ See [AGENTS.md](AGENTS.md) for typed, documented, feature-owned coding conventio
 See the [design style guide](../docs/DESIGN_STYLE_GUIDE.md) for visual direction,
 palette, camera, interface, motion, and interaction rules.
 
+## Local Web export
+
+Install the single-threaded Web debug and release export templates matching your
+Godot editor version using **Editor → Manage Export Templates**. The `Web` preset
+uses the project's Compatibility renderer with thread and extension support off,
+so a plain local HTTP server is sufficient.
+
+Run these commands from the repository root:
+
+```sh
+mkdir -p build/web
+godot --headless --path godot --export-debug Web
+python3 -m http.server 8000 --bind 127.0.0.1 --directory build/web
+```
+
+Open <http://127.0.0.1:8000> in Brave or another WebGL 2/WebAssembly-capable
+browser. The build opens the table preview, just like F5 in the editor.
+Stop the server with Ctrl+C. After edits, repeat the export command and refresh
+the browser. Use `--export-release Web` instead for a release build.
+
+The generated HTML, JavaScript, WebAssembly, and game data stay together in
+`build/web/`, outside the Godot project and ignored by Git. Serve that directory
+over HTTP; opening `index.html` directly as a file will not work. The preset is
+also available under **Project → Export** in the editor.
+
 ## Editing the native resources
 
 The `.tscn` and `.tres` files are the source of truth. There is no JSON import,
@@ -200,8 +225,9 @@ A light, dark translucent backdrop preserves the table beneath it. The only
 heading is **Upgrade a die**. Cards retain their upgrade name and description;
 cards and overlay controls accept mouse/touch input without keyboard focus.
 Each card contains an actual native die in its own
-transparent 3D viewport with 8× MSAA and live VFX. Example choices show Butter
-with bolts, Mint with orbit, and Lavender with flowers.
+transparent 3D viewport with 8× MSAA and live VFX. The viewer supplies Jackpot, Guardian, and Crescendo from the real effects catalog.
+Cards render each definition’s localized name, description, six-face layout, palette,
+and VFX.
 
 Landscape uses one row; portrait uses one column. Small windows scroll
 vertically. Window stretching is disabled so responsive UI uses window dimensions
@@ -211,7 +237,7 @@ instead of shrinking a fixed desktop canvas.
 restores interaction with the table. **Show upgrades** brings the choices back.
 There is no cancel or close action: choosing a card completes the offer.
 
-The host-facing signal is `upgrade_selected(upgrade_id: String)`. It fires
+The host-facing signal is `upgrade_selected(upgrade_id: StringName)`. It fires
 exactly once when the choice is committed, before animation begins. The overlay
 locks all choices and inspection during the selected die's native activation,
 then dismisses itself after `ParoliDie.activation_finished`. This signal marks
@@ -219,10 +245,12 @@ the entire effect's completion, including particles that outlive the die;
 `consumed` still marks disappearance of the die itself.
 
 The overlay does not implement upgrade rules or mutate the table dice. Connect
-`upgrade_selected` to future game logic. The current IDs are `lucky_spark`,
-`second_wind`, and `velvet_touch`; they are authored example choices.
-A host instances the overlay inside a CanvasLayer and calls `open()` for a
-fresh offer. Use `presentation_changed` or `is_blocking()` to coordinate host
+`upgrade_selected` to host game logic.
+A host instances the overlay inside a CanvasLayer and calls
+`open(upgrades: Array[UpgradeDefinition], locale: String = "")` after entering
+the tree. Supply exactly three non-null definitions for a fresh offer. The method
+returns false for invalid input or during activation, leaving the offer unchanged.
+The overlay starts hidden and never generates offers or installs upgrades. Use `presentation_changed` or `is_blocking()` to coordinate host
 shortcuts. Reopening during a committed animation is ignored.
 
 ```sh

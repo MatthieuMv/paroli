@@ -7,7 +7,7 @@ class_name AugmentOverlay
 ## Lets a host suspend its own gameplay shortcuts while cards cover the table.
 signal presentation_changed(blocking: bool)
 ## Emitted exactly once on commitment, before activation; the host owns game rules.
-signal upgrade_selected(upgrade_id: String)
+signal upgrade_selected(upgrade_id: StringName)
 
 # --- Member variables ---
 
@@ -21,6 +21,8 @@ signal upgrade_selected(upgrade_id: String)
 @onready var _restore: Button = $Restore
 ## Inspection cannot bypass a committed choice while its animation is playing.
 @onready var _inspect: Button = $Presentation/Frame/Inspect
+## Read-only vocabulary used to render the supplied definitions.
+var _words: KeywordCatalog = GameKeywords.new()
 ## Guard against repeat input and reentrant signal handlers during activation.
 var _choosing: bool = false
 
@@ -36,15 +38,21 @@ func _ready() -> void:
 	resized.connect(_resize_layout)
 	_resize_layout()
 
-## Begin a fresh offer without applying any upgrade or replacing the game scene.
-func open() -> void:
-	if _choosing:
-		return
-	for card: AugmentCard in _cards.get_children():
-		card.reset_preview()
+## Accept exactly three non-null choices; invalid input leaves the current offer untouched.
+## The host owns offer generation and applying the selected ID. Call after entering the tree.
+func open(upgrades: Array[UpgradeDefinition], locale: String = "") -> bool:
+	if _choosing or upgrades.size() != 3:
+		return false
+	for upgrade: UpgradeDefinition in upgrades:
+		if not upgrade:
+			return false
+	for index: int in upgrades.size():
+		var card: AugmentCard = _cards.get_child(index) as AugmentCard
+		card.configure(upgrades[index], _words, locale)
 	_inspect.disabled = false
 	show()
 	show_cards()
+	return true
 
 ## Hide the dimmer and cards so the host game receives input normally.
 func inspect_game() -> void:
@@ -74,7 +82,7 @@ func _resize_layout() -> void:
 	($Presentation/Frame/Heading as Label).add_theme_font_size_override("font_size", 24 if short_view else 32)
 	_frame.add_theme_constant_override("separation", 10 if short_view else 16)
 	var width: float = minf(size.x - margin * 2.0, 1080.0)
-	var height: float = minf(size.y - margin * 2.0, 760.0 if portrait else (310.0 if short_view else 550.0))
+	var height: float = minf(size.y - margin * 2.0, 760.0 if portrait else (310.0 if short_view else 650.0))
 	_cards.columns = 1 if portrait else 3
 	for card: AugmentCard in _cards.get_children():
 		card.set_compact(portrait, short_view)

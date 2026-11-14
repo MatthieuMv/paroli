@@ -9,7 +9,7 @@ const VIEWER: PackedScene = preload("res://debug/table_viewer/table_viewer.tscn"
 # --- Member variables ---
 
 ## Record the host-facing commitment signal without implementing upgrades.
-var _selections: PackedStringArray = []
+var _selections: Array[StringName] = []
 
 # --- Member functions ---
 
@@ -33,8 +33,13 @@ func _run() -> void:
 	var cards: GridContainer = overlay.get_node("Presentation/Frame/Scroll/Cards") as GridContainer
 	var first: AugmentCard = cards.get_child(0) as AugmentCard
 	overlay.upgrade_selected.connect(_on_upgrade_selected)
+	var catalog: EffectsCatalog = EffectsCatalog.new()
+	var words: KeywordCatalog = GameKeywords.new()
+	var offers: Array[UpgradeDefinition] = [catalog.upgrade(&"jackpot"), catalog.upgrade(&"guardian"), catalog.upgrade(&"crescendo")]
+	assert(not overlay.open([]))
+	assert(not overlay.open([offers[0], null, offers[2]]))
 	assert(not overlay.visible)
-	overlay.open()
+	assert(overlay.open(offers, "en"))
 	assert(overlay.is_blocking())
 	assert(viewport.gui_get_focus_owner() == null, "Opening preselected a focus target")
 	await process_frame
@@ -44,9 +49,14 @@ func _run() -> void:
 	await _key(viewport, KEY_ENTER)
 	assert(_selections.is_empty(), "Keyboard input selected an upgrade")
 	for card: AugmentCard in cards.get_children():
+		var preview: ParoliDie = card.get_node("Margin/Layout/Preview/Viewport/Die") as ParoliDie
+		assert(card.upgrade_id == offers[card.get_index()].id)
+		assert(preview.palette_color == String(offers[card.get_index()].palette_color))
+		assert(preview.effect == String(offers[card.get_index()].vfx_id))
+		assert(preview.face_value == offers[card.get_index()].faces[0])
 		assert(card.focus_mode == Control.FOCUS_NONE)
-		assert((card.get_node("Margin/Layout/Copy/Title") as Label).text == card.title)
-		assert((card.get_node("Margin/Layout/Copy/Description") as Label).text == card.description)
+		assert((card.get_node("Margin/Layout/Copy/Title") as Label).text == words.render(String(offers[card.get_index()].name_keyword), {}, "en"))
+		assert((card.get_node("Margin/Layout/Copy/Description") as Label).text == offers[card.get_index()].describe(words, "en"))
 	for dimensions: Vector2i in [Vector2i(1280, 900), Vector2i(540, 960), Vector2i(390, 844), Vector2i(320, 568), Vector2i(844, 390)]:
 		viewport.size = dimensions
 		for frame: int in 8:
@@ -85,7 +95,7 @@ func _run() -> void:
 	# Each native effect must finish before dismissal; a repeated click emits nothing.
 	for index: int in cards.get_child_count():
 		if index > 0:
-			overlay.open()
+			assert(overlay.open(offers, "en"))
 			await process_frame
 			await process_frame
 		var card: AugmentCard = cards.get_child(index) as AugmentCard
@@ -93,12 +103,23 @@ func _run() -> void:
 		assert(_selections.size() == index + 1)
 		assert(_selections[index] == card.upgrade_id)
 		assert(overlay.visible and overlay.is_blocking(), "Closed before activation finished")
+		assert(not overlay.open(offers))
 		first.pressed.emit()
 		overlay.inspect_game()
 		assert(_selections.size() == index + 1 and overlay.is_blocking())
 		await card.activation_finished
 		assert(not overlay.visible and not overlay.is_blocking())
 		assert(die.face_value == face, "Choice presentation applied gameplay state")
+	# A later host offer replaces every card, and localization never changes identity.
+	var replacement: Array[UpgradeDefinition] = [catalog.upgrade(&"rainbow"), catalog.upgrade(&"odd_master"), catalog.upgrade(&"all_for_one")]
+	assert(overlay.open(replacement, "fr"))
+	replacement.clear()
+	assert(not overlay.open(offers.slice(0, 2)))
+	assert(first.upgrade_id == &"rainbow")
+	assert((first.get_node("Margin/Layout/Copy/Description") as Label).text == catalog.upgrade(&"rainbow").describe(words, "fr"))
+	first.pressed.emit()
+	assert(_selections.back() == &"rainbow")
+	await first.activation_finished
 	print("PASS: responsive live 3D cards, inspection input, one-shot choice signal, full activation before dismissal.")
 	quit()
 
@@ -117,7 +138,7 @@ func _click(viewport: SubViewport, point: Vector2) -> void:
 
 
 ## Capture only the chosen ID; the host is responsible for any gameplay mutation.
-func _on_upgrade_selected(upgrade_id: String) -> void:
+func _on_upgrade_selected(upgrade_id: StringName) -> void:
 	_selections.append(upgrade_id)
 
 

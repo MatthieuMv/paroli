@@ -56,7 +56,6 @@ current = true
 
 [node name="Die" parent="Margin/Layout/Preview/Viewport" instance=ExtResource("die")]
 face_value = 6
-effect = "bolts"
 
 [node name="Copy" type="VBoxContainer" parent="Margin/Layout"]
 layout_mode = 2
@@ -69,11 +68,9 @@ theme_override_constants/separation = 10
 layout_mode = 2
 mouse_filter = 2
 theme_override_font_sizes/font_size = 25
-text = "Lucky spark"
 autowrap_mode = 2
 
 [node name="Description" type="Label" parent="Margin/Layout/Copy"]
 layout_mode = 2
 mouse_filter = 2
-text = "A little bonus whenever this die lands on six."
 autowrap_mode = 2

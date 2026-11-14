@@ -9,16 +9,8 @@ signal activation_finished
 
 # --- Member variables ---
 
-## Stable identifier passed to game logic; the card never applies the upgrade.
-@export var upgrade_id: String = "lucky_spark"
-## Player-facing name and concise explanation of the authored upgrade choice.
-@export var title: String = "Lucky spark"
-## Description stays visible alongside the live die preview.
-@export_multiline var description: String = "A little bonus whenever this die lands on six."
-## Palette and effect are presentation examples, independent of future upgrade rules.
-@export var palette_color: String = "Butter"
-## Native effect identifier used for both the idle preview and activation.
-@export var effect: String = "bolts"
+## Identity copied from the host-supplied definition; no gameplay state is owned here.
+var upgrade_id: StringName
 ## Content minimum follows wrapped copy at every viewport size.
 @onready var _layout: BoxContainer = $Margin/Layout
 ## Authored container owns the preview's responsive minimum size.
@@ -34,19 +26,21 @@ func _ready() -> void:
 	_die.rolled.connect(_on_preview_settled)
 	visibility_changed.connect(_on_visibility_changed)
 	_layout.minimum_size_changed.connect(_fit_content)
-	reset_preview()
+	disabled = true
 	_on_visibility_changed()
 
-## Reset a completed choice for a new offer; initial placement avoids a distracting roll.
-func reset_preview() -> void:
+## Display a supplied immutable definition after entering the tree; never evaluate its rules.
+func configure(upgrade: UpgradeDefinition, words: KeywordCatalog, locale: String) -> void:
+	upgrade_id = upgrade.id
 	button_pressed = false
 	disabled = false
-	_die.palette_color = palette_color
-	_die.effect = effect
-	($Margin/Layout/Copy/Title as Label).text = title
-	($Margin/Layout/Copy/Description as Label).text = description
+	_die.palette_color = String(upgrade.palette_color)
+	_die.effect = String(upgrade.vfx_id)
+	_die.effect_enabled = true
+	($Margin/Layout/Copy/Title as Label).text = words.render(String(upgrade.name_keyword), {}, locale)
+	($Margin/Layout/Copy/Description as Label).text = upgrade.describe(words, locale)
 	_die.reduced_motion = true
-	_die.roll(6)
+	_die.roll(upgrade.faces[0] if not upgrade.faces.is_empty() else 6)
 
 ## Keep all three dice visible in portrait while leaving room for their VFX.
 func set_compact(compact: bool, short_view: bool = false) -> void:

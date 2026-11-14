@@ -24,6 +24,13 @@ func _run() -> void:
 	viewport.add_child(viewer)
 	var table: ParoliTable = viewer.get_node("Table") as ParoliTable
 	var dice_root: Node3D = viewer.get_node("Dice") as Node3D
+	# Exercise the normal-motion branch before the opening roll has settled.
+	var effects: Button = viewer.get_node("%Effects") as Button
+	assert((dice_root.get_child(0) as ParoliDie).is_rolling())
+	effects.button_pressed = true
+	for die: ParoliDie in dice_root.get_children():
+		assert(not die.effect_enabled, "Rolling dice must suppress upgrade previews")
+	effects.button_pressed = false
 	for die: ParoliDie in dice_root.get_children():
 		die.reduced_motion = true
 	await process_frame

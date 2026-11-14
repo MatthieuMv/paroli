@@ -7,6 +7,7 @@
 [sub_resource type="ButtonGroup" id="choices"]
 
 [node name="AugmentOverlay" type="Control"]
+visible = false
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -61,32 +62,17 @@ theme_override_constants/h_separation = 20
 theme_override_constants/v_separation = 16
 columns = 3
 
-[node name="Spark" parent="Presentation/Frame/Scroll/Cards" instance=ExtResource("card")]
+[node name="Choice1" parent="Presentation/Frame/Scroll/Cards" instance=ExtResource("card")]
 layout_mode = 2
 button_group = SubResource("choices")
-upgrade_id = "lucky_spark"
-title = "Lucky spark"
-description = "A little bonus whenever this die lands on six."
-palette_color = "Butter"
-effect = "bolts"
 
-[node name="Wind" parent="Presentation/Frame/Scroll/Cards" instance=ExtResource("card")]
+[node name="Choice2" parent="Presentation/Frame/Scroll/Cards" instance=ExtResource("card")]
 layout_mode = 2
 button_group = SubResource("choices")
-upgrade_id = "second_wind"
-title = "Second wind"
-description = "Give this die another chance at a better face."
-palette_color = "Mint"
-effect = "orbit"
 
-[node name="Velvet" parent="Presentation/Frame/Scroll/Cards" instance=ExtResource("card")]
+[node name="Choice3" parent="Presentation/Frame/Scroll/Cards" instance=ExtResource("card")]
 layout_mode = 2
 button_group = SubResource("choices")
-upgrade_id = "velvet_touch"
-title = "Velvet touch"
-description = "Make holding this die a little more rewarding."
-palette_color = "Lavender"
-effect = "flowers"
 
 [node name="Inspect" type="Button" parent="Presentation/Frame"]
 focus_mode = 0

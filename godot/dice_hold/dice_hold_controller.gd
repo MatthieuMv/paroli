@@ -79,6 +79,17 @@ func toggle_hold(die: ParoliDie) -> void:
 	tween.finished.connect(_on_transfer_finished.bind(die))
 	changed.emit()
 
+## Put a held die straight back on its roll marker, without a slide. Unlike toggle_hold this
+## accepts a consumed die, so a die that was played from its hold marker can re-enter on the
+## roll row. Ignored for unheld dice and during a transfer.
+func return_to_roll(die: ParoliDie) -> void:
+	if not _slots.has(die) or _transfers.has(die) or not is_held(die):
+		return
+	_held[die] = false
+	die.set_hold_highlight(false)
+	die.global_position = _table.get_roll_positions()[_slots[die]]
+	changed.emit()
+
 ## Release the motion guard only once the die reaches its marker.
 func _on_transfer_finished(die: ParoliDie) -> void:
 	_transfers.erase(die)

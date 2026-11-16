@@ -241,6 +241,14 @@ var scored: MechanicsEventResult = run.validate_dice(&"validation_1", selected, 
 assert(scored.errors.is_empty())
 ```
 
+`preview_commands(selected)` plans the pending play's effect commands with the same
+recognizer and planner as `validate_dice`, without committing history, rewards, or the
+event ledger. Presentation reads provenance and signs from it for eligibility cues
+(shine sweeps, crack cue); it must not total the amounts into a score preview (D-023).
+`preview_active_upgrades` is built on it. [CombinationScores](definitions/combination_scores.gd)
+holds the accepted provisional D-022 base points and Mult; hosts add member face values
+to the base points before calling `validate_dice`.
+
 The host supplies **physical face indices 0–5**, preserving repeated-face odds.
 Random sampling, base category scores, shop offers/prices, and visual animation
 remain host responsibilities. The existing table/overlay are presentation previews;

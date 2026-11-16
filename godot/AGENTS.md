@@ -9,7 +9,8 @@ code, tests, and code emitted by generators.
 - Organize by feature: `game_colors/` owns shared color constants and palette order;
   `die/` owns the reusable die, `table/` owns the rolling
   table, `dice_hold/` owns selection and marker transfers,
-  `augment_overlay/` owns upgrade card presentation; mechanics/ owns immutable rules, localized
+  `augment_overlay/` owns upgrade card presentation; `round_interface/` owns the playable
+  round presentation (HUD, scoring reveal, sound) and its host-side session; mechanics/ owns immutable rules, localized
   descriptions, pure command planning, and the isolated run coordinator; and `debug/` contains their separate development viewers. Keep a scene, script, shaders, resources, and tests with the feature that owns them. Do not introduce root
   `scripts/`, `assets/`, `shaders/`, or `scenes/` buckets.
 - Author stable node hierarchies, layout, themes, and resources in `.tscn` and

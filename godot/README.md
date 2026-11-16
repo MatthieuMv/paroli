@@ -115,7 +115,8 @@ The Inspector exposes 15 palette colors, custom body/ink/shine tints, 14 particl
 presets plus `none`, finishes, face value, and reduced motion. `DieLibrary.palette()`
 and `DieLibrary.effect_ids()` expose the ordered choices through typed APIs.
 
-`rolled(value)` signals settling; `consumed` signals disappearance. Call
+`rolled(value)` signals settling; `consumed` signals disappearance. `hover_changed(hovered)`
+reports passive pointer enter/exit for feedback only; hovering never mutates a die. Call
 `activate()` after settling and `roll()` to restore the die. `is_rolling()` and
 `is_consumed()` expose state without child-node access. Omitting the value in
 `roll()` cycles faces; rendering does not choose authoritative game outcomes.
@@ -197,7 +198,8 @@ godot --path godot --script res://debug/table_viewer/tests/smoke.gd -- --capture
 ```
 
 [dice_hold/dice_hold_controller.tscn](dice_hold/dice_hold_controller.tscn) owns
-selection and movement separately from the reusable die and table. Configure it
+selection and movement separately from the reusable die and table. `return_to_roll(die)`
+puts a held die back on its roll marker without a slide, including a consumed one. Configure it
 with a table and a typed dice array in roll-slot order. The die emits `clicked`
 on a press or held-pointer sweep when interaction is enabled; the controller
 exposes `is_held()`, `can_mutate()`, `can_roll()`,
@@ -395,3 +397,112 @@ The artwork control uses linear mipmap filtering. Its 112 px display size matche
 an exact mip level (448 → 224 → 112), avoiding both undersampled jagged edges and
 soft blending between mismatched mip levels. Keep these `.svg.import` settings
 with the artwork when adding or regenerating icons.
+
+## Round interface prototype
+
+Open [debug/round_prototype/round_prototype.tscn](debug/round_prototype/round_prototype.tscn)
+and press **F6** to play a full round on the table: five dice, a build, a target,
+three plays, and three manual rolls. The project's main scene is unchanged.
+
+The felt has two rows. Dice start on the front **Roll** row. **Press a die** (or
+sweep across several) to move it to the back **Play** row: that is the selection
+for the next play. **Roll** (Space) rerolls the dice still on the Roll row and
+spends a roll; selected dice keep their value. **Play** (Enter) scores the
+selection; if the round continues, the played dice reroll for free and re-enter on
+the Roll row. Reaching the target ends the round at once; running out of plays ends
+the run. The corner **Debug** button cycles three fixture builds (Showcase, Starter,
+Bare dice), restarts the run, changes reveal speed, and toggles reduced motion and sound.
+It also steps through 15 backdrop color schemes (**B** / **Shift+B**) and five patterns
+(**P**), so combinations can be compared with the panel closed.
+
+The scoreboard stays empty until at least one die is on the Play row. It then shows
+only the recognized combination and its base points × Mult (D-023). Bonuses and
+Jokers that would trigger get a shine sweep, and a die applying a negative effect
+shows the crack cue. An upgrade's particles show only on a die that is selected
+**and** whose reward will apply to that play; rewards earned from the Roll row
+(Guardian, for example) stay silent until the reveal. No face points, effect totals,
+or projected score appear before the reveal.
+
+The reveal resolves one source per beat: member dice left to right, each die's
+upgrade and bonus, then Jokers in rack order. Each beat hops the die or punches the
+card, pops a colored increment beside it (Sky points, Cherry Mult, Butter coins),
+steps the matching tile, and plays a tick one rung higher on a pentatonic ladder.
+Beats accelerate and hit harder as the chain grows. Percentages then fold into Mult
+once, the total counts up over the tiles, flies to the goal meter, and banks. Played
+dice burst with their native activation and roll back in. Clearing the target stamps
+the meter, converts unused plays into coins, and shows the result card.
+
+Other feedback: staggered throws with three felt knocks per die and a touch of
+camera shake, select/deselect pops pitched per die, hover hops and ticks, idle sway and
+hover tilt on cards, chunky press-down buttons whose pips pop when spent, and
+tooltips with authored descriptions on Jokers, bonuses, and upgrade tags.
+Reduced motion keeps order, values, and sound but removes shake, springs, travel,
+stagger, and confetti, and freezes the backdrop's drift.
+
+### Structure
+
+[round_interface/round_interface.tscn](round_interface/round_interface.tscn) is the
+reusable scene; it works without the debug host.
+
+- `session/`: scene-free round logic. `RoundSession` wraps `MechanicsRun`, samples
+  face positions from a seedable generator, supplies D-022 base scores, and mints
+  event IDs. `PlayPreview` carries pre-commit facts, `PlayOutcome` a committed play,
+  and `ScoreScript` orders an outcome into `ScoreStep` beats with running totals.
+- `round_interface.gd`: phases, input, and preview refresh. `score_sequence.gd`:
+  the reveal choreography.
+- `hud/`: `RoundHud` lays out and exposes the widgets (goal meter, scoreboard, Joker
+  rack, die docks, coin chip, action buttons, popups, tooltip, result banner). It
+  reports intents and animates host-supplied values; no rules live there.
+- `juice/`: `RoundCamera` (table framing and trauma shake) and `Juice` helpers.
+- `backdrop/`: `RoundBackdrop`, a wallpaper quad parented to the camera. A
+  `BackdropPreset` resource (`backdrop/presets/*.tres`) supplies the glow, edge, and
+  pattern colors plus the ink for the few HUD marks drawn straight on the wall; `motif`
+  picks the pattern (plain, sparkles, dots, stripes, diamonds) independently. The pattern
+  drifts slowly and fades out behind the table. Density and pattern strength are material
+  parameters on the `Camera/Backdrop` node.
+- `audio/`: `RoundAudio` voice pool and the WAV cues.
+
+```gdscript
+var run: MechanicsRun = MechanicsRun.new(4)
+run.install_upgrade(catalog.upgrade(&"jackpot"))  # Equip between rounds.
+var session: RoundSession = RoundSession.new(run, seed)
+round_interface.start_round(session, 1, 300.0)
+# The banner's action reports the result; the host starts the next round or a new run.
+round_interface.continue_requested.connect(_on_continue_requested)
+```
+
+`start_round` returns false, changing nothing, while a throw or reveal is playing or
+when the session rejects the start. `busy_changed` and `is_busy()` expose the input
+lock. `reduced_motion`, `tempo`, `muted`, `backdrop_preset`, `backdrop_motif`, and
+`locale` are exported; the scene's default backdrop is the Paper preset with sparkles.
+
+The HUD scales from a 1280×900 landscape or 540×960 portrait reference and frames
+the table in the space it leaves; die docks follow the dice columns on screen.
+
+### Placeholders
+
+- Sound effects are original synthesized studies, generated by
+  [synth_sfx.py](../docs/audio_explorations/round_sfx/synth_sfx.py) into
+  `round_interface/audio/sfx/`. The WAV files are the runtime source; replace them
+  freely. Pitched ticks share a C5 root so chains can climb by `pitch_scale`.
+- `RoundSession.coins_per_unused_play`, the fixture targets and their 1.6× growth,
+  and fixture sell values are test inputs. The design has not fixed these values.
+- Interface copy outside the keyword glossary (Target, Keep, hints, result card) is
+  English only.
+
+### Validation
+
+```sh
+godot --headless --path godot --script res://round_interface/tests/session.gd
+godot --headless --path godot --script res://round_interface/tests/smoke.gd
+godot --headless --path godot --script res://debug/round_prototype/tests/smoke.gd
+# With a working display; saves /tmp/paroli-round-*.png:
+godot --disable-vsync --path godot --script res://round_interface/tests/smoke.gd -- --capture
+godot --disable-vsync --path godot --script res://debug/round_prototype/tests/smoke.gd -- --capture
+```
+
+The session check covers the preview boundary, reveal order, running totals, and
+round completion without any scene. The interface check drives real pointer presses
+through the HUD, the reveal lock, banking, the result card, and the portrait layout.
+The prototype check cycles every fixture and chains rounds. `--disable-vsync` keeps
+captures running when the test window is hidden or occluded.

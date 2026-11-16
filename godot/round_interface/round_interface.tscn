@@ -1,0 +1,101 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://round_interface/round_interface.gd" id="script"]
+[ext_resource type="Script" path="res://round_interface/juice/round_camera.gd" id="camera"]
+[ext_resource type="Script" path="res://round_interface/audio/round_audio.gd" id="audio"]
+[ext_resource type="Script" path="res://round_interface/score_sequence.gd" id="sequence"]
+[ext_resource type="Script" path="res://round_interface/backdrop/round_backdrop.gd" id="backdrop"]
+[ext_resource type="Shader" path="res://round_interface/backdrop/round_backdrop.gdshader" id="backdrop_shader"]
+[ext_resource type="Resource" path="res://round_interface/backdrop/presets/paper.tres" id="backdrop_preset"]
+[ext_resource type="PackedScene" path="res://table/table.tscn" id="table"]
+[ext_resource type="PackedScene" path="res://die/die.tscn" id="die"]
+[ext_resource type="PackedScene" path="res://dice_hold/dice_hold_controller.tscn" id="hold"]
+[ext_resource type="PackedScene" path="res://round_interface/hud/round_hud.tscn" id="hud"]
+
+[sub_resource type="Environment" id="environment"]
+background_mode = 1
+background_color = Color(0.933333, 0.913725, 0.886275, 1)
+
+[sub_resource type="QuadMesh" id="backdrop_mesh"]
+size = Vector2(2, 2)
+
+[sub_resource type="ShaderMaterial" id="backdrop_material"]
+resource_local_to_scene = true
+shader = ExtResource("backdrop_shader")
+shader_parameter/density = 8.5
+shader_parameter/pattern_strength = 0.55
+shader_parameter/clock = 0.0
+
+[sub_resource type="CylinderMesh" id="shadow_mesh"]
+top_radius = 12.4
+bottom_radius = 12.4
+height = 0.01
+radial_segments = 64
+
+[sub_resource type="StandardMaterial3D" id="shadow_mat"]
+shading_mode = 0
+transparency = 1
+albedo_color = Color(0.188235, 0.133333, 0.239216, 0.13)
+
+[node name="RoundInterface" type="Node3D"]
+script = ExtResource("script")
+backdrop_preset = ExtResource("backdrop_preset")
+
+[node name="Environment" type="WorldEnvironment" parent="."]
+environment = SubResource("environment")
+
+[node name="Camera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.5, 0.8660254, 0, -0.8660254, 0.5, 0, 25.980762, 14.45)
+projection = 1
+current = true
+size = 34.0
+keep_aspect = 0
+script = ExtResource("camera")
+
+[node name="Backdrop" type="MeshInstance3D" parent="Camera"]
+transform = Transform3D(40, 0, 0, 0, 40, 0, 0, 0, 40, 0, 0, -150)
+cast_shadow = 0
+mesh = SubResource("backdrop_mesh")
+material_override = SubResource("backdrop_material")
+script = ExtResource("backdrop")
+
+[node name="GroundShadow" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.97, 0, 0, 0, 1, 0, 0, 0, 0.6, 0.2, -3.48, 0.2)
+mesh = SubResource("shadow_mesh")
+surface_material_override/0 = SubResource("shadow_mat")
+
+[node name="Table" parent="." instance=ExtResource("table")]
+
+[node name="Dice" type="Node3D" parent="."]
+
+[node name="Die1" parent="Dice" instance=ExtResource("die")]
+palette_color = "Chalk"
+face_value = 1
+
+[node name="Die2" parent="Dice" instance=ExtResource("die")]
+palette_color = "Chalk"
+face_value = 2
+
+[node name="Die3" parent="Dice" instance=ExtResource("die")]
+palette_color = "Chalk"
+face_value = 3
+
+[node name="Die4" parent="Dice" instance=ExtResource("die")]
+palette_color = "Chalk"
+face_value = 4
+
+[node name="Die5" parent="Dice" instance=ExtResource("die")]
+palette_color = "Chalk"
+face_value = 5
+
+[node name="HoldController" parent="." instance=ExtResource("hold")]
+
+[node name="Audio" type="Node" parent="."]
+script = ExtResource("audio")
+
+[node name="Sequence" type="Node" parent="."]
+script = ExtResource("sequence")
+
+[node name="Interface" type="CanvasLayer" parent="."]
+
+[node name="Hud" parent="Interface" instance=ExtResource("hud")]

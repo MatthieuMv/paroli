@@ -13,6 +13,8 @@ signal consumed
 signal activation_finished
 ## Pointer press or held-pointer sweep intent; the controller decides whether mutation is allowed.
 signal clicked
+## Passive pointer enter/exit for presentation feedback only; hovering never mutates a die.
+signal hover_changed(hovered: bool)
 
 # --- Constants ---
 
@@ -149,6 +151,8 @@ var _impact: MeshInstance3D
 func _ready() -> void:
 	_pick_area.input_ray_pickable = interaction_enabled
 	_pick_area.input_event.connect(_on_pointer_input)
+	_pick_area.mouse_entered.connect(_on_pointer_hover.bind(true))
+	_pick_area.mouse_exited.connect(_on_pointer_hover.bind(false))
 	DieLibrary.collect_bindings(_body, _bindings)
 	(_body.get_child(0) as MeshInstance3D).material_override = _finish.material
 	_body.quaternion = landing_rotation(face_value)
@@ -205,7 +209,8 @@ func roll(value: int = 0) -> void:
 	_rig.basis = Basis.IDENTITY
 	_rig.position = Vector3(0, 1.145, 0)
 	_rig.visible = true
-	_vfx.visible = true
+	# Activation hides the particles; restore them only if the preset is currently enabled.
+	_vfx.visible = effect_enabled
 	_roll_time = 0.0
 	_from_rotation = _body.quaternion
 	face_value = value if value > 0 else face_value % 6 + 1
@@ -228,7 +233,9 @@ func _process(delta: float) -> void:
 	var height: float = _sample_roll(delta)
 	if _activation_time < 0:
 		_vfx.position.y = _rig.position.y
-		_vfx.sample(3.0 if reduced_motion else _effect_time, _rig.position.y)
+		# Sampling re-shows landed particles, so a disabled preset must not be sampled at all.
+		if effect_enabled:
+			_vfx.sample(3.0 if reduced_motion else _effect_time, _rig.position.y)
 	_sample_impact()
 	var shadow_color: Color = ink_color
 	shadow_color.a = 0.16 / (1 + height)
@@ -332,3 +339,8 @@ func _on_pointer_input(_camera: Node, event: InputEvent, _position: Vector3, _no
 	if requested:
 		clicked.emit()
 		get_viewport().set_input_as_handled()
+
+## Relay passive hover so hosts can add feedback without reaching into the picking volume.
+func _on_pointer_hover(hovered: bool) -> void:
+	if interaction_enabled:
+		hover_changed.emit(hovered)

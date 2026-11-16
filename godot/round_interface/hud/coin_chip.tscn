@@ -1,0 +1,51 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://round_interface/hud/coin_chip.gd" id="script"]
+[ext_resource type="Script" path="res://round_interface/hud/coin_icon.gd" id="coin"]
+
+[sub_resource type="StyleBoxFlat" id="chip"]
+content_margin_left = 12.0
+content_margin_top = 7.0
+content_margin_right = 18.0
+content_margin_bottom = 9.0
+bg_color = Color(1, 0.980392, 0.941176, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 4
+border_color = Color(0.188235, 0.133333, 0.239216, 1)
+corner_radius_top_left = 24
+corner_radius_top_right = 24
+corner_radius_bottom_right = 24
+corner_radius_bottom_left = 24
+corner_detail = 10
+anti_aliasing_size = 1.2
+
+[node name="CoinChip" type="PanelContainer"]
+offset_right = 104.0
+offset_bottom = 48.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("chip")
+script = ExtResource("script")
+
+[node name="Row" type="HBoxContainer" parent="."]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 9
+
+[node name="Icon" type="Control" parent="Row"]
+custom_minimum_size = Vector2(30, 30)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+script = ExtResource("coin")
+
+[node name="Count" type="Label" parent="Row"]
+custom_minimum_size = Vector2(34, 0)
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.188235, 0.133333, 0.239216, 1)
+theme_override_colors/font_outline_color = Color(0.188235, 0.133333, 0.239216, 1)
+theme_override_constants/outline_size = 1
+theme_override_font_sizes/font_size = 22
+text = "0"

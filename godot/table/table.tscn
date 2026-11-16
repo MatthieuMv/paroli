@@ -191,13 +191,13 @@ mesh = ExtResource("inlay")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 0.02, 2.5)
 
 [node name="Die2" type="Marker3D" parent="RollPositions" unique_id=1956798361]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.5, 0.02, 4.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.5, 0.02, 5.5)
 
 [node name="Die3" type="Marker3D" parent="RollPositions" unique_id=1679077297]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, 2.5)
 
 [node name="Die4" type="Marker3D" parent="RollPositions" unique_id=137467451]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.5, 0.02, 4.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.5, 0.02, 5.5)
 
 [node name="Die5" type="Marker3D" parent="RollPositions" unique_id=1390907884]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 0.02, 2.5)
@@ -209,13 +209,13 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -6)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 0.02, 1.5)
 
 [node name="Die2" type="Marker3D" parent="HoldPositions" unique_id=1326448262]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.5, 0.02, 3.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.5, 0.02, 4.5)
 
 [node name="Die3" type="Marker3D" parent="HoldPositions" unique_id=2138459589]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, 1.5)
 
 [node name="Die4" type="Marker3D" parent="HoldPositions" unique_id=1128788199]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.5, 0.02, 3.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.5, 0.02, 4.5)
 
 [node name="Die5" type="Marker3D" parent="HoldPositions" unique_id=166355442]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 0.02, 1.5)

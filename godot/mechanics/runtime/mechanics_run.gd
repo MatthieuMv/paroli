@@ -433,11 +433,11 @@ func preview_combination(selected: Array[StringName]) -> CombinationRecognizer.R
 	return CombinationRecognizer.recognize(selected_dice, gaps)
 
 
-## Return upgrades that would contribute to the current play, without committing anything.
-## Zero-valued commands do not activate VFX; held support upgrades may still contribute.
-## Use the same recognition and rule planner as validation, including history and Jokers.
-func preview_active_upgrades(selected: Array[StringName]) -> Array[StringName]:
-	var result: Array[StringName] = []
+## Plan the pending play's effect commands without committing history, rewards, or the event ledger.
+## Presentation uses provenance and signs for eligibility cues; it must not total these amounts.
+## Unavailable plays and planning errors return an empty list.
+func preview_commands(selected: Array[StringName]) -> Array[EffectCommand]:
+	var result: Array[EffectCommand] = []
 	if not round_active or _opening_pending or not _automatic_pending.is_empty() or validations_remaining <= 0:
 		return result
 	var combination: CombinationRecognizer.Result = preview_combination(selected)
@@ -446,7 +446,15 @@ func preview_active_upgrades(selected: Array[StringName]) -> Array[StringName]:
 	var plan: EffectResolution = _plan(&"validation", &"preview", selected, combination)
 	if not plan.errors.is_empty():
 		return result
-	for command: EffectCommand in plan.commands:
+	return plan.commands
+
+
+## Return upgrades that would contribute to the current play, without committing anything.
+## Zero-valued commands do not activate VFX; held support upgrades may still contribute.
+## Use the same recognition and rule planner as validation, including history and Jokers.
+func preview_active_upgrades(selected: Array[StringName]) -> Array[StringName]:
+	var result: Array[StringName] = []
+	for command: EffectCommand in preview_commands(selected):
 		var item: OwnedDefinition = find_owned(command.owner_id)
 		if not item or not item.definition is UpgradeDefinition:
 			continue

@@ -1,0 +1,290 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://round_interface/hud/score_board.gd" id="script"]
+
+[sub_resource type="StyleBoxFlat" id="plate"]
+content_margin_left = 18.0
+content_margin_top = 4.0
+content_margin_right = 18.0
+content_margin_bottom = 5.0
+bg_color = Color(0.87, 0.82, 0.93, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 3
+border_color = Color(0.188235, 0.133333, 0.239216, 1)
+corner_radius_top_left = 17
+corner_radius_top_right = 17
+corner_radius_bottom_right = 17
+corner_radius_bottom_left = 17
+corner_detail = 12
+anti_aliasing_size = 1.2
+
+[sub_resource type="StyleBoxFlat" id="points"]
+bg_color = Color(0.818039, 0.887843, 0.91451, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 5
+border_color = Color(0.188235, 0.133333, 0.239216, 1)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+corner_detail = 12
+anti_aliasing_size = 1.2
+
+[sub_resource type="StyleBoxFlat" id="mult"]
+bg_color = Color(0.962353, 0.778039, 0.771765, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 5
+border_color = Color(0.188235, 0.133333, 0.239216, 1)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+corner_detail = 12
+anti_aliasing_size = 1.2
+
+[sub_resource type="StyleBoxFlat" id="percent"]
+content_margin_left = 10.0
+content_margin_top = 2.0
+content_margin_right = 10.0
+content_margin_bottom = 3.0
+bg_color = Color(1, 0.980392, 0.941176, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 3
+border_color = Color(0.188235, 0.133333, 0.239216, 1)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+corner_detail = 12
+anti_aliasing_size = 1.2
+
+[sub_resource type="StyleBoxFlat" id="total"]
+bg_color = Color(0.929412, 0.8, 0.388235, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 6
+border_color = Color(0.188235, 0.133333, 0.239216, 1)
+corner_radius_top_left = 24
+corner_radius_top_right = 24
+corner_radius_bottom_right = 24
+corner_radius_bottom_left = 24
+corner_detail = 12
+anti_aliasing_size = 1.2
+shadow_color = Color(0.188235, 0.133333, 0.239216, 0.18)
+shadow_size = 1
+shadow_offset = Vector2(0, 7)
+
+[node name="ScoreBoard" type="Control"]
+custom_minimum_size = Vector2(360, 132)
+layout_mode = 3
+anchors_preset = 0
+offset_right = 360.0
+offset_bottom = 132.0
+mouse_filter = 2
+script = ExtResource("script")
+
+[node name="Plate" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 120.0
+offset_right = 240.0
+offset_bottom = 34.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("plate")
+
+[node name="PlateText" type="Label" parent="Plate"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.188235, 0.133333, 0.239216, 1)
+theme_override_colors/font_outline_color = Color(0.188235, 0.133333, 0.239216, 1)
+theme_override_constants/outline_size = 1
+theme_override_font_sizes/font_size = 17
+text = "Pair"
+horizontal_alignment = 1
+
+[node name="PointsTile" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 0.0
+offset_top = 42.0
+offset_right = 150.0
+offset_bottom = 132.0
+mouse_filter = 2
+
+[node name="Face" type="Panel" parent="PointsTile"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("points")
+
+[node name="PointsTitle" type="Label" parent="PointsTile"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 9.0
+offset_bottom = 26.0
+grow_horizontal = 2
+mouse_filter = 2
+theme_override_font_sizes/font_size = 12
+text = "POINTS"
+horizontal_alignment = 1
+
+[node name="Points" type="Label" parent="PointsTile"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 24.0
+offset_right = -10.0
+offset_bottom = -8.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/outline_size = 2
+theme_override_font_sizes/font_size = 40
+text = "0"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Times" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 150.0
+offset_top = 42.0
+offset_right = 210.0
+offset_bottom = 132.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.188235, 0.133333, 0.239216, 1)
+theme_override_font_sizes/font_size = 30
+text = "×"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="MultTile" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 210.0
+offset_top = 42.0
+offset_right = 360.0
+offset_bottom = 132.0
+mouse_filter = 2
+
+[node name="Face" type="Panel" parent="MultTile"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("mult")
+
+[node name="MultTitle" type="Label" parent="MultTile"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 9.0
+offset_bottom = 26.0
+grow_horizontal = 2
+mouse_filter = 2
+theme_override_font_sizes/font_size = 12
+text = "MULT"
+horizontal_alignment = 1
+
+[node name="Mult" type="Label" parent="MultTile"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 24.0
+offset_right = -10.0
+offset_bottom = -8.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/outline_size = 2
+theme_override_font_sizes/font_size = 40
+text = "1"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Percent" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 0
+offset_left = 300.0
+offset_top = 28.0
+offset_right = 366.0
+offset_bottom = 56.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("percent")
+
+[node name="PercentText" type="Label" parent="Percent"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/outline_size = 1
+theme_override_font_sizes/font_size = 16
+text = "+50%"
+horizontal_alignment = 1
+
+[node name="Total" type="Control" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 0
+offset_left = 55.0
+offset_top = 36.0
+offset_right = 305.0
+offset_bottom = 132.0
+mouse_filter = 2
+
+[node name="Face" type="Panel" parent="Total"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("total")
+
+[node name="TotalValue" type="Label" parent="Total"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 14.0
+offset_top = 4.0
+offset_right = -14.0
+offset_bottom = -8.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.188235, 0.133333, 0.239216, 1)
+theme_override_colors/font_outline_color = Color(0.188235, 0.133333, 0.239216, 1)
+theme_override_constants/outline_size = 2
+theme_override_font_sizes/font_size = 46
+text = "0"
+horizontal_alignment = 1
+vertical_alignment = 1

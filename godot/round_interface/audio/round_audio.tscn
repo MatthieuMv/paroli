@@ -1,0 +1,6 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://round_interface/audio/round_audio.gd" id="script"]
+
+[node name="RoundAudio" type="Node"]
+script = ExtResource("script")

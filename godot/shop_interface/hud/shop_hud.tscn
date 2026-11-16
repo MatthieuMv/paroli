@@ -1,0 +1,244 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://shop_interface/hud/shop_hud.gd" id="script"]
+[ext_resource type="PackedScene" path="res://round_interface/hud/build_card.tscn" id="card"]
+[ext_resource type="PackedScene" path="res://round_interface/hud/die_dock.tscn" id="dock"]
+[ext_resource type="PackedScene" path="res://round_interface/hud/coin_chip.tscn" id="coins"]
+[ext_resource type="PackedScene" path="res://round_interface/hud/coin_icon.tscn" id="coin"]
+[ext_resource type="PackedScene" path="res://round_interface/hud/action_button.tscn" id="action"]
+[ext_resource type="PackedScene" path="res://round_interface/hud/build_tooltip.tscn" id="tooltip"]
+
+[sub_resource type="StyleBoxFlat" id="sign"]
+bg_color = Color(1, 0.980392, 0.941176, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 4
+border_color = Color(0.188235, 0.133333, 0.239216, 1)
+corner_radius_top_left = 18
+corner_radius_top_right = 18
+corner_radius_bottom_right = 18
+corner_radius_bottom_left = 18
+corner_detail = 10
+anti_aliasing_size = 1.2
+shadow_color = Color(0.188235, 0.133333, 0.239216, 0.14)
+shadow_size = 1
+shadow_offset = Vector2(0, 5)
+
+[sub_resource type="StyleBoxFlat" id="sell"]
+content_margin_left = 12.0
+content_margin_top = 5.0
+content_margin_right = 14.0
+content_margin_bottom = 7.0
+bg_color = Color(0.929412, 0.8, 0.388235, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 4
+border_color = Color(0.188235, 0.133333, 0.239216, 1)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+corner_detail = 10
+anti_aliasing_size = 1.2
+
+[node name="ShopHud" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 1280.0
+offset_bottom = 900.0
+mouse_filter = 2
+script = ExtResource("script")
+
+[node name="CaptionJokers" type="Label" parent="."]
+visible = false
+modulate = Color(1, 1, 1, 0.5)
+layout_mode = 0
+offset_right = 140.0
+offset_bottom = 16.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.188235, 0.133333, 0.239216, 1)
+theme_override_font_sizes/font_size = 11
+text = "J O K E R S"
+
+[node name="CaptionBonuses" type="Label" parent="."]
+visible = false
+modulate = Color(1, 1, 1, 0.5)
+layout_mode = 0
+offset_right = 140.0
+offset_bottom = 16.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.188235, 0.133333, 0.239216, 1)
+theme_override_font_sizes/font_size = 11
+text = "B O N U S E S"
+
+[node name="CaptionLucky" type="Label" parent="."]
+visible = false
+modulate = Color(1, 1, 1, 0.5)
+layout_mode = 0
+offset_right = 140.0
+offset_bottom = 16.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.188235, 0.133333, 0.239216, 1)
+theme_override_font_sizes/font_size = 11
+text = "L U C K Y   D I P"
+
+[node name="Sign" type="Control" parent="."]
+custom_minimum_size = Vector2(300, 118)
+layout_mode = 0
+offset_right = 300.0
+offset_bottom = 118.0
+mouse_filter = 2
+
+[node name="Face" type="Panel" parent="Sign"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("sign")
+
+[node name="Eyebrow" type="Label" parent="Sign"]
+modulate = Color(1, 1, 1, 0.72)
+layout_mode = 0
+offset_left = 20.0
+offset_top = 12.0
+offset_right = 200.0
+offset_bottom = 30.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.188235, 0.133333, 0.239216, 1)
+theme_override_font_sizes/font_size = 12
+text = "S H O P"
+
+[node name="Title" type="Label" parent="Sign"]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 20.0
+offset_top = 28.0
+offset_right = 282.0
+offset_bottom = 66.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.188235, 0.133333, 0.239216, 1)
+theme_override_colors/font_outline_color = Color(0.188235, 0.133333, 0.239216, 1)
+theme_override_constants/outline_size = 1
+theme_override_font_sizes/font_size = 25
+text = "Before round 2"
+vertical_alignment = 1
+clip_text = true
+
+[node name="Note" type="Label" parent="Sign"]
+unique_name_in_owner = true
+modulate = Color(1, 1, 1, 0.75)
+layout_mode = 0
+offset_left = 20.0
+offset_top = 66.0
+offset_right = 284.0
+offset_bottom = 108.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.188235, 0.133333, 0.239216, 1)
+theme_override_constants/line_spacing = 0
+theme_override_font_sizes/font_size = 13
+text = "Press an item, then where it goes. You can drag it too."
+autowrap_mode = 2
+
+[node name="Jokers" type="Control" parent="."]
+layout_mode = 0
+mouse_filter = 2
+
+[node name="Joker1" parent="Jokers" instance=ExtResource("card")]
+layout_mode = 0
+
+[node name="Joker2" parent="Jokers" instance=ExtResource("card")]
+layout_mode = 0
+
+[node name="Joker3" parent="Jokers" instance=ExtResource("card")]
+layout_mode = 0
+
+[node name="Joker4" parent="Jokers" instance=ExtResource("card")]
+layout_mode = 0
+
+[node name="Shelf" type="Control" parent="."]
+layout_mode = 0
+mouse_filter = 2
+
+[node name="Docks" type="Control" parent="."]
+layout_mode = 0
+mouse_filter = 2
+
+[node name="Dock1" parent="Docks" instance=ExtResource("dock")]
+layout_mode = 0
+
+[node name="Dock2" parent="Docks" instance=ExtResource("dock")]
+layout_mode = 0
+
+[node name="Dock3" parent="Docks" instance=ExtResource("dock")]
+layout_mode = 0
+
+[node name="Dock4" parent="Docks" instance=ExtResource("dock")]
+layout_mode = 0
+
+[node name="Dock5" parent="Docks" instance=ExtResource("dock")]
+layout_mode = 0
+
+[node name="Coins" parent="." instance=ExtResource("coins")]
+layout_mode = 0
+
+[node name="SellBadge" type="PanelContainer" parent="."]
+visible = false
+layout_mode = 0
+offset_right = 110.0
+offset_bottom = 38.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("sell")
+
+[node name="Row" type="HBoxContainer" parent="SellBadge"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 6
+
+[node name="Word" type="Label" parent="SellBadge/Row"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.188235, 0.133333, 0.239216, 1)
+theme_override_colors/font_outline_color = Color(0.188235, 0.133333, 0.239216, 1)
+theme_override_constants/outline_size = 1
+theme_override_font_sizes/font_size = 16
+text = "Sell"
+
+[node name="Coin" parent="SellBadge/Row" instance=ExtResource("coin")]
+layout_mode = 2
+
+[node name="SellAmount" type="Label" parent="SellBadge/Row"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.188235, 0.133333, 0.239216, 1)
+theme_override_colors/font_outline_color = Color(0.188235, 0.133333, 0.239216, 1)
+theme_override_constants/outline_size = 1
+theme_override_font_sizes/font_size = 16
+text = "+3"
+
+[node name="Refresh" parent="." instance=ExtResource("action")]
+layout_mode = 0
+accent = Color(0.937255, 0.627451, 0.356863, 1)
+title = "Refresh"
+
+[node name="Leave" parent="." instance=ExtResource("action")]
+layout_mode = 0
+accent = Color(0.407843, 0.733333, 0.698039, 1)
+title = "Next round"
+
+[node name="Popups" type="Control" parent="."]
+layout_mode = 0
+mouse_filter = 2
+
+[node name="Ghost" parent="." instance=ExtResource("card")]
+visible = false
+layout_mode = 0
+interactive = false
+
+[node name="Tooltip" parent="." instance=ExtResource("tooltip")]
+layout_mode = 0

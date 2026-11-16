@@ -1,62 +1,35 @@
 extends Node
 class_name RoundPrototype
-## Debug host for the round interface: equips fixture builds, owns the run, and chains rounds.
-## Targets, sell values, and the unused-play coin rate here are test fixtures, not balance.
-
-# --- Types ---
-
-## One named fixture: equipment plus a first-round target sized to its strength.
-class Build:
-	extends RefCounted
-
-	# --- Member variables ---
-
-	## Label shown on the debug control.
-	var title: String
-	## Upgrades installed onto dice 1, 2, 3… in order.
-	var upgrades: Array[StringName] = []
-	## Bonus per die identity.
-	var bonuses: Dictionary[StringName, StringName] = {}
-	## Jokers in rack order.
-	var jokers: Array[StringName] = []
-	## First-round target; later rounds grow from it.
-	var target: float = 100.0
-
-	# --- Member functions ---
-
-	## Declare a fixture in one readable expression.
-	func _init(title_: String, upgrades_: Array[StringName], bonuses_: Dictionary[StringName, StringName], jokers_: Array[StringName], target_: float) -> void:
-		title = title_
-		upgrades = upgrades_
-		bonuses = bonuses_
-		jokers = jokers_
-		target = target_
+## Debug host for the round interface: equips fixture builds, owns the run, and chains rounds
+## with a shop visit between them. Targets, coins, and shop rules here are test fixtures.
 
 # --- Constants ---
 
 ## Each cleared round multiplies the target by this fixture factor.
 const TARGET_GROWTH: float = 1.6
+## Shop scene shown between cleared rounds; parked outside the tree while a round plays.
+const SHOP: PackedScene = preload("res://shop_interface/shop_interface.tscn")
 ## Reveal speeds cycled by the debug control.
 const SPEEDS: PackedFloat32Array = [1.0, 1.5, 2.0]
 ## Wallpaper color schemes to compare: pastel washes, mid-tones, then dark walls.
 const BACKDROPS: Array[BackdropPreset] = [
-	preload("res://round_interface/backdrop/presets/paper.tres"),
-	preload("res://round_interface/backdrop/presets/sand.tres"),
-	preload("res://round_interface/backdrop/presets/butter.tres"),
-	preload("res://round_interface/backdrop/presets/peach_cream.tres"),
-	preload("res://round_interface/backdrop/presets/blush.tres"),
-	preload("res://round_interface/backdrop/presets/lavender.tres"),
-	preload("res://round_interface/backdrop/presets/sky.tres"),
-	preload("res://round_interface/backdrop/presets/mint.tres"),
-	preload("res://round_interface/backdrop/presets/lagoon.tres"),
-	preload("res://round_interface/backdrop/presets/periwinkle.tres"),
-	preload("res://round_interface/backdrop/presets/honey.tres"),
-	preload("res://round_interface/backdrop/presets/cocoa.tres"),
-	preload("res://round_interface/backdrop/presets/plum_night.tres"),
-	preload("res://round_interface/backdrop/presets/deep_lagoon.tres"),
-	preload("res://round_interface/backdrop/presets/espresso.tres"),
+	preload("res://table_stage/backdrop/presets/paper.tres"),
+	preload("res://table_stage/backdrop/presets/sand.tres"),
+	preload("res://table_stage/backdrop/presets/butter.tres"),
+	preload("res://table_stage/backdrop/presets/peach_cream.tres"),
+	preload("res://table_stage/backdrop/presets/blush.tres"),
+	preload("res://table_stage/backdrop/presets/lavender.tres"),
+	preload("res://table_stage/backdrop/presets/sky.tres"),
+	preload("res://table_stage/backdrop/presets/mint.tres"),
+	preload("res://table_stage/backdrop/presets/lagoon.tres"),
+	preload("res://table_stage/backdrop/presets/periwinkle.tres"),
+	preload("res://table_stage/backdrop/presets/honey.tres"),
+	preload("res://table_stage/backdrop/presets/cocoa.tres"),
+	preload("res://table_stage/backdrop/presets/plum_night.tres"),
+	preload("res://table_stage/backdrop/presets/deep_lagoon.tres"),
+	preload("res://table_stage/backdrop/presets/espresso.tres"),
 ]
-## Captions for RoundBackdrop.Motif values, in enum order.
+## Captions for StageBackdrop.Motif values, in enum order.
 const MOTIFS: PackedStringArray = ["Plain", "Sparkles", "Dots", "Stripes", "Diamonds"]
 
 # --- Member variables ---
@@ -65,20 +38,24 @@ const MOTIFS: PackedStringArray = ["Plain", "Sparkles", "Dots", "Stripes", "Diam
 @onready var _round: RoundInterface = $Round
 ## Collapsible debug options.
 @onready var _panel: PanelContainer = %Panel
+## Shop prices and stock; edit the resource in the Inspector to iterate on the shop.
+@export var shop_rules: ShopRules = preload("res://shop_interface/session/shop_rules.tres")
 ## Fixture builds, from a full chain showcase down to bare dice.
-var _builds: Array[Build] = [
-	Build.new("Showcase", [&"all_for_one", &"odd_master", &"golden_touch"], {&"die_1": &"family_spirit", &"die_2": &"odd_charm", &"die_4": &"pair_partner", &"die_5": &"first_instinct"}, [&"match_master", &"odd_squad", &"momentum", &"extra_time"], 1500.0),
-	Build.new("Starter", [&"jackpot"], {&"die_1": &"six_addict"}, [&"bipolarity"], 200.0),
-	Build.new("Bare dice", [], {}, [], 100.0),
-]
+var _builds: Array[RunFixtures.Build] = RunFixtures.builds()
+## Shop scene, created on the first visit and reused afterwards.
+var _shop: ShopInterface
+## Shop logic for the current run; one session keeps its event IDs unique across visits.
+var _shop_session: ShopSession
+## Whether a cleared round leads to a shop visit before the next round.
+var _shops_enabled: bool = true
 ## Selected fixture.
 var _build_index: int = 0
 ## Selected reveal speed.
 var _speed_index: int = 0
-## Selected wallpaper color scheme.
-var _backdrop_index: int = 0
+## Selected wallpaper color scheme; starts on the stage's authored default, Plum night.
+var _backdrop_index: int = 12
 ## Selected wallpaper pattern; starts on the round interface's authored default.
-var _motif_index: int = RoundBackdrop.Motif.SPARKLES
+var _motif_index: int = StageBackdrop.Motif.SPARKLES
 ## Current run's round logic; replaced after a failed round.
 var _session: RoundSession
 ## Rounds cleared in this run, plus one.
@@ -99,6 +76,7 @@ func _ready() -> void:
 	(%Pattern as Button).pressed.connect(_next_motif)
 	(%Motion as Button).toggled.connect(_on_motion_toggled)
 	(%Sound as Button).toggled.connect(_on_sound_toggled)
+	(%Shops as Button).toggled.connect(_on_shops_toggled)
 	_round.continue_requested.connect(_on_continue_requested)
 	_round.busy_changed.connect(_on_busy_changed)
 	_refresh_labels()
@@ -106,31 +84,62 @@ func _ready() -> void:
 
 ## Start a fresh run with the selected fixture.
 func _new_run() -> void:
-	var build: Build = _builds[_build_index]
-	var catalog: EffectsCatalog = EffectsCatalog.new()
-	var run: MechanicsRun = MechanicsRun.new(4)
-	var errors: PackedStringArray = []
-	for id: StringName in build.upgrades:
-		errors.append_array(run.install_upgrade(catalog.upgrade(id)))
-	for die_id: StringName in build.bonuses:
-		errors.append_array(run.equip_bonus(catalog.bonus(build.bonuses[die_id]), die_id, 2))
-	for id: StringName in build.jokers:
-		errors.append_array(run.add_joker(catalog.joker(id), 3))
-	for message: String in errors:
-		push_error("Fixture build: " + message)
+	_show_round()
+	var build: RunFixtures.Build = _builds[_build_index]
+	var run: MechanicsRun = RunFixtures.equip(build, 4)
 	_session = RoundSession.new(run)
 	_session.coins_per_unused_play = 2
+	_shop_session = ShopSession.new(run, shop_rules)
 	_round_number = 1
 	_target = build.target
 	_round.start_round(_session, _round_number, _target)
 
-## Clearing a round raises the target; failing ends the run, so a new one begins.
+## Clearing a round raises the target and visits the shop; failing ends the run.
 func _on_continue_requested(succeeded: bool) -> void:
 	if not succeeded:
 		_new_run()
 		return
 	_round_number += 1
 	_target = roundf(_target * TARGET_GROWTH / 10.0) * 10.0
+	if _shops_enabled:
+		_show_shop()
+	else:
+		_round.start_round(_session, _round_number, _target)
+
+## Swap the round out for the shop. Only one table scene is in the tree at a time, so
+## there is a single camera and environment.
+func _show_shop() -> void:
+	if not _shop:
+		_shop = SHOP.instantiate() as ShopInterface
+		_shop.name = "Shop"
+		_shop.leave_requested.connect(_on_shop_left)
+	remove_child(_round)
+	add_child(_shop)
+	move_child(_shop, 0)
+	_shop.reduced_motion = _round.reduced_motion
+	_shop.muted = _round.muted
+	_shop.stage.backdrop_preset = _round.stage.backdrop_preset
+	_shop.stage.backdrop_motif = _round.stage.backdrop_motif
+	_shop.open_shop(_shop_session, "Before round %d" % _round_number)
+
+## Bring the round back, wherever the host currently is.
+func _show_round() -> void:
+	if _round.is_inside_tree():
+		return
+	remove_child(_shop)
+	add_child(_round)
+	move_child(_round, 0)
+
+## Whichever scene is parked outside the tree would otherwise outlive this host.
+func _exit_tree() -> void:
+	if _shop and not _shop.is_inside_tree():
+		_shop.free()
+	if not _round.is_inside_tree():
+		_round.free()
+
+## Leaving the shop starts the next round with whatever was bought.
+func _on_shop_left() -> void:
+	_show_round()
 	_round.start_round(_session, _round_number, _target)
 
 ## Show or hide the options without covering the round.
@@ -152,13 +161,17 @@ func _next_speed() -> void:
 ## Step through wallpaper color schemes in either direction, wrapping at the ends.
 func _step_backdrop(direction: int) -> void:
 	_backdrop_index = posmod(_backdrop_index + direction, BACKDROPS.size())
-	_round.backdrop_preset = BACKDROPS[_backdrop_index]
+	_round.stage.backdrop_preset = BACKDROPS[_backdrop_index]
+	if _shop:
+		_shop.stage.backdrop_preset = BACKDROPS[_backdrop_index]
 	_refresh_labels()
 
 ## Cycle the wallpaper pattern; it combines with any color scheme.
 func _next_motif() -> void:
 	_motif_index = (_motif_index + 1) % MOTIFS.size()
-	_round.backdrop_motif = _motif_index as RoundBackdrop.Motif
+	_round.stage.backdrop_motif = _motif_index as StageBackdrop.Motif
+	if _shop:
+		_shop.stage.backdrop_motif = _motif_index as StageBackdrop.Motif
 	_refresh_labels()
 
 ## B and Shift+B step the backdrop, P steps the pattern, so schemes can be compared
@@ -178,10 +191,18 @@ func _unhandled_key_input(event: InputEvent) -> void:
 ## Toggle reduced motion across dice, HUD, and reveal.
 func _on_motion_toggled(enabled: bool) -> void:
 	_round.reduced_motion = enabled
+	if _shop:
+		_shop.reduced_motion = enabled
 
 ## Toggle sound effects.
 func _on_sound_toggled(enabled: bool) -> void:
 	_round.muted = not enabled
+	if _shop:
+		_shop.muted = not enabled
+
+## Choose whether cleared rounds lead to the shop.
+func _on_shops_toggled(enabled: bool) -> void:
+	_shops_enabled = enabled
 
 ## A run cannot be replaced in the middle of a throw or reveal.
 func _on_busy_changed(busy: bool) -> void:

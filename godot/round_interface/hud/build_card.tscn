@@ -39,6 +39,36 @@ corner_radius_bottom_left = 16
 corner_detail = 10
 anti_aliasing_size = 1.2
 
+[sub_resource type="StyleBoxFlat" id="glow"]
+bg_color = Color(0.929412, 0.8, 0.388235, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.188235, 0.133333, 0.239216, 1)
+corner_radius_top_left = 21
+corner_radius_top_right = 21
+corner_radius_bottom_right = 21
+corner_radius_bottom_left = 21
+corner_detail = 10
+anti_aliasing_size = 1.2
+shadow_color = Color(0.929412, 0.8, 0.388235, 0.55)
+shadow_size = 9
+
+[sub_resource type="StyleBoxFlat" id="target"]
+bg_color = Color(0.929412, 0.8, 0.388235, 0.22)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.929412, 0.8, 0.388235, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+corner_detail = 10
+anti_aliasing_size = 1.2
+
 [sub_resource type="ShaderMaterial" id="shine_material"]
 resource_local_to_scene = true
 shader = ExtResource("shine")
@@ -62,6 +92,17 @@ grow_vertical = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("slot")
 
+[node name="Target" type="Panel" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("target")
+
 [node name="Body" type="Control" parent="."]
 layout_mode = 1
 anchors_preset = 15
@@ -70,6 +111,21 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
+
+[node name="Glow" type="Panel" parent="Body"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -5.0
+offset_top = -5.0
+offset_right = 5.0
+offset_bottom = 7.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("glow")
 
 [node name="Shadow" type="Panel" parent="Body"]
 layout_mode = 1
@@ -109,3 +165,21 @@ grow_vertical = 2
 mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
+
+[node name="Mark" type="Label" parent="Body"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_bottom = -4.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.458824, 0.396078, 0.541176, 1)
+theme_override_colors/font_outline_color = Color(0.458824, 0.396078, 0.541176, 1)
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 46
+text = "?"
+horizontal_alignment = 1
+vertical_alignment = 1

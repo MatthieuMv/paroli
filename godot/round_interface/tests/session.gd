@@ -35,6 +35,16 @@ func _run() -> void:
 		assert(owner_id in preview.eligible_owners, "Missing eligibility cue: " + String(owner_id))
 	assert(&"joker:extra_time" not in preview.eligible_owners)
 	assert(preview.penalized_dice.is_empty())
+	var idle: Array[StringName] = [&"die_3"]
+	assert(preview.idle_dice == idle, "The extra 5 adds nothing to a Pair of 3s here")
+	# Payday needs its die in the combination: as an extra, that die is idle too.
+	run.find_die(&"die_2").value = 5
+	run.find_die(&"die_3").value = 3
+	var benched: Array[StringName] = [&"die_2"]
+	assert(session.preview(selected).idle_dice == benched, "Payday pays nothing outside the combination")
+	run.find_die(&"die_2").value = 3
+	run.find_die(&"die_3").value = 5
+	assert(session.preview([&"die_3"]).idle_dice.is_empty(), "A lone die is its own combination")
 	assert(run.round_score == 0.0 and run.validations_remaining == 4, "Preview never commits")
 	var outcome: PlayOutcome = session.play(selected)
 	assert(outcome.result.errors.is_empty())

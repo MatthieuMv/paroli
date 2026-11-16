@@ -5,51 +5,54 @@
 
 [sub_resource type="StyleBoxFlat" id="tag"]
 resource_local_to_scene = true
-content_margin_left = 10.0
-content_margin_top = 2.0
-content_margin_right = 10.0
-content_margin_bottom = 3.0
+content_margin_left = 11.0
+content_margin_top = 3.0
+content_margin_right = 11.0
+content_margin_bottom = 4.0
 bg_color = Color(1, 0.980392, 0.941176, 1)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
-border_width_bottom = 2
+border_width_bottom = 3
 border_color = Color(0.188235, 0.133333, 0.239216, 1)
-corner_radius_top_left = 12
-corner_radius_top_right = 12
-corner_radius_bottom_right = 12
-corner_radius_bottom_left = 12
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
 corner_detail = 8
 anti_aliasing_size = 1.2
 
 [node name="DieDock" type="Control"]
-custom_minimum_size = Vector2(104, 124)
+custom_minimum_size = Vector2(104, 126)
 layout_mode = 3
 anchors_preset = 0
 offset_right = 104.0
-offset_bottom = 124.0
-mouse_filter = 2
+offset_bottom = 126.0
 script = ExtResource("script")
 
 [node name="Tag" type="PanelContainer" parent="."]
+custom_minimum_size = Vector2(72, 28)
 layout_mode = 0
-offset_left = 20.0
-offset_right = 84.0
-offset_bottom = 24.0
+offset_left = 16.0
+offset_right = 88.0
+offset_bottom = 28.0
+mouse_filter = 2
 theme_override_styles/panel = SubResource("tag")
 
 [node name="Name" type="Label" parent="Tag"]
 layout_mode = 2
 mouse_filter = 2
 theme_override_colors/font_color = Color(0.188235, 0.133333, 0.239216, 1)
-theme_override_font_sizes/font_size = 13
+theme_override_font_sizes/font_size = 14
 text = "Die 1"
 horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="Card" parent="." instance=ExtResource("card")]
 custom_minimum_size = Vector2(88, 88)
 layout_mode = 0
 offset_left = 8.0
-offset_top = 32.0
+offset_top = 36.0
 offset_right = 96.0
-offset_bottom = 120.0
+offset_bottom = 124.0
+interactive = false

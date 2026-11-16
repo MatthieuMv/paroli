@@ -50,28 +50,10 @@ const ROLL_CAPTION: Vector3 = Vector3(-10.25, 0.0, 3.5)
 		muted = value
 		if is_node_ready():
 			_audio.muted = value
-## Wallpaper color scheme behind the table; null keeps the backdrop material's own colors.
-@export var backdrop_preset: BackdropPreset:
-	set(value):
-		backdrop_preset = value
-		if is_node_ready():
-			_apply_backdrop()
-## Wallpaper pattern, independent of the color scheme.
-@export var backdrop_motif: RoundBackdrop.Motif = RoundBackdrop.Motif.SPARKLES:
-	set(value):
-		backdrop_motif = value
-		if is_node_ready():
-			_apply_backdrop()
 ## Explicit locale for names and captions; empty follows the game locale.
 @export var locale: String = ""
-## Scene-authored table; used only through its marker and palette API.
-@onready var _table: ParoliTable = $Table
-## Framing and shake.
-@onready var _camera: RoundCamera = $Camera
-## Wallpaper behind the table, kept filling the view.
-@onready var _backdrop: RoundBackdrop = $Camera/Backdrop
-## Five native dice in run order.
-@onready var _dice_root: Node3D = $Dice
+## Shared table set: wallpaper, camera, table, and dice. Hosts may restyle its wallpaper.
+@onready var stage: TableStage = $Stage
 ## Play selection and marker transfers: a die on its hold marker is selected for the play.
 @onready var _hold: DiceHoldController = $HoldController
 ## Heads-up display.
@@ -106,26 +88,22 @@ var _generation: int = 0
 ## Ready callback: place dice, connect modules, and frame the table.
 func _ready() -> void:
 	get_viewport().physics_object_picking = true
-	var dice: Array[ParoliDie] = []
-	var positions: PackedVector3Array = _table.get_roll_positions()
-	for index: int in _dice_root.get_child_count():
-		var die: ParoliDie = _dice_root.get_child(index) as ParoliDie
-		die.global_position = positions[index]
+	_views = stage.views
+	for die: ParoliDie in _views.values():
 		die.rolled.connect(_on_die_rolled)
 		die.hover_changed.connect(_on_die_hover.bind(die))
-		dice.append(die)
-		_views[StringName("die_%d" % (index + 1))] = die
 		_chosen[die] = false
-	_hold.configure(_table, dice)
+	_hold.configure(stage.table, stage.dice())
 	_hold.changed.connect(_on_hold_changed)
 	_hud.roll_pressed.connect(_on_roll_pressed)
 	_hud.play_pressed.connect(_on_play_pressed)
 	_hud.continue_pressed.connect(_on_continue_pressed)
 	_hud.hover_ticked.connect(_audio.play.bind(&"hover", 0, 0.0, 0.1))
-	_sequence.setup(_hud, _camera, _audio, _views)
+	_sequence.setup(_hud, stage.camera, _audio, _views)
 	_sequence.tempo = tempo
 	_audio.muted = muted
-	_apply_backdrop()
+	stage.backdrop_changed.connect(_on_backdrop_changed)
+	_on_backdrop_changed()
 	_apply_motion()
 	get_viewport().size_changed.connect(_layout)
 	_set_phase(Phase.IDLE)
@@ -194,15 +172,19 @@ func _unhandled_key_input(event: InputEvent) -> void:
 	get_viewport().set_input_as_handled()
 
 ## Fit the HUD to the window, frame the table in the space it leaves, then align the docks.
+## A host may park this scene outside the tree (during a shop visit); it lays out on return.
 func _layout() -> void:
+	if not is_inside_tree():
+		return
 	var viewport: Vector2 = get_viewport().get_visible_rect().size
 	var free: Rect2 = _hud.arrange(viewport)
-	var pixels_per_unit: float = _camera.frame(free, viewport)
-	_backdrop.cover(_camera.size, viewport)
-	var columns: PackedFloat32Array = []
-	for marker: Vector3 in _table.get_roll_positions():
-		columns.append(_camera.unproject_position(marker).x)
-	_hud.align_table(columns, pixels_per_unit, _camera.framed_rect.end.y, _camera.unproject_position(_table.to_global(PLAY_CAPTION)), _camera.unproject_position(_table.to_global(ROLL_CAPTION)))
+	var pixels_per_unit: float = stage.frame(free, viewport)
+	_hud.align_table(stage.columns(), pixels_per_unit, stage.camera.framed_rect.end.y, stage.project(PLAY_CAPTION), stage.project(ROLL_CAPTION))
+
+## Re-entering the tree after being parked: the window may have changed meanwhile.
+func _enter_tree() -> void:
+	if is_node_ready():
+		_layout.call_deferred()
 
 ## Manual roll of every die left on the roll row; spends one roll. Selected dice keep their value.
 func _on_roll_pressed() -> void:
@@ -303,6 +285,7 @@ func _throw(ids: Array[StringName]) -> void:
 func _launch(die: ParoliDie, value: int) -> void:
 	die.effect_enabled = false
 	die.cracks_enabled = false
+	die.shine_enabled = false
 	die.roll(value)
 	if reduced_motion:
 		return
@@ -312,7 +295,7 @@ func _launch(die: ParoliDie, value: int) -> void:
 ## One felt impact: a clack and a touch of shake.
 func _knock(gain_db: float, trauma: float) -> void:
 	_audio.play_clack(gain_db)
-	_camera.add_trauma(trauma)
+	stage.camera.add_trauma(trauma)
 
 ## Count settled dice; the last one releases the waiting throw.
 func _on_die_rolled(_value: int) -> void:
@@ -338,7 +321,9 @@ func _on_hold_changed() -> void:
 	_refresh_preview()
 
 ## Passive hover: a small hop, a tick, and a pointing cursor on dice that can be toggled.
+## Resting on a die also opens its sheet (upgrade and bonus) beside its column.
 func _on_die_hover(hovered: bool, die: ParoliDie) -> void:
+	_hud.inspect_die(_views.find_key(die), hovered and _phase == Phase.CHOOSING)
 	var active: bool = hovered and _phase == Phase.CHOOSING and _hold.can_mutate(die)
 	Input.set_default_cursor_shape(Input.CURSOR_POINTING_HAND if active else Input.CURSOR_ARROW)
 	if active:
@@ -381,7 +366,11 @@ func _refresh_preview() -> void:
 		_last_category = &""
 	# Eligibility cues wait for dice to stop moving, as the upgrade particles do.
 	var cue_selection: Array[StringName] = selected if settled else ([] as Array[StringName])
-	_hud.mark_eligible(preview.eligible_owners if settled else ([] as Array[StringName]))
+	var newly_eligible: int = _hud.mark_eligible(preview.eligible_owners if settled else ([] as Array[StringName]))
+	if newly_eligible > 0:
+		_audio.play(&"pip", 1 + newly_eligible, -2.0)
+	# Dice forming the recognized combination shine; extra selected dice do not.
+	var members: Array[StringName] = preview.combination.members if preview.combination and settled else ([] as Array[StringName])
 	UpgradePresentation.refresh(_session.run, cue_selection, _views)
 	for die_id: StringName in _views:
 		var die: ParoliDie = _views[die_id]
@@ -389,7 +378,9 @@ func _refresh_preview() -> void:
 		# reward will apply. Rewards earned from the roll row stay silent until the reveal.
 		if die_id not in cue_selection:
 			die.effect_enabled = false
-		die.cracks_enabled = settled and die_id in preview.penalized_dice
+		die.shine_enabled = die_id in members
+		# Cracks mark a die that hurts the play or adds nothing to it.
+		die.cracks_enabled = settled and (die_id in preview.penalized_dice or die_id in preview.idle_dice)
 	_hud.set_actions(settled and not to_roll.is_empty() and _session.run.rerolls_remaining > 0, settled and not selected.is_empty())
 
 ## Push the session's allowances to the buttons.
@@ -416,17 +407,12 @@ func _settled() -> bool:
 func _category_title(category: StringName) -> String:
 	return _words.render(StringName("combination." + String(category)), {}, locale)
 
-## Push the wallpaper choice to the backdrop, and its ink to the marks the HUD draws on the wall.
-func _apply_backdrop() -> void:
-	_backdrop.preset = backdrop_preset
-	_backdrop.motif = backdrop_motif
-	_hud.set_wall_ink(backdrop_preset.wall_ink if backdrop_preset else GameColors.INK)
+## The wallpaper changed: recolor the marks the HUD draws straight on the wall.
+func _on_backdrop_changed() -> void:
+	_hud.set_wall_ink(stage.wall_ink())
 
 ## Push the reduced-motion preference into dice, camera, HUD, and the reveal.
 func _apply_motion() -> void:
-	for die: ParoliDie in _views.values():
-		die.reduced_motion = reduced_motion
-	_camera.reduced_motion = reduced_motion
-	_backdrop.reduced_motion = reduced_motion
+	stage.reduced_motion = reduced_motion
 	_hud.reduced_motion = reduced_motion
 	_sequence.reduced_motion = reduced_motion

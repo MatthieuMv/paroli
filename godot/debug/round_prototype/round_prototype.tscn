@@ -141,6 +141,14 @@ focus_mode = 0
 toggle_mode = true
 text = "Reduced motion"
 
+[node name="Shops" type="Button" parent="Debug/Panel/Options"]
+unique_name_in_owner = true
+layout_mode = 2
+focus_mode = 0
+toggle_mode = true
+button_pressed = true
+text = "Shop between rounds"
+
 [node name="Sound" type="Button" parent="Debug/Panel/Options"]
 unique_name_in_owner = true
 layout_mode = 2

@@ -30,6 +30,10 @@ const POPUP_COLORS: Dictionary[StringName, Color] = {
 	&"coins": GameColors.BUTTER,
 	&"tempo": GameColors.TANGERINE,
 }
+## Unscaled die dock footprint in HUD units.
+const DOCK_SIZE: Vector2 = Vector2(104.0, 126.0)
+## Clear space kept between the docks and the action buttons below them.
+const DOCK_GAP: float = 14.0
 ## Floating increment scene; instances free themselves.
 const POPUP: PackedScene = preload("res://round_interface/hud/score_popup.tscn")
 
@@ -89,6 +93,10 @@ var _rerolls_total: int = 0
 var _coin_balance: int = 0
 ## Card or dock whose tooltip is open, so only its own exit dismisses it.
 var _tooltip_owner: Control
+## A press or tap pins the tooltip until the next press elsewhere; hover alone never pins.
+var _tooltip_pinned: bool = false
+## Top of the action buttons in HUD units; docks must end above it.
+var _actions_top: float = 0.0
 
 # --- Member functions ---
 
@@ -101,9 +109,10 @@ func _ready() -> void:
 	_play.mouse_entered.connect(_on_action_hover.bind(_play))
 	for card: BuildCard in _jokers.get_children():
 		card.hover_changed.connect(_on_card_hover)
+		card.pressed.connect(_on_card_pressed)
 	for dock: DieDock in _docks.get_children():
-		dock.card.hover_changed.connect(_on_card_hover)
-		dock.tag_hover_changed.connect(_on_tag_hover)
+		dock.hover_changed.connect(_on_dock_hover)
+		dock.pressed.connect(_on_dock_pressed)
 	_apply_motion()
 
 ## Lay out for a window size and return the free rectangle (window pixels) left for the table.
@@ -118,20 +127,23 @@ func arrange(viewport: Vector2) -> Rect2:
 	banner.position = Vector2.ZERO
 	banner.size = size
 	_popups.size = size
-	_tooltip.dismiss()
+	dismiss_tooltip()
 	return Rect2(0.0, top * _ui_scale, viewport.x, (_tray_top - top) * _ui_scale)
 
 ## Align die docks and row captions with the framed table (all inputs in window pixels).
 ## Docks hang just below `table_bottom`, so they stay with the table when it has spare room.
 func align_table(columns: PackedFloat32Array, pixels_per_unit: float, table_bottom: float, play_point: Vector2, roll_point: Vector2) -> void:
-	# Docks shrink together when die columns are closer than a dock is wide.
+	# Docks shrink together when die columns are closer than a dock is wide, and again if
+	# they would otherwise reach the action buttons (portrait only; landscape has them aside).
 	var spacing: float = absf(columns[1] - columns[0]) / _ui_scale if columns.size() > 1 else 200.0
-	var dock_scale: float = clampf((spacing - 6.0) / 104.0, 0.5, 1.0)
+	var dock_scale: float = _dock_scale(spacing)
 	var dock_top: float = table_bottom / _ui_scale + (6.0 if _tall else 14.0)
+	if _tall:
+		dock_scale = minf(dock_scale, maxf(0.4, (_actions_top - DOCK_GAP - dock_top) / DOCK_SIZE.y))
 	for index: int in mini(columns.size(), _docks.get_child_count()):
 		var dock: DieDock = _docks.get_child(index) as DieDock
 		dock.scale = Vector2.ONE * dock_scale
-		dock.position = Vector2(columns[index] / _ui_scale - 52.0 * dock_scale, dock_top)
+		dock.position = Vector2(columns[index] / _ui_scale - DOCK_SIZE.x * 0.5 * dock_scale, dock_top)
 	_zone_play.position = play_point / _ui_scale - Vector2(0.0, _zone_play.size.y * 0.5)
 	_zone_roll.position = roll_point / _ui_scale - Vector2(0.0, _zone_roll.size.y * 0.5)
 	_zone_play.visible = pixels_per_unit / _ui_scale > 24.0
@@ -192,10 +204,20 @@ func set_actions(can_roll: bool, can_play: bool) -> void:
 	_roll.set_available(can_roll)
 	_play.set_available(can_play)
 
-## Run the eligibility shine on exactly these owners' cards.
-func mark_eligible(owner_ids: Array[StringName]) -> void:
+## Run the eligibility cue on exactly these owners' cards. Returns how many cards have just
+## become eligible, so the host can mark the moment with a sound.
+func mark_eligible(owner_ids: Array[StringName]) -> int:
+	var started: int = 0
 	for card: BuildCard in _cards():
-		card.set_eligible(not card.is_empty() and card.owner_id in owner_ids)
+		if card.set_eligible(not card.is_empty() and card.owner_id in owner_ids):
+			started += 1
+	return started
+
+## Open or close a die's sheet from outside, for example while the pointer rests on the die.
+func inspect_die(die_id: StringName, inspecting: bool) -> void:
+	for dock: DieDock in _docks.get_children():
+		if dock.die_id == die_id and dock.has_details():
+			_on_dock_hover(dock, inspecting)
 
 ## Punch the card of a resolving bonus or Joker; unknown owners are ignored.
 func trigger_owner(owner_id: StringName, strength: float = 1.0) -> void:
@@ -232,10 +254,18 @@ func set_wall_ink(ink: Color) -> void:
 	for card: BuildCard in _cards():
 		card.set_slot_ink(ink)
 
-## Close any open explanation, for example when a reveal starts.
+## Close any open explanation, pinned or not, for example when a reveal starts.
 func dismiss_tooltip() -> void:
 	_tooltip_owner = null
+	_tooltip_pinned = false
 	_tooltip.dismiss()
+
+## A press anywhere outside the pinned source releases its explanation without consuming
+## the press, so the same tap can still select a die or press a button.
+func _input(event: InputEvent) -> void:
+	var button: InputEventMouseButton = event as InputEventMouseButton
+	if _tooltip_pinned and button and button.pressed and not _tooltip_owner.get_global_rect().has_point(button.position):
+		dismiss_tooltip()
 
 ## Landscape: goal, scoreboard, and rack share one band; docks and actions share the tray.
 func _arrange_wide() -> float:
@@ -243,7 +273,8 @@ func _arrange_wide() -> float:
 	_place(goal, Vector2(margin, 30.0), 1.0)
 	_place(score, Vector2((size.x - 360.0) * 0.5, 24.0), 1.0)
 	_place_rack(Vector2(size.x - margin - (98.0 * 4.0 + 8.0 * 3.0), 32.0), 98.0, 8.0)
-	_tray_top = size.y - 158.0
+	_tray_top = size.y - 160.0
+	_actions_top = _tray_top
 	_coins.position = Vector2(margin, _tray_top + 26.0)
 	_hint.visible = true
 	_hint.position = Vector2(margin, _tray_top + 86.0)
@@ -263,9 +294,13 @@ func _arrange_tall() -> float:
 	_place(score, Vector2(margin + 300.0 * shrink + gap, 28.0), shrink)
 	var card: float = 84.0
 	_place_rack(Vector2((size.x - (card * 4.0 + 8.0 * 3.0)) * 0.5, 142.0), card, 8.0)
-	_tray_top = size.y - 196.0
-	_hint.visible = false
+	# Reserve exactly what the docks need at this width, so wide portrait windows (tablets)
+	# never push full-size docks into the action row.
 	var row: float = size.y - 16.0 - 62.0
+	var widest_spacing: float = size.x / (StageCamera.TABLE_HALF_WIDTH * 2.0) * 3.5
+	_actions_top = row
+	_tray_top = row - DOCK_GAP - DOCK_SIZE.y * _dock_scale(widest_spacing) - 6.0
+	_hint.visible = false
 	_coins.position = Vector2(margin, row + 7.0)
 	var left: float = margin + 112.0
 	var width: float = (size.x - margin - left - 10.0) * 0.5
@@ -274,6 +309,10 @@ func _arrange_tall() -> float:
 	_play.position = Vector2(left + width + 10.0, row)
 	_play.size = Vector2(width, 62.0)
 	return 142.0 + card + 12.0
+
+## Dock scale for a die column spacing in HUD units; full size once columns are wide enough.
+func _dock_scale(spacing: float) -> float:
+	return clampf((spacing - 6.0) / DOCK_SIZE.x, 0.5, 1.0)
 
 ## Position a fixed-size widget and scale it about its top-left corner.
 func _place(widget: Control, at: Vector2, widget_scale: float) -> void:
@@ -322,32 +361,70 @@ func _apply_motion() -> void:
 func _spaced(text: String) -> String:
 	return " ".join(text.to_upper().split(""))
 
-## Explain a hovered bonus or Joker.
+## Explain a hovered Joker.
 func _on_card_hover(card: BuildCard, hovered: bool) -> void:
 	if not hovered:
 		_close_tooltip(card)
 		return
 	hover_ticked.emit()
-	var family: StringName = &"joker" if card.definition is JokerDefinition else &"bonus"
-	_open_tooltip(card, card.get_global_rect(), _spaced(words.render(family, {}, locale)), card.definition)
+	_open_card(card)
 
-## Explain a hovered upgrade tag.
-func _on_tag_hover(dock: DieDock, hovered: bool) -> void:
+## Pin a pressed Joker's explanation; pressing it again releases it.
+func _on_card_pressed(card: BuildCard) -> void:
+	if _tooltip_owner == card and _tooltip_pinned:
+		dismiss_tooltip()
+		return
+	_open_card(card)
+	_tooltip_pinned = true
+
+## Explain a hovered die column: its upgrade, then its bonus.
+func _on_dock_hover(dock: DieDock, hovered: bool) -> void:
 	if not hovered:
 		_close_tooltip(dock)
 		return
 	hover_ticked.emit()
-	_open_tooltip(dock, dock.tag_rect(), _spaced(words.render(&"upgrade", {}, locale)), dock.upgrade)
+	_open_dock(dock)
 
-## Place the explanation next to a window-pixel rectangle.
-func _open_tooltip(source: Control, rect: Rect2, eyebrow: String, definition: BuildDefinition) -> void:
+## Pin a pressed die column's sheet; pressing it again releases it.
+func _on_dock_pressed(dock: DieDock) -> void:
+	if not dock.has_details():
+		return
+	if _tooltip_owner == dock and _tooltip_pinned:
+		dismiss_tooltip()
+		return
+	_open_dock(dock)
+	_tooltip_pinned = true
+
+## Single-section explanation for a rack card.
+func _open_card(card: BuildCard) -> void:
+	if _tooltip_owner == card:
+		return
+	_open_tooltip(card, [_spaced(words.render(&"joker", {}, locale))], [card.definition])
+
+## Die sheet: every piece of equipment on one die, upgrade first.
+func _open_dock(dock: DieDock) -> void:
+	if _tooltip_owner == dock:
+		return
+	var eyebrows: PackedStringArray = []
+	var definitions: Array[BuildDefinition] = []
+	if dock.upgrade:
+		eyebrows.append(_spaced(words.render(&"upgrade", {}, locale)))
+		definitions.append(dock.upgrade)
+	if dock.bonus:
+		eyebrows.append(_spaced(words.render(&"bonus", {}, locale)))
+		definitions.append(dock.bonus)
+	_open_tooltip(dock, eyebrows, definitions)
+
+## Place the explanation next to its source.
+func _open_tooltip(source: Control, eyebrows: PackedStringArray, definitions: Array[BuildDefinition]) -> void:
 	_tooltip_owner = source
-	var local: Rect2 = Rect2(rect.position / _ui_scale, rect.size / _ui_scale)
-	_tooltip.present(local, size, eyebrow, definition, words, locale)
+	_tooltip_pinned = false
+	var rect: Rect2 = source.get_global_rect()
+	_tooltip.present(Rect2(rect.position / _ui_scale, rect.size / _ui_scale), size, eyebrows, definitions, words, locale)
 
-## Only the element that opened the explanation may close it.
+## Only the element that opened an unpinned explanation may close it.
 func _close_tooltip(source: Control) -> void:
-	if _tooltip_owner == source:
+	if _tooltip_owner == source and not _tooltip_pinned:
 		dismiss_tooltip()
 
 ## Available actions acknowledge the pointer.

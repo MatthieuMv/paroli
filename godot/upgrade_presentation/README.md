@@ -22,6 +22,8 @@ Ink remains the outline color, and background colors remain UI colors.
 | Alternator | Lagoon | Bolts |
 
 `EffectsCatalog` owns these identifiers. Mechanics never loads visual resources.
+The bridge also copies each run die's physical faces to `ParoliDie.faces`, so an
+upgraded die prints its permanent layout on the model.
 `UpgradePresentation.refresh(run, selected_ids, views)` applies identity and
 particle visibility through the die's public API. Call it after equipment,
 selection, roll, or history changes. Supply an empty selection while rolls or

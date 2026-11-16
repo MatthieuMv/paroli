@@ -20,6 +20,8 @@ signal hover_changed(hovered: bool)
 
 ## Face normals in numeric order, matching the art prototype.
 const NORMALS: Array[Vector3] = [Vector3.UP, Vector3.BACK, Vector3.RIGHT, Vector3.LEFT, Vector3.FORWARD, Vector3.DOWN]
+## Ordinary layout: the six physical faces print 1 to 6.
+const STANDARD_FACES: PackedInt32Array = [1, 2, 3, 4, 5, 6]
 
 # --- Member variables ---
 
@@ -82,7 +84,22 @@ const NORMALS: Array[Vector3] = [Vector3.UP, Vector3.BACK, Vector3.RIGHT, Vector
 		if not v and is_instance_valid(_impact):
 			_impact.hide()
 
-## Requested upward face, independent of gameplay randomness.
+## Value printed on each of the six physical faces, in the positions of the ordinary 1–6.
+## An upgrade's layout goes here, so repeated values really appear on several faces.
+## Each value must be 1–6: pips are authored per value. Other sizes or values are ignored.
+@export var faces: PackedInt32Array = STANDARD_FACES:
+	set(v):
+		if v.size() != 6:
+			return
+		for value: int in v:
+			if value < 1 or value > 6:
+				return
+		faces = v.duplicate()
+		if is_instance_valid(_body):
+			_print_faces()
+
+## Requested upward value, independent of gameplay randomness. The die lands on the first
+## physical face printed with it; a value missing from `faces` falls back to that position.
 @export_range(1, 6) var face_value: int = 1:
 	set(v):
 		face_value = clampi(v, 1, 6)
@@ -115,6 +132,15 @@ var _finish: DieFinish = DieFinish.new()
 
 ## Palette bindings for the native model meshes.
 var _bindings: Array[DieLibrary.MaterialBinding] = []
+
+## Authored pip poses for values 1–6, concatenated; value v starts at v(v-1)/2 and has v poses.
+var _pip_poses: Array[Transform3D] = []
+## Shared immutable pip geometry, captured from the authored model.
+var _pip_mesh: Mesh
+## Authored pip material; every printed pip gets its own copy for palette updates.
+var _pip_material: Material
+## Layout currently built in the model, so unchanged faces are never rebuilt.
+var _printed_faces: PackedInt32Array = STANDARD_FACES
 
 ## Elapsed presentation seconds used by deterministic surface samplers.
 var _clock: float = 0.0
@@ -154,6 +180,8 @@ func _ready() -> void:
 	_pick_area.mouse_entered.connect(_on_pointer_hover.bind(true))
 	_pick_area.mouse_exited.connect(_on_pointer_hover.bind(false))
 	DieLibrary.collect_bindings(_body, _bindings)
+	_capture_pips()
+	_print_faces()
 	(_body.get_child(0) as MeshInstance3D).material_override = _finish.material
 	_body.quaternion = landing_rotation(face_value)
 	_rig.position.y = 1.145
@@ -196,9 +224,51 @@ func _paint() -> void:
 	_vfx.ink = ink_color
 	_vfx.paint()
 
-## Return the orientation that presents the requested face upward.
+## Return the orientation that presents a face printed with the requested value upward.
 func landing_rotation(value: int) -> Quaternion:
-	return Quaternion(Vector3.UP, 0.25) * Quaternion(NORMALS[value - 1], Vector3.UP)
+	return Quaternion(Vector3.UP, 0.25) * Quaternion(NORMALS[_face_position(value)], Vector3.UP)
+
+## First physical face printed with `value`; the ordinary position when the layout lacks it.
+func _face_position(value: int) -> int:
+	var position_: int = faces.find(value)
+	return position_ if position_ >= 0 else value - 1
+
+## Record the authored pip arrangement of each value before any face is reprinted.
+func _capture_pips() -> void:
+	for value: int in range(1, 7):
+		for pip: MeshInstance3D in _body.get_node("Face%d" % value).get_children():
+			_pip_poses.append(pip.transform)
+			_pip_mesh = pip.mesh
+			_pip_material = pip.material_override
+
+## Rebuild only the faces whose printed value changed, then repaint and re-seat the die.
+func _print_faces() -> void:
+	if faces == _printed_faces:
+		return
+	for position_: int in 6:
+		var value: int = faces[position_]
+		if _printed_faces[position_] == value:
+			continue
+		var face: Node3D = _body.get_node("Face%d" % (position_ + 1)) as Node3D
+		for old: Node in face.get_children():
+			face.remove_child(old)
+			old.queue_free()
+		# Triangular offset into the concatenated poses: 1, 2, 3… pips per value.
+		var first: int = (value * (value - 1)) >> 1
+		for offset: int in value:
+			var pip: DiePaletteMesh = DiePaletteMesh.new()
+			pip.mesh = _pip_mesh
+			pip.material_override = _pip_material.duplicate() as Material
+			pip.tone = "ink"
+			pip.transform = _pip_poses[first + offset]
+			face.add_child(pip)
+	_printed_faces = faces.duplicate()
+	# Pip materials changed, so palette bindings must be collected again.
+	_bindings.clear()
+	DieLibrary.collect_bindings(_body, _bindings)
+	_paint()
+	if _roll_time < 0:
+		_body.quaternion = landing_rotation(face_value)
 
 ## Start a visual roll; value zero cycles faces and never chooses a game result.
 func roll(value: int = 0) -> void:

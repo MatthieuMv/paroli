@@ -31,6 +31,48 @@ The generated HTML, JavaScript, WebAssembly, and game data stay together in
 over HTTP; opening `index.html` directly as a file will not work. The preset is
 also available under **Project → Export** in the editor.
 
+## Local Android export
+
+The `Android` preset builds a debug-signed APK for ARM phones (32-bit and 64-bit)
+with package ID `org.paroli.game`. It uses the prebuilt Android templates; Android
+Studio, Gradle, the NDK, and an emulator are not needed for this workflow.
+
+Use Android export templates matching the editor exactly (currently 4.7.2).
+In **Editor → Editor Settings → Export → Android**, configure these local paths:
+
+- **Java SDK Path:** `~/.local/share/java/jdk-17` (expand `~` to your home directory).
+- **Android SDK Path:** `~/Android/Sdk`.
+- **Debug Keystore:** `~/.local/share/godot/keystores/debug.keystore`.
+
+The local SDK includes command-line tools, platform-tools, Android platform 36,
+and build-tools 36.1.0, matching the installed templates. The debug key uses alias
+`androiddebugkey` and password `android`. Keep signing keys outside the repository.
+The project enables ETC2/ASTC texture imports required by the Android exporter.
+
+From the repository root:
+
+```sh
+mkdir -p build/android
+godot --headless --path godot --export-debug Android
+```
+
+On the phone, enable Developer options (usually by tapping **Build number** seven
+times in Settings), then enable **USB debugging**. Connect a USB data cable, unlock
+the phone, and accept its debugging authorization prompt. Then run:
+
+```sh
+adb devices -l
+adb install -r build/android/paroli.apk
+```
+
+The device must show `device`, rather than `unauthorized`, before installation.
+If several devices are connected, use `adb -s DEVICE_SERIAL install -r ...`.
+Open **Paroli** on the phone after installation. Godot's Android run button can
+also deploy to a connected, authorized device because the preset is runnable.
+
+This APK is for local testing. Store publication needs a release signing key and
+a separate release/AAB configuration.
+
 ## Editing the native resources
 
 The `.tscn` and `.tres` files are the source of truth. There is no JSON import,
@@ -112,7 +154,10 @@ die.roll(5)
 ```
 
 The Inspector exposes 15 palette colors, custom body/ink/shine tints, 14 particle
-presets plus `none`, finishes, face value, and reduced motion. `DieLibrary.palette()`
+presets plus `none`, finishes, face layout, face value, and reduced motion. `faces` holds
+the value printed on each of the six physical faces (ordinary dice use
+`ParoliDie.STANDARD_FACES`); setting an upgrade's layout reprints the model, and
+`roll(value)` lands on a face printed with that value. Values must be 1–6. `DieLibrary.palette()`
 and `DieLibrary.effect_ids()` expose the ordered choices through typed APIs.
 
 `rolled(value)` signals settling; `consumed` signals disappearance. `hover_changed(hovered)`
@@ -199,7 +244,8 @@ godot --path godot --script res://debug/table_viewer/tests/smoke.gd -- --capture
 
 [dice_hold/dice_hold_controller.tscn](dice_hold/dice_hold_controller.tscn) owns
 selection and movement separately from the reusable die and table. `return_to_roll(die)`
-puts a held die back on its roll marker without a slide, including a consumed one. Configure it
+puts a held die back on its roll marker without a slide, including a consumed one.
+`show_highlight = false` hides the gold ring for hosts that mark selection another way. Configure it
 with a table and a typed dice array in roll-slot order. The die emits `clicked`
 on a press or held-pointer sweep when interaction is enabled; the controller
 exposes `is_held()`, `can_mutate()`, `can_roll()`,
@@ -414,14 +460,26 @@ the run. The corner **Debug** button cycles three fixture builds (Showcase, Star
 Bare dice), restarts the run, changes reveal speed, and toggles reduced motion and sound.
 It also steps through 15 backdrop color schemes (**B** / **Shift+B**) and five patterns
 (**P**), so combinations can be compared with the panel closed.
+With **Shop between rounds** on (the default), clearing a round opens the
+[shop](#shop-interface-prototype) before the next round; coins and purchases carry over.
 
 The scoreboard stays empty until at least one die is on the Play row. It then shows
-only the recognized combination and its base points × Mult (D-023). Bonuses and
-Jokers that would trigger get a shine sweep, and a die applying a negative effect
-shows the crack cue. An upgrade's particles show only on a die that is selected
-**and** whose reward will apply to that play; rewards earned from the Roll row
-(Guardian, for example) stay silent until the reveal. No face points, effect totals,
-or projected score appear before the reveal.
+only the recognized combination and its base points × Mult (D-023). Selection is
+shown by position alone: there is no ring. Dice that form the recognized combination
+get the die's shine sweep; extra selected dice do not. Bonuses and Jokers that would
+trigger get a butter halo, a lift, a gentle pulse, and the shine sweep, with a soft
+pop and tick when they become eligible. Cracks mark a selected die that hurts the play
+(a negative effect) or adds nothing to it: outside the combination, and the play would
+score and reward at least as much without it. An extra die that still feeds a bonus or a
+Joker is left whole. An upgrade's particles show only on a die that is selected **and** whose
+reward will apply to that play; rewards earned from the Roll row (Guardian, for
+example) stay silent until the reveal. No face points, effect totals, or projected
+score appear before the reveal.
+
+Upgraded dice print their permanent face layout on the model. Each die's column
+below the table is one hover and tap target: it opens a die sheet with the upgrade
+and the bonus. Resting the pointer on the die itself opens the same sheet. A press
+or tap pins a sheet or a Joker's explanation until the next press elsewhere.
 
 The reveal resolves one source per beat: member dice left to right, each die's
 upgrade and bonus, then Jokers in rack order. Each beat hops the die or punches the
@@ -434,8 +492,7 @@ the meter, converts unused plays into coins, and shows the result card.
 
 Other feedback: staggered throws with three felt knocks per die and a touch of
 camera shake, select/deselect pops pitched per die, hover hops and ticks, idle sway and
-hover tilt on cards, chunky press-down buttons whose pips pop when spent, and
-tooltips with authored descriptions on Jokers, bonuses, and upgrade tags.
+hover tilt on cards, and chunky press-down buttons whose pips pop when spent.
 Reduced motion keeps order, values, and sound but removes shake, springs, travel,
 stagger, and confetti, and freezes the backdrop's drift.
 
@@ -453,13 +510,9 @@ reusable scene; it works without the debug host.
 - `hud/`: `RoundHud` lays out and exposes the widgets (goal meter, scoreboard, Joker
   rack, die docks, coin chip, action buttons, popups, tooltip, result banner). It
   reports intents and animates host-supplied values; no rules live there.
-- `juice/`: `RoundCamera` (table framing and trauma shake) and `Juice` helpers.
-- `backdrop/`: `RoundBackdrop`, a wallpaper quad parented to the camera. A
-  `BackdropPreset` resource (`backdrop/presets/*.tres`) supplies the glow, edge, and
-  pattern colors plus the ink for the few HUD marks drawn straight on the wall; `motif`
-  picks the pattern (plain, sparkles, dots, stripes, diamonds) independently. The pattern
-  drifts slowly and fades out behind the table. Density and pattern strength are material
-  parameters on the `Camera/Backdrop` node.
+- `juice/`: `Juice` helpers for punches, hops, and number formatting.
+- The table, dice, camera, and wallpaper come from the shared
+  [table stage](#table-stage), exposed as `RoundInterface.stage`.
 - `audio/`: `RoundAudio` voice pool and the WAV cues.
 
 ```gdscript
@@ -473,8 +526,9 @@ round_interface.continue_requested.connect(_on_continue_requested)
 
 `start_round` returns false, changing nothing, while a throw or reveal is playing or
 when the session rejects the start. `busy_changed` and `is_busy()` expose the input
-lock. `reduced_motion`, `tempo`, `muted`, `backdrop_preset`, `backdrop_motif`, and
-`locale` are exported; the scene's default backdrop is the Paper preset with sparkles.
+lock. `reduced_motion`, `tempo`, `muted`, and `locale` are exported. A host may park the
+scene outside the tree (the round prototype does during a shop visit); it lays out again
+when it returns.
 
 The HUD scales from a 1280×900 landscape or 540×960 portrait reference and frames
 the table in the space it leaves; die docks follow the dice columns on screen.
@@ -506,3 +560,114 @@ round completion without any scene. The interface check drives real pointer pres
 through the HUD, the reveal lock, banking, the result card, and the portrait layout.
 The prototype check cycles every fixture and chains rounds. `--disable-vsync` keeps
 captures running when the test window is hidden or occluded.
+
+## Table stage
+
+[table_stage/table_stage.tscn](table_stage/table_stage.tscn) is the 3D set shared by the
+round and the shop: wallpaper, framed orthographic camera, table, and the run's five dice
+on their roll markers. Instancing it keeps the build looking the same on every screen.
+It owns presentation only.
+
+- `frame(rect, viewport)` fits the table into the space a HUD leaves and returns pixels
+  per world unit. `columns()`, `project(table_point)`, and `die_rect(die_id)` map the
+  table to window pixels for HUD alignment and 2D hit tests.
+- `views` maps `die_1`…`die_5` to the native dice; `dice()` returns them in run order.
+- `StageCamera` (`camera`) adds trauma shake through lens offsets.
+- `backdrop/`: `StageBackdrop`, a wallpaper quad parented to the camera. A
+  `BackdropPreset` resource (`backdrop/presets/*.tres`) supplies the glow, edge, and
+  pattern colors plus the ink for the few HUD marks drawn straight on the wall; `motif`
+  picks the pattern (plain, sparkles, dots, stripes, diamonds) independently. The
+  authored default is **Plum night** with **sparkles**; change `backdrop_preset` and
+  `backdrop_motif` on the stage to restyle every screen. `backdrop_changed` tells
+  interfaces to recolor their wall marks (`wall_ink()`).
+- `reduced_motion` settles dice immediately and stops shake and wallpaper drift.
+
+## Shop interface prototype
+
+Open [debug/shop_prototype/shop_prototype.tscn](debug/shop_prototype/shop_prototype.tscn)
+and press **F6** to try the shop on its own, or play the round prototype: a cleared
+round leads here. The shop uses the same table: stock lies on the felt's back half, the
+dice rest in front, and the Joker rack and die columns sit where they do in a round.
+
+Everything in the shop is drag and drop. Pressing an item picks it up: it lifts, the
+places it can go light up, and its explanation opens. Dragging carries it; the
+destination under the pointer brightens. Releasing it anywhere else sends it back, so a
+plain press only inspects.
+
+- **Buy a Joker:** drag it onto the rack.
+- **Buy a bonus:** drag it onto a die or its column with a free slot. A die that already
+  has a bonus refuses and the item goes back.
+- **Lucky dip:** the two `?` tiles sell a random Joker or bonus at a discount. Drag them
+  like known goods; the tile turns over to show what was found before it flies home.
+- **Move a bonus:** drag an owned bonus onto a die with a free slot.
+- **Sell:** drag an owned bonus or Joker onto the purse; a **Sell +N** badge shows its
+  value while you hold it. Upgrades cannot be sold.
+- **Refresh** restocks the whole shelf for coins; each refresh in a visit costs more.
+- **Next round** leaves.
+
+Hovering goods, rack Jokers, a die, or its column explains them; the sign's second line
+says where the held item can go. Goods the purse or the build cannot take shake and say
+why (not enough coins, no free slot) instead of lifting. Feedback follows the round:
+deals, lifts, flights to their new place, counting coins, a hop from the die that
+receives a bonus, and matching sounds.
+
+### Rules you can tune
+
+[shop_rules.tres](shop_interface/session/shop_rules.tres) holds every number the design
+has left open (D-015). Edit it in the Inspector; both prototypes use it.
+
+| Setting | Default | Meaning |
+| --- | ---: | --- |
+| `joker_offers` / `bonus_offers` | 2 / 3 | Known goods stocked per shelf |
+| `joker_price` / `bonus_price` | 6 / 4 | Known prices, in coins |
+| `sell_percent` | 50 | Share of the price paid that selling returns, rounded down |
+| `refresh_base_cost` / `refresh_cost_step` | 2 / 1 | First refresh in a visit, and how much each next one adds |
+| `random_joker` / `random_bonus` | on / on | Whether each lucky dip is offered |
+| `random_discount_percent` | 40 | Lucky dip discount off the known price |
+
+Fixture decisions made so the prototype is playable, all easy to change in
+[shop_session.gd](shop_interface/session/shop_session.gd): prices are flat per family;
+a shelf never repeats an identity and never offers something owned; a lucky dip draws
+from what is neither owned nor on the shelf; sold items can reappear in later stock;
+a refresh restocks every slot, bought ones included; the refresh cost resets each visit;
+sale value follows the price actually paid, so a discounted item sells for less.
+Occupied bonus slots never swap (D-014).
+
+### Structure
+
+[shop_interface/shop_interface.tscn](shop_interface/shop_interface.tscn) is the reusable
+scene; it works without the debug host.
+
+- `session/`: scene-free logic. `ShopSession` wraps `MechanicsRun`: stock, prices,
+  purchases, placement, moves, sales, and paid refreshes (which feed Roulette). One
+  session lives for the whole run so event IDs stay unique; `open()` starts a visit.
+  `ShopOffer` is a shelf slot; `ShopRules` is the tunable fixture.
+- `shop_interface.gd`: turns HUD intents into session calls and presents the results.
+- `hud/`: `ShopHud` (layout, shelf, and the drag-and-drop interaction) and `OfferCard`.
+  It reuses the round's tiles, die columns, purse, buttons, tooltip, and sounds.
+
+```gdscript
+var shop: ShopSession = ShopSession.new(run, rules)  # Once per run.
+shop_interface.open_shop(shop, "Before round 2")     # Each visit; restocks the shelf.
+shop_interface.leave_requested.connect(_on_shop_left)
+```
+
+`debug/fixtures/run_fixtures.gd` holds the fixture builds both debug hosts share. The
+shop host's Debug panel cycles builds, restocks, grants coins, and toggles reduced
+motion and sound.
+
+### Validation
+
+```sh
+godot --headless --path godot --script res://shop_interface/tests/session.gd
+godot --headless --path godot --script res://shop_interface/tests/smoke.gd
+godot --headless --path godot --script res://debug/shop_prototype/tests/smoke.gd
+# With a working display; saves /tmp/paroli-shop-*.png:
+godot --disable-vsync --path godot --script res://shop_interface/tests/smoke.gd -- --capture
+godot --disable-vsync --path godot --script res://debug/shop_prototype/tests/smoke.gd -- --capture
+```
+
+The session check walks the D-015 cases without any scene. The interface check drives
+every path with real pointer input: dragged purchases onto the rack, a column, or the
+die itself, moves, sales, both lucky dips, refused and abandoned drops, refresh, and
+tablet and phone layouts. The round prototype check covers the round → shop → round loop.

@@ -15,3 +15,6 @@ var base_mult: int = 0
 var eligible_owners: Array[StringName] = []
 ## Dice whose own upgrade or bonus would apply a negative amount; shown with the crack cue.
 var penalized_dice: Array[StringName] = []
+## Selected dice that add nothing: outside the recognized combination, and the play would
+## score and reward at least as much without them. Also shown with the crack cue.
+var idle_dice: Array[StringName] = []

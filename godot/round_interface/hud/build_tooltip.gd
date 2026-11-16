@@ -1,20 +1,18 @@
 extends PanelContainer
 class_name BuildTooltip
-## Hover card explaining one owned upgrade, bonus, or Joker with its authored description.
-## Read-only: it renders definition text and never evaluates rules.
+## Explanation card for owned content: one section for a Joker, or a die sheet with its
+## upgrade and bonus. Read-only: it renders authored text and never evaluates rules.
 
 # --- Member variables ---
 
 ## Removes the pop-in.
 var reduced_motion: bool = false
-## Invalidates deferred placement when another card takes over or the pointer leaves.
+## Invalidates deferred placement when another source takes over or the pointer leaves.
 var _version: int = 0
-## Family caption, tinted by keyword role.
-@onready var _eyebrow: Label = %Eyebrow
-## Localized definition name.
-@onready var _title: Label = %Title
-## Authored rule text with colored keywords; nested glossary popups stay disabled here.
-@onready var _description: KeywordText = %Description
+## Up to two authored sections; unused ones are hidden.
+@onready var _sections: Array[VBoxContainer] = [%Section1 as VBoxContainer, %Section2 as VBoxContainer]
+## Hairline between the two sections of a die sheet.
+@onready var _divider: Panel = %Divider
 
 # --- Member functions ---
 
@@ -22,13 +20,21 @@ var _version: int = 0
 func _ready() -> void:
 	hide()
 
-## Show a definition beside `anchor` (parent-local rectangle), inside `bounds` (parent-local size).
-func present(anchor: Rect2, bounds: Vector2, eyebrow: String, definition: BuildDefinition, words: KeywordCatalog, locale: String) -> void:
+## Show one or two definitions beside `anchor` (parent-local), inside `bounds` (parent-local size).
+## `eyebrows` supplies each section's family caption, in the same order as `definitions`.
+func present(anchor: Rect2, bounds: Vector2, eyebrows: PackedStringArray, definitions: Array[BuildDefinition], words: KeywordCatalog, locale: String) -> void:
 	_version += 1
 	var version: int = _version
-	_eyebrow.text = eyebrow
-	_title.text = words.render(definition.name_keyword, {}, locale)
-	_description.configure(definition.describe_rich(words, locale), definition.describe(words, locale), words, locale)
+	for index: int in _sections.size():
+		var section: VBoxContainer = _sections[index]
+		section.visible = index < definitions.size()
+		if not section.visible:
+			continue
+		var definition: BuildDefinition = definitions[index]
+		(section.get_node("Eyebrow") as Label).text = eyebrows[index]
+		(section.get_node("Title") as Label).text = words.render(definition.name_keyword, {}, locale)
+		(section.get_node("Description") as KeywordText).configure(definition.describe_rich(words, locale), definition.describe(words, locale), words, locale)
+	_divider.visible = definitions.size() > 1
 	# Lay out offscreen first so wrapped text has its final height before placement.
 	position = Vector2(-10000.0, -10000.0)
 	size = Vector2(custom_minimum_size.x, 0.0)
@@ -41,6 +47,7 @@ func present(anchor: Rect2, bounds: Vector2, eyebrow: String, definition: BuildD
 	if place.y + size.y > bounds.y - 10.0:
 		place.y = anchor.position.y - size.y - 12.0
 	place.x = clampf(place.x, 10.0, maxf(10.0, bounds.x - size.x - 10.0))
+	place.y = maxf(10.0, place.y)
 	position = place
 	if not reduced_motion:
 		pivot_offset = size * 0.5

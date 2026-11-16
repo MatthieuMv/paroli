@@ -21,6 +21,10 @@ var reduced_motion: bool = false
 @onready var _title: Label = $Content/Title
 ## Remaining uses.
 @onready var _pips: PipRow = $Content/Pips
+## Coin cost row, shown instead of pips for paid actions.
+@onready var _cost: HBoxContainer = $Content/Cost
+## Amount inside the cost row.
+@onready var _cost_amount: Label = $Content/Cost/Amount
 
 # --- Member functions ---
 
@@ -38,6 +42,15 @@ func _ready() -> void:
 func set_uses(remaining: int, total: int, animate: bool) -> void:
 	_pips.reduced_motion = reduced_motion
 	_pips.set_uses(remaining, total, animate)
+
+## Show a coin cost under the caption instead of use pips; a changed cost gets a small punch.
+func set_cost(cost: int) -> void:
+	var changed: bool = _cost.visible and _cost_amount.text != str(cost)
+	_pips.hide()
+	_cost.show()
+	_cost_amount.text = str(cost)
+	if changed and not reduced_motion:
+		Juice.punch(_cost, 0.3, 0.4)
 
 ## Fade the face with the disabled state so availability reads at a glance.
 func set_available(available: bool) -> void:

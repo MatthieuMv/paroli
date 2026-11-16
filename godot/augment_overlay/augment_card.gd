@@ -37,6 +37,7 @@ func configure(upgrade: UpgradeDefinition, words: KeywordCatalog, locale: String
 	_die.palette_color = String(upgrade.palette_color)
 	_die.effect = String(upgrade.vfx_id)
 	_die.effect_enabled = true
+	_die.faces = upgrade.faces if not upgrade.faces.is_empty() else ParoliDie.STANDARD_FACES
 	($Margin/Layout/Copy/Title as Label).text = words.render(String(upgrade.name_keyword), {}, locale)
 	($Margin/Layout/Copy/Description as Label).text = upgrade.describe(words, locale)
 	_die.reduced_motion = true

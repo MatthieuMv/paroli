@@ -1,6 +1,6 @@
 extends Node
 class_name RoundAudio
-## One-shot sound effects for the round interface, played through a small voice pool.
+## One-shot sound effects for the table screens (round and shop), played through a small voice pool.
 ## Pitched cues share a C5 root, so chains climb a pentatonic ladder via `pitch_scale`.
 ## Plain players and WAV streams keep this compatible with the single-threaded Web export.
 
@@ -35,6 +35,13 @@ const CUES: Dictionary[StringName, AudioStream] = {
 	&"total": preload("res://round_interface/audio/sfx/total.wav"),
 	&"win": preload("res://round_interface/audio/sfx/win.wav"),
 	&"womp": preload("res://round_interface/audio/sfx/womp.wav"),
+	&"reveal": preload("res://round_interface/audio/sfx/reveal.wav"),
+	&"refresh": preload("res://round_interface/audio/sfx/refresh.wav"),
+	&"place": preload("res://round_interface/audio/sfx/place.wav"),
+	&"pickup": preload("res://round_interface/audio/sfx/pickup.wav"),
+	&"deny": preload("res://round_interface/audio/sfx/deny.wav"),
+	&"deal": preload("res://round_interface/audio/sfx/deal.wav"),
+	&"buy": preload("res://round_interface/audio/sfx/buy.wav"),
 }
 ## Per-cue mix in decibels, relative to `volume_db`; unlisted cues play at zero.
 const MIX: Dictionary[StringName, float] = {
@@ -57,6 +64,13 @@ const MIX: Dictionary[StringName, float] = {
 	&"combo": -5.0,
 	&"bank": -3.0,
 	&"womp": -5.0,
+	&"buy": -4.0,
+	&"deny": -6.0,
+	&"pickup": -8.0,
+	&"place": -5.0,
+	&"deal": -9.0,
+	&"refresh": -6.0,
+	&"reveal": -5.0,
 }
 
 # --- Member variables ---

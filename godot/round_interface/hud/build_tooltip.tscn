@@ -23,6 +23,9 @@ anti_aliasing_size = 1.2
 shadow_color = Color(0.188235, 0.133333, 0.239216, 0.2)
 shadow_size = 8
 
+[sub_resource type="StyleBoxFlat" id="divider"]
+bg_color = Color(0.188235, 0.133333, 0.239216, 0.16)
+
 [node name="BuildTooltip" type="PanelContainer"]
 visible = false
 custom_minimum_size = Vector2(300, 0)
@@ -35,10 +38,15 @@ script = ExtResource("script")
 [node name="Content" type="VBoxContainer" parent="."]
 layout_mode = 2
 mouse_filter = 2
+theme_override_constants/separation = 12
+
+[node name="Section1" type="VBoxContainer" parent="Content"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
 theme_override_constants/separation = 6
 
-[node name="Eyebrow" type="Label" parent="Content"]
-unique_name_in_owner = true
+[node name="Eyebrow" type="Label" parent="Content/Section1"]
 modulate = Color(1, 1, 1, 0.72)
 layout_mode = 2
 mouse_filter = 2
@@ -46,8 +54,7 @@ theme_override_colors/font_color = Color(0.188235, 0.133333, 0.239216, 1)
 theme_override_font_sizes/font_size = 12
 text = "J O K E R"
 
-[node name="Title" type="Label" parent="Content"]
-unique_name_in_owner = true
+[node name="Title" type="Label" parent="Content/Section1"]
 layout_mode = 2
 mouse_filter = 2
 theme_override_colors/font_color = Color(0.188235, 0.133333, 0.239216, 1)
@@ -57,8 +64,44 @@ theme_override_font_sizes/font_size = 21
 text = "Matchmaker"
 autowrap_mode = 2
 
-[node name="Description" parent="Content" instance=ExtResource("keywords")]
+[node name="Description" parent="Content/Section1" instance=ExtResource("keywords")]
+layout_mode = 2
+mouse_filter = 2
+theme_override_font_sizes/normal_font_size = 15
+autowrap_mode = 2
+
+[node name="Divider" type="Panel" parent="Content"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 2)
+layout_mode = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("divider")
+
+[node name="Section2" type="VBoxContainer" parent="Content"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 6
+
+[node name="Eyebrow" type="Label" parent="Content/Section2"]
+modulate = Color(1, 1, 1, 0.72)
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.188235, 0.133333, 0.239216, 1)
+theme_override_font_sizes/font_size = 12
+text = "J O K E R"
+
+[node name="Title" type="Label" parent="Content/Section2"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.188235, 0.133333, 0.239216, 1)
+theme_override_colors/font_outline_color = Color(0.188235, 0.133333, 0.239216, 1)
+theme_override_constants/outline_size = 1
+theme_override_font_sizes/font_size = 21
+text = "Matchmaker"
+autowrap_mode = 2
+
+[node name="Description" parent="Content/Section2" instance=ExtResource("keywords")]
 layout_mode = 2
 mouse_filter = 2
 theme_override_font_sizes/normal_font_size = 15

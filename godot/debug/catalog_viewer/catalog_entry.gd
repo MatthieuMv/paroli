@@ -42,6 +42,7 @@ func configure(definition: BuildDefinition, words: KeywordCatalog, locale: Strin
 		_die.palette_color = String(upgrade.palette_color)
 		_die.effect = String(upgrade.vfx_id)
 		_die.effect_enabled = true
+		_die.faces = upgrade.faces if not upgrade.faces.is_empty() else ParoliDie.STANDARD_FACES
 		_die.face_value = upgrade.faces[0] if not upgrade.faces.is_empty() else 6
 	_sync_preview()
 	_title.text = words.render(String(definition.name_keyword), {}, locale)

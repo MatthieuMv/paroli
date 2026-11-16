@@ -1,0 +1,17 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://shop_interface/shop_interface.gd" id="script"]
+[ext_resource type="PackedScene" path="res://table_stage/table_stage.tscn" id="stage"]
+[ext_resource type="PackedScene" path="res://round_interface/audio/round_audio.tscn" id="audio"]
+[ext_resource type="PackedScene" path="res://shop_interface/hud/shop_hud.tscn" id="hud"]
+
+[node name="ShopInterface" type="Node3D"]
+script = ExtResource("script")
+
+[node name="Stage" parent="." instance=ExtResource("stage")]
+
+[node name="Audio" parent="." instance=ExtResource("audio")]
+
+[node name="Interface" type="CanvasLayer" parent="."]
+
+[node name="Hud" parent="Interface" instance=ExtResource("hud")]

@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="BackdropPreset" format=3]
+
+[ext_resource type="Script" path="res://table_stage/backdrop/backdrop_preset.gd" id="script"]
+
+[resource]
+script = ExtResource("script")
+title = "Sky"
+center_color = Color(0.901961, 0.941176, 0.960784, 1)
+edge_color = Color(0.788235, 0.878431, 0.92549, 1)
+mark_color = Color(0.662745, 0.803922, 0.886275, 1)
+light_color = Color(0.984314, 0.992157, 1, 1)
+wall_ink = Color(0.188235, 0.133333, 0.239216, 1)

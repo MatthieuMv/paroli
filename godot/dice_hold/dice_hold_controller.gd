@@ -10,6 +10,8 @@ signal changed
 
 # --- Member variables ---
 
+## Show the die's gold ring while it is held. Hosts that mark selection another way turn it off.
+@export var show_highlight: bool = true
 ## Duration of the floor-level slide; reduced-motion dice move immediately.
 @export_range(0.0, 1.0, 0.01) var transfer_seconds: float = 0.28
 ## Table exposes marker locations through its public API.
@@ -67,7 +69,7 @@ func toggle_hold(die: ParoliDie) -> void:
 	if positions.size() <= _slots[die]:
 		return
 	_held[die] = held
-	die.set_hold_highlight(held)
+	die.set_hold_highlight(held and show_highlight)
 	var target: Vector3 = positions[_slots[die]]
 	if die.reduced_motion or transfer_seconds <= 0.0:
 		die.global_position = target

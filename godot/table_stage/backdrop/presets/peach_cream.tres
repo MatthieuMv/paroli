@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="BackdropPreset" format=3]
+
+[ext_resource type="Script" path="res://table_stage/backdrop/backdrop_preset.gd" id="script"]
+
+[resource]
+script = ExtResource("script")
+title = "Peach cream"
+center_color = Color(0.984314, 0.901961, 0.854902, 1)
+edge_color = Color(0.956863, 0.803922, 0.72549, 1)
+mark_color = Color(0.933333, 0.709804, 0.611765, 1)
+light_color = Color(1, 0.964706, 0.933333, 1)
+wall_ink = Color(0.188235, 0.133333, 0.239216, 1)

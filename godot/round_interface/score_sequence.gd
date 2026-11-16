@@ -24,7 +24,7 @@ var reduced_motion: bool = false
 ## Widgets that display the reveal.
 var _hud: RoundHud
 ## Table camera, for shake and die-to-screen projection.
-var _camera: RoundCamera
+var _camera: StageCamera
 ## Sound effects.
 var _audio: RoundAudio
 ## Native dice by permanent identity.
@@ -33,7 +33,7 @@ var _views: Dictionary[StringName, ParoliDie] = {}
 # --- Member functions ---
 
 ## Receive collaborators from the owning round interface once its scene is ready.
-func setup(hud: RoundHud, camera: RoundCamera, audio: RoundAudio, views: Dictionary[StringName, ParoliDie]) -> void:
+func setup(hud: RoundHud, camera: StageCamera, audio: RoundAudio, views: Dictionary[StringName, ParoliDie]) -> void:
 	_hud = hud
 	_camera = camera
 	_audio = audio

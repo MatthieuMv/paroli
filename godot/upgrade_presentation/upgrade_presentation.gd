@@ -23,4 +23,8 @@ static func refresh(run: MechanicsRun, selected: Array[StringName], views: Dicti
 			die.palette_color = color
 		if die.effect != effect:
 			die.effect = effect
+		# The run's physical faces are authoritative; an upgrade's layout shows on the model.
+		var run_die: RunDie = run.find_die(id)
+		if run_die and die.faces != run_die.faces:
+			die.faces = run_die.faces
 		die.effect_enabled = id in active and not die.is_rolling() and not die.is_consumed()

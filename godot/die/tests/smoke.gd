@@ -50,6 +50,29 @@ func _run() -> void:
 		assert(not die.is_rolling())
 		assert((die._body.basis * ParoliDie.NORMALS[value - 1]).dot(Vector3.UP) > 0.999)
 
+	# An upgrade layout reprints the physical faces and lands on a face showing the value.
+	die.faces = [1, 1, 1, 3, 3, 3]
+	var printed: PackedInt32Array = []
+	for position_: int in 6:
+		printed.append(die._body.get_node("Face%d" % (position_ + 1)).get_child_count())
+	assert(printed == PackedInt32Array([1, 1, 1, 3, 3, 3]), "Each physical face prints its layout value")
+	die.roll(3)
+	die._process(0.62)
+	var top: int = -1
+	for position_: int in 6:
+		if (die._body.basis * ParoliDie.NORMALS[position_]).dot(Vector3.UP) > 0.999:
+			top = position_
+	assert(top >= 0 and die.faces[top] == 3, "The die lands on a face printed with the requested value")
+	assert(second._body.get_node("Face4").get_child_count() == 4, "Layouts are per die")
+	die.palette_color = "Sky"
+	for pip: MeshInstance3D in die._body.get_node("Face5").get_children():
+		assert((pip.material_override as StandardMaterial3D).albedo_color == die.ink_color, "Reprinted pips follow the palette")
+	die.faces = [1, 2, 3]
+	assert(die.faces == PackedInt32Array([1, 1, 1, 3, 3, 3]), "Malformed layouts are ignored")
+	die.faces = ParoliDie.STANDARD_FACES
+	for value: int in range(1, 7):
+		assert(die._body.get_node("Face%d" % value).get_child_count() == value)
+
 	# The finish module keeps its own uniforms and supports simultaneous effects.
 	for seconds: float in [0.0, 0.4, 1.4, 3.0, 9.0]:
 		die._finish.sample(seconds, true, true, false)
@@ -60,5 +83,5 @@ func _run() -> void:
 	die.roll(1)
 	die._process(0.01)
 	assert(not die.is_consumed())
-	print("PASS: 15 colors, 14 VFX, all activations, six faces, material isolation, finishes, reduced motion, replay.")
+	print("PASS: 15 colors, 14 VFX, all activations, six faces, face layouts, material isolation, finishes, reduced motion, replay.")
 	quit()

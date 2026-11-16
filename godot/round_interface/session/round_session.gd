@@ -66,7 +66,44 @@ func preview(selected: Array[StringName]) -> PlayPreview:
 			result.eligible_owners.append(command.owner_id)
 		if amount < 0 and command.source_die_id != &"" and command.source_die_id not in result.penalized_dice:
 			result.penalized_dice.append(command.source_die_id)
+	# A selected die outside the combination is idle when leaving it out would lose nothing.
+	# This compares plays internally; the cue it feeds never shows a number.
+	var worth: Vector2 = _worth(selected)
+	for die_id: StringName in selected:
+		if die_id in result.combination.members:
+			continue
+		var without: Array[StringName] = selected.duplicate()
+		without.erase(die_id)
+		var other: Vector2 = _worth(without)
+		if other.x >= worth.x and other.y >= worth.y:
+			result.idle_dice.append(die_id)
 	return result
+
+## Value of a pending play for comparing selections: x is the credited score it would
+## earn, y the sum of its non-scoring rewards (coins, growth, allowances). Never displayed.
+func _worth(selected: Array[StringName]) -> Vector2:
+	var combination: CombinationRecognizer.Result = run.preview_combination(selected)
+	if not combination:
+		return Vector2.ZERO
+	var points: float = float(CombinationScores.base_points(combination.category) + combination.value_sum)
+	var mult: float = float(CombinationScores.base_mult(combination.category))
+	var percent: float = 0.0
+	var rewards: float = 0.0
+	for command: EffectCommand in run.preview_commands(selected):
+		if command is ScoreDeltaCommand:
+			var score: ScoreDeltaCommand = command as ScoreDeltaCommand
+			match score.channel:
+				ScoreDeltaCommand.Channel.POINTS:
+					points += float(score.amount)
+				ScoreDeltaCommand.Channel.MULT:
+					mult += float(score.amount)
+				ScoreDeltaCommand.Channel.MULT_PERCENT:
+					percent += float(score.amount)
+		elif command is RuntimeDeltaCommand:
+			var runtime: RuntimeDeltaCommand = command as RuntimeDeltaCommand
+			if runtime.kind != RuntimeDeltaCommand.Kind.STRAIGHT_GAPS:
+				rewards += float(runtime.amount)
+	return Vector2(maxf(0.0, points * mult * (1.0 + percent / 100.0)), rewards)
 
 ## Commit a play. Base points include member face values, as D-019 specifies.
 func play(selected: Array[StringName]) -> PlayOutcome:

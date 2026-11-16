@@ -35,10 +35,10 @@ func _run() -> void:
 	round_view.muted = true
 	round_view.reduced_motion = not capture
 	var hud: RoundHud = round_view.get_node("Interface/Hud") as RoundHud
-	var table: ParoliTable = round_view.get_node("Table") as ParoliTable
+	var table: ParoliTable = round_view.get_node("Stage/Table") as ParoliTable
 	var hold: DiceHoldController = round_view.get_node("HoldController") as DiceHoldController
 	var dice: Array[ParoliDie] = []
-	for die: ParoliDie in round_view.get_node("Dice").get_children():
+	for die: ParoliDie in round_view.get_node("Stage/Dice").get_children():
 		dice.append(die)
 	# Showcase-like fixture; the forced table state below clears this target on the second play.
 	var catalog: EffectsCatalog = EffectsCatalog.new()
@@ -60,7 +60,7 @@ func _run() -> void:
 	for index: int in dice.size():
 		assert(table.contains_roll_position(table.to_local(dice[index].global_position)))
 	var docks: Node = hud.get_node("Docks")
-	var camera: Camera3D = round_view.get_node("Camera") as Camera3D
+	var camera: Camera3D = round_view.get_node("Stage/Camera") as Camera3D
 	for index: int in dice.size():
 		var dock: Control = docks.get_child(index) as Control
 		var column: float = camera.unproject_position(dice[index].global_position).x
@@ -68,6 +68,9 @@ func _run() -> void:
 	_assert_backdrop_covers(round_view)
 	assert((hud.get_node("Jokers/Joker1") as BuildCard).owner_id == &"joker:match_master")
 	assert((hud.get_node("Jokers/Joker3") as BuildCard).is_empty())
+	# Upgraded dice print their permanent layout on the model; ordinary dice keep 1–6.
+	assert(dice[0].faces == PackedInt32Array([1, 1, 1, 3, 3, 3]) and dice[1].faces == PackedInt32Array([1, 1, 3, 3, 5, 5]))
+	assert(dice[2].faces == ParoliDie.STANDARD_FACES)
 	# Nothing is selected yet: no combination, no upgrade particles, nothing to play.
 	_force_values(run, [3, 3, 5, 3, 6])
 	assert(play.disabled and not roll.disabled, "Only rolling is possible before a selection")
@@ -75,6 +78,7 @@ func _run() -> void:
 	for die: ParoliDie in dice:
 		assert(not die.effect_enabled, "Unselected dice never show upgrade particles")
 		assert(not (die.get_node("Effects") as Node3D).visible, "A roll must not re-show disabled particles")
+		assert(not die.shine_enabled, "No die shines before a combination exists")
 	# A real press on a die must reach it through the HUD overlay and move it to the play row.
 	await physics_frame
 	await _click(camera.unproject_position(dice[0].global_position + Vector3.UP * 1.145))
@@ -85,6 +89,8 @@ func _run() -> void:
 	# One selected die: the combination appears with base values only (D-023).
 	assert(hud.score.shown_points == 5.0 and hud.score.shown_mult == 1.0, "A single die previews 5 × 1")
 	assert(not dice[0].effect_enabled, "All for one has no matching played die yet")
+	assert(dice[0].shine_enabled, "The single selected die is the combination and shines")
+	assert(not (dice[0].get_node("HoldHighlight") as Node3D).visible, "Selected dice show no gold ring")
 	hold.toggle_hold(dice[1])
 	hold.toggle_hold(dice[3])
 	while not (hold.can_mutate(dice[1]) and hold.can_mutate(dice[3])):
@@ -94,6 +100,53 @@ func _run() -> void:
 	assert(dice[0].effect_enabled and dice[1].effect_enabled, "Selected upgrades with an active reward show particles")
 	assert((dice[0].get_node("Effects") as Node3D).visible and (dice[1].get_node("Effects") as Node3D).visible)
 	assert(not dice[2].effect_enabled and not dice[4].effect_enabled)
+	assert(dice[0].shine_enabled and dice[1].shine_enabled and dice[3].shine_enabled, "Combination members shine")
+	assert(not dice[2].shine_enabled and not dice[4].shine_enabled)
+	# Eligible cards carry the halo; others do not.
+	assert((hud.get_node("Jokers/Joker1/Body/Glow") as Control).visible, "Matchmaker will trigger")
+	assert((hud.get_node("Docks/Dock1/Card/Body/Glow") as Control).visible, "Copycat will trigger")
+	assert(not (hud.get_node("Docks/Dock4/Card/Body/Glow") as Control).visible, "Sock Mate needs a Pair")
+	# A fourth selected die that is not part of the combination does not shine.
+	hold.toggle_hold(dice[4])
+	while not hold.can_mutate(dice[4]):
+		await process_frame
+	await process_frame
+	assert(hud.score.shown_points == 20.0 and not dice[4].shine_enabled and dice[0].shine_enabled)
+	assert(dice[4].cracks_enabled, "A selected die that adds nothing cracks")
+	assert(not dice[0].cracks_enabled and not dice[2].cracks_enabled, "Members and unselected dice never crack")
+	hold.toggle_hold(dice[4])
+	while not hold.can_mutate(dice[4]):
+		await process_frame
+	await process_frame
+	assert(not dice[4].cracks_enabled, "Back on the roll row, the die is whole again")
+	# An extra die that still feeds an effect is not idle: the odd 5 scores for Odd Squad.
+	hold.toggle_hold(dice[2])
+	while not hold.can_mutate(dice[2]):
+		await process_frame
+	await process_frame
+	assert(not dice[2].cracks_enabled and not dice[2].shine_enabled, "Useful extras neither crack nor shine")
+	hold.toggle_hold(dice[2])
+	while not hold.can_mutate(dice[2]):
+		await process_frame
+	# One press on a die column pins its sheet: upgrade and bonus together.
+	var tooltip: BuildTooltip = hud.get_node("Tooltip") as BuildTooltip
+	var dock_one: Control = hud.get_node("Docks/Dock1") as Control
+	await _click(dock_one.get_global_rect().get_center())
+	assert(tooltip.visible and (tooltip.get_node("%Section2") as Control).visible, "Die 1 explains its upgrade and its bonus")
+	assert(((tooltip.get_node("%Section1") as Control).get_node("Title") as Label).text == "All for one")
+	assert(hold.is_held(dice[0]), "Inspecting a die column never changes the selection")
+	var away: InputEventMouseMotion = InputEventMouseMotion.new()
+	away.position = Vector2(640.0, 20.0)
+	away.global_position = away.position
+	_viewport.push_input(away, true)
+	await process_frame
+	assert(tooltip.visible, "A pinned sheet survives the pointer leaving")
+	await _click(Vector2(640.0, 20.0))
+	assert(not tooltip.visible, "A press elsewhere releases the pinned sheet")
+	# An upgraded die without a bonus still has a one-section sheet.
+	await _click((hud.get_node("Docks/Dock2") as Control).get_global_rect().get_center())
+	assert(tooltip.visible and not (tooltip.get_node("%Section2") as Control).visible)
+	await _click(Vector2(640.0, 20.0))
 	assert(not roll.disabled and not play.disabled)
 	# Deselecting an upgraded die silences it again, even though it sits beside its matches.
 	hold.toggle_hold(dice[1])
@@ -151,6 +204,18 @@ func _run() -> void:
 	round_view.continue_requested.connect(func(succeeded: bool) -> void: continued.append(succeeded))
 	hud.continue_pressed.emit()
 	assert(continued == [true], "The host hears the result exactly once")
+	# Tablet and phone shapes: docks never reach the action buttons, widgets never overlap.
+	for shape: Vector2i in [Vector2i(1000, 1000), Vector2i(900, 1100), Vector2i(768, 1024), Vector2i(1024, 768), Vector2i(1366, 1024), Vector2i(540, 960), Vector2i(1280, 900)]:
+		_viewport.size = shape
+		await process_frame
+		await process_frame
+		for index: int in dice.size():
+			var dock_rect: Rect2 = (docks.get_child(index) as Control).get_global_rect()
+			for action: ActionButton in [roll, play]:
+				assert(not dock_rect.grow(4.0).intersects(action.get_global_rect()), "Dock %d touches %s at %s" % [index, action.name, shape])
+			assert(dock_rect.end.y <= float(shape.y), "Dock %d leaves the window at %s" % [index, shape])
+		assert(not hud.goal.get_global_rect().intersects(hud.score.get_global_rect()), "Goal and scoreboard overlap at %s" % shape)
+		_assert_backdrop_covers(round_view)
 	# Portrait arrangement keeps docks on their columns too.
 	_viewport.size = Vector2i(540, 960)
 	await process_frame
@@ -184,8 +249,8 @@ func _force_values(run: MechanicsRun, values: PackedInt32Array) -> void:
 
 ## The wallpaper quad must reach past every window corner, behind the table.
 func _assert_backdrop_covers(round_view: RoundInterface) -> void:
-	var camera: Camera3D = round_view.get_node("Camera") as Camera3D
-	var backdrop: MeshInstance3D = round_view.get_node("Camera/Backdrop") as MeshInstance3D
+	var camera: Camera3D = round_view.get_node("Stage/Camera") as Camera3D
+	var backdrop: MeshInstance3D = round_view.get_node("Stage/Camera/Backdrop") as MeshInstance3D
 	var window: Vector2 = Vector2(_viewport.size)
 	for corner: Vector2 in [Vector2(-1, -1), Vector2(1, -1), Vector2(1, 1), Vector2(-1, 1)]:
 		var edge: Vector2 = camera.unproject_position(backdrop.to_global(Vector3(corner.x, corner.y, 0.0)))

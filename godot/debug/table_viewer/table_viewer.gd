@@ -117,6 +117,7 @@ func _on_effects_toggled(enabled: bool) -> void:
 			die.effect_enabled = false
 			die.effect = "none"
 			die.palette_color = "Chalk"
+			die.faces = ParoliDie.STANDARD_FACES
 	_update_status()
 
 ## A play selects unheld dice. Wait for the whole selection to settle before predicting it.

@@ -1,0 +1,11 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://round_interface/hud/coin_icon.gd" id="script"]
+
+[node name="CoinIcon" type="Control"]
+custom_minimum_size = Vector2(18, 18)
+layout_mode = 3
+anchors_preset = 0
+size_flags_vertical = 4
+mouse_filter = 2
+script = ExtResource("script")

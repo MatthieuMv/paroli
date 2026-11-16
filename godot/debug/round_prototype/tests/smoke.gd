@@ -27,7 +27,7 @@ func _run() -> void:
 	var round_view: RoundInterface = prototype.get_node("Round") as RoundInterface
 	var hud: RoundHud = round_view.get_node("Interface/Hud") as RoundHud
 	var hold: DiceHoldController = round_view.get_node("HoldController") as DiceHoldController
-	var dice: Node = round_view.get_node("Dice")
+	var dice: Node = round_view.get_node("Stage/Dice")
 	var build: Button = prototype.get_node("%Build") as Button
 	var restart: Button = prototype.get_node("%Restart") as Button
 	(prototype.get_node("%Sound") as Button).button_pressed = false
@@ -53,23 +53,27 @@ func _run() -> void:
 		await _until_idle(round_view)
 	(prototype.get_node("%Motion") as Button).button_pressed = true
 	# Backdrop controls: schemes step both ways and wrap; patterns cycle independently.
-	var backdrop: RoundBackdrop = round_view.get_node("Camera/Backdrop") as RoundBackdrop
+	var backdrop: StageBackdrop = round_view.get_node("Stage/Camera/Backdrop") as StageBackdrop
 	var hint: Label = hud.get_node("Hint") as Label
-	assert(round_view.backdrop_preset.title == "Paper" and backdrop.motif == RoundBackdrop.Motif.SPARKLES)
+	assert(round_view.stage.backdrop_preset.title == "Plum night" and backdrop.motif == StageBackdrop.Motif.SPARKLES, "Authored default wallpaper")
+	assert(hint.get_theme_color("font_color").is_equal_approx(GameColors.CHALK), "Dark walls draw their marks in cream")
 	(prototype.get_node("%BackdropNext") as Button).pressed.emit()
-	assert(round_view.backdrop_preset.title == "Sand" and backdrop.preset == round_view.backdrop_preset)
+	assert(round_view.stage.backdrop_preset.title == "Deep lagoon" and backdrop.preset == round_view.stage.backdrop_preset)
+	for step: int in 3:
+		(prototype.get_node("%BackdropNext") as Button).pressed.emit()
+	assert(round_view.stage.backdrop_preset.title == "Sand", "Stepping past the last scheme wraps")
 	assert(hint.get_theme_color("font_color").is_equal_approx(GameColors.INK), "Light walls keep plum marks")
-	(prototype.get_node("%BackdropPrevious") as Button).pressed.emit()
-	(prototype.get_node("%BackdropPrevious") as Button).pressed.emit()
-	assert(round_view.backdrop_preset.title == "Espresso", "Stepping back from the first scheme wraps")
-	assert(hint.get_theme_color("font_color").is_equal_approx(GameColors.CHALK), "Dark walls switch their marks to cream")
-	(prototype.get_node("%BackdropNext") as Button).pressed.emit()
-	assert(round_view.backdrop_preset.title == "Paper")
+	for step: int in 2:
+		(prototype.get_node("%BackdropPrevious") as Button).pressed.emit()
+	assert(round_view.stage.backdrop_preset.title == "Espresso")
+	for step: int in 2:
+		(prototype.get_node("%BackdropPrevious") as Button).pressed.emit()
+	assert(round_view.stage.backdrop_preset.title == "Plum night")
 	(prototype.get_node("%Pattern") as Button).pressed.emit()
-	assert(backdrop.motif == RoundBackdrop.Motif.DOTS and round_view.backdrop_preset.title == "Paper")
+	assert(backdrop.motif == StageBackdrop.Motif.DOTS and round_view.stage.backdrop_preset.title == "Plum night")
 	for step: int in 4:
 		(prototype.get_node("%Pattern") as Button).pressed.emit()
-	assert(backdrop.motif == RoundBackdrop.Motif.SPARKLES, "The pattern cycle returns to the default")
+	assert(backdrop.motif == StageBackdrop.Motif.SPARKLES, "The pattern cycle returns to the default")
 	# Starter, then bare dice: equipment disappears with the fixture.
 	build.pressed.emit()
 	await _until_idle(round_view)
@@ -92,7 +96,37 @@ func _run() -> void:
 	assert(not hud.banner.visible)
 	await _until_idle(round_view)
 	assert(hud.goal.shown_score == 0.0, "The next round starts from zero")
-	print("PASS: round prototype fixtures, build cycling, input lock, round chaining.")
+	# A cleared round leads to the shop, and leaving it starts the next round with the same run.
+	var run: MechanicsRun = (prototype as RoundPrototype)._session.run
+	run.round_target = 1.0
+	hold.toggle_hold(dice.get_child(0) as ParoliDie)
+	await process_frame
+	hud.play_pressed.emit()
+	await _until_idle(round_view)
+	assert(hud.banner.visible and not run.round_active and not run.run_failed)
+	var coins: int = run.coins
+	hud.banner.action_pressed.emit()
+	var shop_view: ShopInterface = prototype.get_node_or_null("Shop") as ShopInterface
+	assert(shop_view != null and shop_view.is_inside_tree() and not round_view.is_inside_tree(), "Only the shop is on stage")
+	var shop_hud: ShopHud = shop_view.get_node("Interface/Hud") as ShopHud
+	assert(shop_hud._coin_balance == coins and shop_hud._slots.size() == 7)
+	assert((shop_hud.get_node("%Title") as Label).text == "Before round 2")
+	assert(shop_view.reduced_motion and shop_view.stage.backdrop_preset == round_view.stage.backdrop_preset, "The shop inherits the host's settings")
+	shop_hud.leave_pressed.emit()
+	assert(round_view.is_inside_tree() and not shop_view.is_inside_tree())
+	await _until_idle(round_view)
+	assert(run.round_active and hud.goal.shown_score == 0.0 and run.coins == coins)
+	# With shops switched off, a cleared round goes straight to the next one.
+	(prototype.get_node("%Shops") as Button).button_pressed = false
+	run.round_target = 1.0
+	hold.toggle_hold(dice.get_child(0) as ParoliDie)
+	await process_frame
+	hud.play_pressed.emit()
+	await _until_idle(round_view)
+	hud.banner.action_pressed.emit()
+	assert(round_view.is_inside_tree() and run.round_active)
+	await _until_idle(round_view)
+	print("PASS: round prototype fixtures, build cycling, input lock, round chaining, shop between rounds.")
 	quit()
 
 ## Watchdog: report a stalled check instead of hanging.

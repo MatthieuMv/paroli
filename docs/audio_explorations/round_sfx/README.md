@@ -1,6 +1,6 @@
 # Round interface sound studies
 
-`synth_sfx.py` synthesizes the 23 placeholder cues used by the round interface
+`synth_sfx.py` synthesizes the 30 placeholder cues used by the round and shop interfaces
 prototype. Every cue is original additive or filtered-noise synthesis; no samples
 or third-party audio are involved. Output goes to
 `godot/round_interface/audio/sfx/`, which is the runtime source of truth.

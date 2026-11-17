@@ -153,6 +153,16 @@ def build() -> dict[str, np.ndarray]:
     cues["win"] = mix(1.75, win_layers)
     lose_steps = [4, 2, 0, -3]
     cues["lose"] = mix(1.3, [(index * 0.19, partials(note(step - 12), 0.6, [(1.0, 1.0, 0.24), (3.0, 0.12, 0.1)])) for index, step in enumerate(lose_steps)])
+    # Shop cues: counter, till, and card handling.
+    cues["buy"] = mix(0.7, [(0.0, thump(160, 95, 0.045) * 0.8), (0.02, partials(note(12), 0.12, [(1.0, 1.0, 0.05), (3.0, 0.2, 0.03)])), (0.09, bell(note(16), 0.5, 0.22) * 0.9), (0.15, bell(note(19), 0.5, 0.26) * 0.8)])
+    cues["deny"] = mix(0.34, [(0.0, partials(note(-17), 0.16, [(1.0, 1.0, 0.07), (2.0, 0.5, 0.05), (3.0, 0.25, 0.04)])), (0.13, partials(note(-20), 0.2, [(1.0, 1.0, 0.09), (2.0, 0.5, 0.06), (3.0, 0.25, 0.04)]))])
+    cues["pickup"] = mix(0.16, [(0.0, sweep(520, 760, 0.14, 0.04, (1.0, 0.2))), (0.0, decay(bandpass(noise(0.02, 21), 3000, 2400), 0.004) * 0.25)])
+    cues["place"] = mix(0.2, [(0.0, thump(210, 130, 0.03)), (0.0, decay(bandpass(noise(0.04, 23), 1800, 1100, 1.6), 0.008) * 0.6), (0.02, marimba(note(0), 0.16, 0.05) * 0.3)])
+    cues["deal"] = mix(0.12, [(0.0, decay(airy(noise(0.1, 25), 2600, 1300, 1.2), 0.022)), (0.0, thump(240, 170, 0.014) * 0.35)])
+    riffle = [(index * 0.045, decay(airy(noise(0.07, 27 + index), 2400 + index * 120, 1300, 1.2), 0.018) * (0.6 + 0.07 * index)) for index in range(6)]
+    cues["refresh"] = mix(0.42, riffle + [(0.27, marimba(note(7), 0.15, 0.05) * 0.35)])
+    reveal_steps = [7, 12, 16, 19, 24]
+    cues["reveal"] = mix(0.95, [(index * 0.055, bell(note(step), 0.6, 0.24) * (0.7 + 0.06 * index)) for index, step in enumerate(reveal_steps)])
     return cues
 
 

@@ -37,8 +37,8 @@ class Build:
 ## Fixture builds, from a full chain showcase down to bare dice.
 static func builds() -> Array[Build]:
 	return [
-		Build.new("Showcase", [&"all_for_one", &"odd_master", &"golden_touch"], {&"die_1": &"family_spirit", &"die_2": &"odd_charm", &"die_4": &"pair_partner", &"die_5": &"first_instinct"}, [&"match_master", &"odd_squad", &"momentum", &"extra_time"], 1500.0),
-		Build.new("Starter", [&"jackpot"], {&"die_1": &"six_addict"}, [&"bipolarity"], 200.0),
+		Build.new("Showcase", [&"all-for-one", &"odd-master", &"golden-touch"], {&"die_1": &"copycat", &"die_2": &"odd-button", &"die_4": &"sock-mate", &"die_5": &"first-instinct"}, [&"matchmaker", &"odd-squad", &"snowball", &"overtime"], 1500.0),
+		Build.new("Starter", [&"jackpot"], {&"die_1": &"six-addict"}, [&"highs-and-lows"], 200.0),
 		Build.new("Bare dice", [], {}, [], 100.0),
 	]
 

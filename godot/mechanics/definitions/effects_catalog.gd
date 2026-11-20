@@ -18,11 +18,11 @@ func _init() -> void:
 	# Upgrades
 	upgrades = [
 		# All for one
-		UpgradeDefinition.new(&"all_for_one", [1, 1, 1, 3, 3, 3], [
+		UpgradeDefinition.new(&"all-for-one", [1, 1, 1, 3, 3, 3], [
 			EffectDefinition.OnValidated.new(&"reward", Conditions.AtLeast.new(1, DieQuery.OtherMatching.new()), [ScoreAction.MultPercentPerDie.new(25, DieQuery.OtherMatching.new())]),
 		], &"Cherry", &"hearts"),
 		# House builder
-		UpgradeDefinition.new(&"house_builder", [2, 2, 3, 3, 3, 3], [
+		UpgradeDefinition.new(&"house-builder", [2, 2, 3, 3, 3, 3], [
 			EffectDefinition.OnValidated.new(&"reward", Conditions.All.new([Conditions.Member.new(), Conditions.Combination.new([&"full_house"])]), [ScoreAction.MultPercent.new(50)]),
 		], &"Cocoa", &"ribbons"),
 		# Jackpot
@@ -30,11 +30,11 @@ func _init() -> void:
 			EffectDefinition.OnValidated.new(&"reward", Conditions.Showing.new(6), [ScoreAction.MultPercent.new(100)]),
 		], &"Butter", &"starburst"),
 		# Odd master
-		UpgradeDefinition.new(&"odd_master", [1, 1, 3, 3, 5, 5], [
+		UpgradeDefinition.new(&"odd-master", [1, 1, 3, 3, 5, 5], [
 			EffectDefinition.OnValidated.new(&"reward", null, [ScoreAction.MultPercentPerDie.new(20, DieQuery.Validated.new(DieQuery.Parity.ODD))]),
 		], &"Pistachio", &"flowers"),
 		# Even master
-		UpgradeDefinition.new(&"even_master", [2, 2, 4, 4, 6, 6], [
+		UpgradeDefinition.new(&"even-master", [2, 2, 4, 4, 6, 6], [
 			EffectDefinition.OnValidated.new(&"reward", null, [ScoreAction.MultPercentPerDie.new(20, DieQuery.Validated.new(DieQuery.Parity.EVEN))]),
 		], &"Mint", &"petals"),
 		# Rainbow
@@ -42,7 +42,7 @@ func _init() -> void:
 			EffectDefinition.OnValidated.new(&"reward", null, [ScoreAction.Calculated.new(ScoreDeltaCommand.Channel.MULT_PERCENT, HistoryAmount.DistinctValues.new(20))]),
 		], &"Bubblegum", &"confetti"),
 		# Lone wolf
-		UpgradeDefinition.new(&"lone_wolf", [1, 1, 1, 6, 6, 6], [
+		UpgradeDefinition.new(&"lone-wolf", [1, 1, 1, 6, 6, 6], [
 			EffectDefinition.OnValidated.new(&"reward", null, [ScoreAction.MultPercentPerDie.new(25, DieQuery.Excluded.new())]),
 		], &"Periwinkle", &"crescents"),
 		# Guardian
@@ -50,11 +50,11 @@ func _init() -> void:
 			EffectDefinition.OnValidation.new(&"reward", Conditions.All.new([Conditions.Held.new(), Conditions.NotValidated.new(), Conditions.AtLeast.new(1, DieQuery.OtherMatching.new())]), [ScoreAction.MultPercent.new(50)]),
 		], &"Sky", &"bubbles"),
 		# Golden touch
-		UpgradeDefinition.new(&"golden_touch", [1, 2, 2, 3, 3, 6], [
+		UpgradeDefinition.new(&"golden-touch", [1, 2, 2, 3, 3, 6], [
 			EffectDefinition.OnValidated.new(&"reward", Conditions.Member.new(), [RuntimeAction.CoinsFromDie.new()]),
 		], &"Honey", &"diamonds"),
 		# Stepping stones
-		UpgradeDefinition.new(&"stepping_stones", [2, 3, 3, 4, 4, 5], [
+		UpgradeDefinition.new(&"stepping-stones", [2, 3, 3, 4, 4, 5], [
 			EffectDefinition.OnValidated.new(&"short_straight", Conditions.All.new([Conditions.Member.new(), Conditions.Combination.new([&"short_straight"])]), [ScoreAction.MultPercent.new(50)]),
 			EffectDefinition.OnValidated.new(&"long_straight", Conditions.All.new([Conditions.Member.new(), Conditions.Combination.new([&"long_straight"])]), [ScoreAction.MultPercent.new(75)]),
 		], &"Peach", &"feathers"),
@@ -67,7 +67,7 @@ func _init() -> void:
 			EffectDefinition.OnValidated.new(&"reward", null, [ScoreAction.Calculated.new(ScoreDeltaCommand.Channel.MULT_PERCENT, HistoryAmount.Crescendo.new())]),
 		], &"Lilac", &"notes"),
 		# Déjà vu
-		UpgradeDefinition.new(&"deja_vu", [2, 2, 2, 5, 5, 5], [
+		UpgradeDefinition.new(&"deja-vu", [2, 2, 2, 5, 5, 5], [
 			EffectDefinition.OnValidated.new(&"reward", ValidationConditions.SameDieValue.new(), [ScoreAction.MultPercent.new(50)]),
 		], &"Lavender", &"orbit"),
 		# Alternator
@@ -78,115 +78,115 @@ func _init() -> void:
 	# Bonuses
 	bonuses = [
 		# Top Hat
-		BonusDefinition.new(&"solo_talent", [
+		BonusDefinition.new(&"top-hat", [
 			EffectDefinition.OnValidated.new(&"reward", Conditions.All.new([Conditions.Member.new(), Conditions.Combination.new([&"single"])]), [ScoreAction.Mult.new(6)]),
 		]),
 		# Sock Mate
-		BonusDefinition.new(&"pair_partner", [
+		BonusDefinition.new(&"sock-mate", [
 			EffectDefinition.OnValidated.new(&"reward", Conditions.All.new([Conditions.Member.new(), Conditions.Combination.new([&"pair"])]), [ScoreAction.Mult.new(6)]),
 		]),
 		# Double Vision
-		BonusDefinition.new(&"double_partner", [
+		BonusDefinition.new(&"double-vision", [
 			EffectDefinition.OnValidated.new(&"reward", Conditions.All.new([Conditions.Member.new(), Conditions.Combination.new([&"two_pairs"])]), [ScoreAction.Mult.new(8)]),
 		]),
 		# Peas in a Pod
-		BonusDefinition.new(&"triple_bond", [
+		BonusDefinition.new(&"peas-in-a-pod", [
 			EffectDefinition.OnValidated.new(&"reward", Conditions.All.new([Conditions.Member.new(), Conditions.Combination.new([&"three_of_a_kind"])]), [ScoreAction.Mult.new(10)]),
 		]),
 		# Shortcut
-		BonusDefinition.new(&"sure_footing", [
+		BonusDefinition.new(&"shortcut", [
 			EffectDefinition.OnValidated.new(&"reward", Conditions.All.new([Conditions.Member.new(), Conditions.Combination.new([&"short_straight"])]), [ScoreAction.Mult.new(10)]),
 		]),
 		# Couch Surfer
-		BonusDefinition.new(&"house_guest", [
+		BonusDefinition.new(&"couch-surfer", [
 			EffectDefinition.OnValidated.new(&"reward", Conditions.All.new([Conditions.Member.new(), Conditions.Combination.new([&"full_house"])]), [ScoreAction.Mult.new(12)]),
 		]),
 		# Finish Line
-		BonusDefinition.new(&"last_mile", [
+		BonusDefinition.new(&"finish-line", [
 			EffectDefinition.OnValidated.new(&"reward", Conditions.All.new([Conditions.Member.new(), Conditions.Combination.new([&"long_straight"])]), [ScoreAction.Mult.new(14)]),
 		]),
 		# Four-leaf Clover
-		BonusDefinition.new(&"four_together", [
+		BonusDefinition.new(&"four-leaf-clover", [
 			EffectDefinition.OnValidated.new(&"reward", Conditions.All.new([Conditions.Member.new(), Conditions.Combination.new([&"four_of_a_kind"])]), [ScoreAction.Mult.new(16)]),
 		]),
 		# High Five
-		BonusDefinition.new(&"family_bond", [
+		BonusDefinition.new(&"high-five", [
 			EffectDefinition.OnValidated.new(&"reward", Conditions.All.new([Conditions.Member.new(), Conditions.Combination.new([&"five_of_a_kind"])]), [ScoreAction.Mult.new(20)]),
 		]),
 		# Copycat
-		BonusDefinition.new(&"family_spirit", [
+		BonusDefinition.new(&"copycat", [
 			EffectDefinition.OnValidated.new(&"reward", Conditions.AtLeast.new(1, DieQuery.OtherMatching.new()), [ScoreAction.MultPerDie.new(2, DieQuery.OtherMatching.new())]),
 		]),
 		# One or Nothing
-		BonusDefinition.new(&"one_or_nothing", [
+		BonusDefinition.new(&"one-or-nothing", [
 			EffectDefinition.OnValidated.new(&"reward", Conditions.Showing.new(1), [ScoreAction.Mult.new(4)]),
 		]),
 		# Six Addict
-		BonusDefinition.new(&"six_addict", [
+		BonusDefinition.new(&"six-addict", [
 			EffectDefinition.OnValidated.new(&"reward", Conditions.Showing.new(6), [ScoreAction.Mult.new(4)]),
 		]),
 		# Odd Button
-		BonusDefinition.new(&"odd_charm", [
+		BonusDefinition.new(&"odd-button", [
 			EffectDefinition.OnValidated.new(&"reward", Conditions.Odd.new(), [ScoreAction.Mult.new(2)]),
 		]),
 		# Even Button
-		BonusDefinition.new(&"even_charm", [
+		BonusDefinition.new(&"even-button", [
 			EffectDefinition.OnValidated.new(&"reward", Conditions.Even.new(), [ScoreAction.Mult.new(2)]),
 		]),
 		# Lucky Seven
-		BonusDefinition.new(&"lucky_seven", [
+		BonusDefinition.new(&"lucky-seven", [
 			EffectDefinition.OnValidated.new(&"reward", ValidationConditions.SevenPartner.new(), [ScoreAction.Mult.new(4)]),
 		]),
 		# Black Sheep
-		BonusDefinition.new(&"unique", [
+		BonusDefinition.new(&"black-sheep", [
 			EffectDefinition.OnValidated.new(&"reward", Conditions.All.new([Conditions.AtLeast.new(3, DieQuery.Validated.new()), Conditions.Exactly.new(0, DieQuery.OtherMatching.new())]), [ScoreAction.Mult.new(4)]),
 		]),
 		# Me Time
-		BonusDefinition.new(&"small_circle", [
+		BonusDefinition.new(&"me-time", [
 			EffectDefinition.OnValidated.new(&"reward", null, [ScoreAction.MultPerDie.new(1, DieQuery.Excluded.new())]),
 		]),
 		# Four-wheel Drive
-		BonusDefinition.new(&"squad", [
+		BonusDefinition.new(&"four-wheel-drive", [
 			EffectDefinition.OnValidated.new(&"reward", Conditions.All.new([Conditions.Exactly.new(4, DieQuery.Validated.new()), Conditions.Member.new(), Conditions.Combination.new([&"two_pairs", &"four_of_a_kind"])]), [ScoreAction.Mult.new(8)]),
 		]),
 		# Power Reserve
-		BonusDefinition.new(&"quiet_strength", [
+		BonusDefinition.new(&"power-reserve", [
 			EffectDefinition.OnValidation.new(&"reward", Conditions.All.new([Conditions.Held.new(), Conditions.NotValidated.new()]), [ScoreAction.Mult.new(2)]),
 		]),
 		# Payday
-		BonusDefinition.new(&"pocket_money", [
+		BonusDefinition.new(&"payday", [
 			EffectDefinition.OnValidated.new(&"reward", Conditions.Member.new(), [RuntimeAction.Coins.new(2)]),
 		]),
 		# Paid Leave
-		BonusDefinition.new(&"paid_leave", [
+		BonusDefinition.new(&"paid-leave", [
 			EffectDefinition.OnValidation.new(&"reward", Conditions.All.new([Conditions.Held.new(), Conditions.NotValidated.new()]), [RuntimeAction.Coins.new(1)]),
 		]),
 		# Side Hustle
-		BonusDefinition.new(&"rolling_income", [
+		BonusDefinition.new(&"side-hustle", [
 			EffectDefinition.OnRoll.new(&"reward", ValidationConditions.IncomeReroll.new(), [RuntimeAction.Coins.new(1)]),
 		]),
 		# Borderline
-		BonusDefinition.new(&"extremities", [
+		BonusDefinition.new(&"borderline", [
 			EffectDefinition.OnValidated.new(&"reward", ValidationConditions.StraightEndpoint.new(), [ScoreAction.Mult.new(12)]),
 		]),
 		# Sandwiched
-		BonusDefinition.new(&"neighbours", [
+		BonusDefinition.new(&"sandwiched", [
 			EffectDefinition.OnValidated.new(&"reward", ValidationConditions.Neighbours.new(), [ScoreAction.Mult.new(4)]),
 		]),
 		# First Instinct
-		BonusDefinition.new(&"first_instinct", [
+		BonusDefinition.new(&"first-instinct", [
 			EffectDefinition.OnValidated.new(&"reward", ValidationConditions.FirstInstinct.new(), [ScoreAction.Mult.new(4)]),
 		]),
 		# Loyalty Card
-		BonusDefinition.new(&"persistence", [
+		BonusDefinition.new(&"loyalty-card", [
 			EffectDefinition.OnValidated.new(&"reward", null, [ScoreAction.Calculated.new(ScoreDeltaCommand.Channel.MULT, HistoryAmount.ManualRerolls.new(3))]),
 		]),
 		# Opening Act
-		BonusDefinition.new(&"opening_act", [
+		BonusDefinition.new(&"opening-act", [
 			EffectDefinition.OnValidated.new(&"reward", ValidationConditions.OpeningAct.new(), [ScoreAction.Mult.new(8)]),
 		]),
 		# Grand Finale
-		BonusDefinition.new(&"grand_finale", [
+		BonusDefinition.new(&"grand-finale", [
 			EffectDefinition.OnValidated.new(&"reward", ValidationConditions.GrandFinale.new(), [ScoreAction.Mult.new(12)]),
 		]),
 		# Echo
@@ -197,71 +197,71 @@ func _init() -> void:
 	# Jokers
 	jokers = [
 		# One-man Band
-		JokerDefinition.new(&"solo_act", [
+		JokerDefinition.new(&"one-man-band", [
 			EffectDefinition.OnValidation.new(&"reward", Conditions.Combination.new([&"single"]), [ScoreAction.Points.new(30)]),
 		]),
 		# Lovebirds
-		JokerDefinition.new(&"better_together", [
+		JokerDefinition.new(&"lovebirds", [
 			EffectDefinition.OnValidation.new(&"reward", Conditions.Combination.new([&"pair"]), [ScoreAction.Points.new(40)]),
 		]),
 		# Double Date
-		JokerDefinition.new(&"double_date", [
+		JokerDefinition.new(&"double-date", [
 			EffectDefinition.OnValidation.new(&"reward", Conditions.Combination.new([&"two_pairs"]), [ScoreAction.Points.new(60)]),
 		]),
 		# Trio
-		JokerDefinition.new(&"three_company", [
+		JokerDefinition.new(&"trio", [
 			EffectDefinition.OnValidation.new(&"reward", Conditions.Combination.new([&"three_of_a_kind"]), [ScoreAction.Points.new(80)]),
 		]),
 		# Conga Line
-		JokerDefinition.new(&"short_journey", [
+		JokerDefinition.new(&"conga-line", [
 			EffectDefinition.OnValidation.new(&"reward", Conditions.Combination.new([&"short_straight"]), [ScoreAction.Points.new(100)]),
 		]),
 		# Sardine Tin
-		JokerDefinition.new(&"open_house", [
+		JokerDefinition.new(&"sardine-tin", [
 			EffectDefinition.OnValidation.new(&"reward", Conditions.Combination.new([&"full_house"]), [ScoreAction.Points.new(120)]),
 		]),
 		# Road Trip
-		JokerDefinition.new(&"long_journey", [
+		JokerDefinition.new(&"road-trip", [
 			EffectDefinition.OnValidation.new(&"reward", Conditions.Combination.new([&"long_straight"]), [ScoreAction.Points.new(140)]),
 		]),
 		# Four Corners
-		JokerDefinition.new(&"four_corners", [
+		JokerDefinition.new(&"four-corners", [
 			EffectDefinition.OnValidation.new(&"reward", Conditions.Combination.new([&"four_of_a_kind"]), [ScoreAction.Points.new(160)]),
 		]),
 		# Family Reunion
-		JokerDefinition.new(&"family_reunion", [
+		JokerDefinition.new(&"family-reunion", [
 			EffectDefinition.OnValidation.new(&"reward", Conditions.Combination.new([&"five_of_a_kind"]), [ScoreAction.Points.new(200)]),
 		]),
 		# Matchmaker
-		JokerDefinition.new(&"match_master", [
+		JokerDefinition.new(&"matchmaker", [
 			EffectDefinition.OnValidation.new(&"reward", Conditions.Combination.new([&"pair", &"two_pairs", &"three_of_a_kind", &"full_house", &"four_of_a_kind", &"five_of_a_kind"]), [ScoreAction.PointsPerDie.new(15, DieQuery.Members.new())]),
 		]),
 		# Highs and Lows
-		JokerDefinition.new(&"bipolarity", [
+		JokerDefinition.new(&"highs-and-lows", [
 			EffectDefinition.OnValidation.new(&"reward", null, [ScoreAction.PointsPerDie.new(15, DieQuery.ValidatedValues.new([1, 6]))]),
 		]),
 		# Bean Counter
-		JokerDefinition.new(&"mathmind", [
+		JokerDefinition.new(&"bean-counter", [
 			EffectDefinition.OnValidation.new(&"reward", ValidationConditions.SumEquals.new(15), [ScoreAction.Points.new(100)]),
 		]),
 		# Odd Squad
-		JokerDefinition.new(&"odd_squad", [
+		JokerDefinition.new(&"odd-squad", [
 			EffectDefinition.OnValidation.new(&"reward", null, [ScoreAction.PointsPerDie.new(10, DieQuery.Validated.new(DieQuery.Parity.ODD))]),
 		]),
 		# Even Squad
-		JokerDefinition.new(&"even_squad", [
+		JokerDefinition.new(&"even-squad", [
 			EffectDefinition.OnValidation.new(&"reward", null, [ScoreAction.PointsPerDie.new(10, DieQuery.Validated.new(DieQuery.Parity.EVEN))]),
 		]),
 		# Pick ’n’ Mix
-		JokerDefinition.new(&"variety_show", [
+		JokerDefinition.new(&"pick-n-mix", [
 			EffectDefinition.OnValidation.new(&"reward", null, [ScoreAction.Calculated.new(ScoreDeltaCommand.Channel.POINTS, HistoryAmount.DistinctValues.new(10))]),
 		]),
 		# Lazy Bones
-		JokerDefinition.new(&"less_is_more", [
+		JokerDefinition.new(&"lazy-bones", [
 			EffectDefinition.OnValidation.new(&"reward", null, [ScoreAction.PointsPerDie.new(5, DieQuery.Excluded.new())]),
 		]),
 		# Bench Warmers
-		JokerDefinition.new(&"backup", [
+		JokerDefinition.new(&"bench-warmers", [
 			EffectDefinition.OnValidation.new(&"reward", null, [ScoreAction.PointsPerDie.new(15, DieQuery.HeldMatching.new())]),
 		]),
 		# Stonks
@@ -269,44 +269,44 @@ func _init() -> void:
 			EffectDefinition.OnRoundEnd.new(&"reward", ValidationConditions.SuccessfulRound.new(), [RuntimeAction.SellValue.new(1)]),
 		]),
 		# Roulette
-		JokerDefinition.new(&"window_shopper", [
+		JokerDefinition.new(&"roulette", [
 			EffectDefinition.OnShopRefresh.new(&"refresh_growth", ValidationConditions.PaidRefresh.new(), [RuntimeAction.AccumulateMult.new(1)]),
 			EffectDefinition.OnValidation.new(&"accumulated_mult", null, [ScoreAction.Calculated.new(ScoreDeltaCommand.Channel.MULT, HistoryAmount.AccumulatedMult.new())]),
 		]),
 		# Nest Egg
-		JokerDefinition.new(&"portfolio", [
+		JokerDefinition.new(&"nest-egg", [
 			EffectDefinition.OnValidation.new(&"reward", null, [ScoreAction.Calculated.new(ScoreDeltaCommand.Channel.MULT, HistoryAmount.Portfolio.new())]),
 		]),
 		# Ducks in a Row
-		JokerDefinition.new(&"alignment", [
+		JokerDefinition.new(&"ducks-in-a-row", [
 			EffectDefinition.OnValidation.new(&"reward", Conditions.Combination.new([&"short_straight", &"long_straight"]), [ScoreAction.PointsPerDie.new(15, DieQuery.Members.new())]),
 		]),
 		# Missing Link
-		JokerDefinition.new(&"missing_link", [
+		JokerDefinition.new(&"missing-link", [
 			EffectDefinition.BeforeRecognition.new(&"straight_gap", [RuntimeAction.MissingLink.new()]),
 		]),
 		# Last Straw
-		JokerDefinition.new(&"last_chance", [
+		JokerDefinition.new(&"last-straw", [
 			EffectDefinition.OnValidation.new(&"reward", ValidationConditions.LastChance.new(), [ScoreAction.Points.new(60)]),
 		]),
 		# Overtime
-		JokerDefinition.new(&"extra_time", [
+		JokerDefinition.new(&"overtime", [
 			EffectDefinition.OnRoundStart.new(&"reward", null, [RuntimeAction.Validations.new(1)]),
 		]),
 		# Do-over
-		JokerDefinition.new(&"second_chance", [
+		JokerDefinition.new(&"do-over", [
 			EffectDefinition.OnRoundStart.new(&"reward", null, [RuntimeAction.Rerolls.new(1)]),
 		]),
 		# Snowball
-		JokerDefinition.new(&"momentum", [
+		JokerDefinition.new(&"snowball", [
 			EffectDefinition.OnValidation.new(&"reward", null, [ScoreAction.Calculated.new(ScoreDeltaCommand.Channel.POINTS, HistoryAmount.PreviousValidations.new(25))]),
 		]),
 		# Broken Record
-		JokerDefinition.new(&"habit", [
+		JokerDefinition.new(&"broken-record", [
 			EffectDefinition.OnValidation.new(&"reward", ValidationConditions.PreviousCombination.new(true), [ScoreAction.Points.new(50)]),
 		]),
 		# Plot Twist
-		JokerDefinition.new(&"variety", [
+		JokerDefinition.new(&"plot-twist", [
 			EffectDefinition.OnValidation.new(&"reward", ValidationConditions.PreviousCombination.new(false), [ScoreAction.Points.new(50)]),
 		]),
 	]

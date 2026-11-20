@@ -1,7 +1,7 @@
 # Bonus and Joker icons
 
 Complete first SVG set: **29 bonuses + 28 Jokers**, using the agreed English/French
-names. Game display names are updated; internal IDs and mechanics are unchanged.
+names. Each catalog ID and icon filename uses the lowercase, hyphenated English name.
 The artwork is ready for review and is not yet wired into game scenes.
 
 - [Bonus review sheet](bonuses-review.png)
@@ -26,63 +26,63 @@ is the approved original, copied into the Joker set.
 
 | Family | English | French | SVG / stable ID |
 | --- | --- | --- | --- |
-| Bonus | Top Hat | Haut-de-forme | [solo_talent](bonuses/solo_talent.svg) |
-| Bonus | Sock Mate | Chaussettes | [pair_partner](bonuses/pair_partner.svg) |
-| Bonus | Double Vision | Vision double | [double_partner](bonuses/double_partner.svg) |
-| Bonus | Peas in a Pod | Petits pois | [triple_bond](bonuses/triple_bond.svg) |
-| Bonus | Shortcut | Raccourci | [sure_footing](bonuses/sure_footing.svg) |
-| Bonus | Couch Surfer | Squatteur | [house_guest](bonuses/house_guest.svg) |
-| Bonus | Finish Line | Ligne d’arrivée | [last_mile](bonuses/last_mile.svg) |
-| Bonus | Four-leaf Clover | Trèfle à quatre feuilles | [four_together](bonuses/four_together.svg) |
-| Bonus | High Five | Tape m’en cinq | [family_bond](bonuses/family_bond.svg) |
-| Bonus | Copycat | Copieur | [family_spirit](bonuses/family_spirit.svg) |
-| Bonus | One or Nothing | Un ou rien | [one_or_nothing](bonuses/one_or_nothing.svg) |
-| Bonus | Six Addict | Accro au six | [six_addict](bonuses/six_addict.svg) |
-| Bonus | Odd Button | Bouton impair | [odd_charm](bonuses/odd_charm.svg) |
-| Bonus | Even Button | Bouton pair | [even_charm](bonuses/even_charm.svg) |
-| Bonus | Lucky Seven | Sept porte-bonheur | [lucky_seven](bonuses/lucky_seven.svg) |
-| Bonus | Black Sheep | Mouton noir | [unique](bonuses/unique.svg) |
-| Bonus | Me Time | Ma petite pause | [small_circle](bonuses/small_circle.svg) |
-| Bonus | Four-wheel Drive | Quatre roues motrices | [squad](bonuses/squad.svg) |
-| Bonus | Power Reserve | Réserve de puissance | [quiet_strength](bonuses/quiet_strength.svg) |
-| Bonus | Payday | Jour de paye | [pocket_money](bonuses/pocket_money.svg) |
-| Bonus | Paid Leave | Congé payé | [paid_leave](bonuses/paid_leave.svg) |
-| Bonus | Side Hustle | Petit boulot | [rolling_income](bonuses/rolling_income.svg) |
-| Bonus | Borderline | La frontière | [extremities](bonuses/extremities.svg) |
-| Bonus | Sandwiched | En sandwich | [neighbours](bonuses/neighbours.svg) |
-| Bonus | First Instinct | Premier instinct | [first_instinct](bonuses/first_instinct.svg) |
-| Bonus | Loyalty Card | Carte de fidélité | [persistence](bonuses/persistence.svg) |
-| Bonus | Opening Act | Lever de rideau | [opening_act](bonuses/opening_act.svg) |
-| Bonus | Grand Finale | Bouquet final | [grand_finale](bonuses/grand_finale.svg) |
+| Bonus | Top Hat | Haut-de-forme | [top-hat](bonuses/top-hat.svg) |
+| Bonus | Sock Mate | Chaussettes | [sock-mate](bonuses/sock-mate.svg) |
+| Bonus | Double Vision | Vision double | [double-vision](bonuses/double-vision.svg) |
+| Bonus | Peas in a Pod | Petits pois | [peas-in-a-pod](bonuses/peas-in-a-pod.svg) |
+| Bonus | Shortcut | Raccourci | [shortcut](bonuses/shortcut.svg) |
+| Bonus | Couch Surfer | Squatteur | [couch-surfer](bonuses/couch-surfer.svg) |
+| Bonus | Finish Line | Ligne d’arrivée | [finish-line](bonuses/finish-line.svg) |
+| Bonus | Four-leaf Clover | Trèfle à quatre feuilles | [four-leaf-clover](bonuses/four-leaf-clover.svg) |
+| Bonus | High Five | Tape m’en cinq | [high-five](bonuses/high-five.svg) |
+| Bonus | Copycat | Copieur | [copycat](bonuses/copycat.svg) |
+| Bonus | One or Nothing | Un ou rien | [one-or-nothing](bonuses/one-or-nothing.svg) |
+| Bonus | Six Addict | Accro au six | [six-addict](bonuses/six-addict.svg) |
+| Bonus | Odd Button | Bouton impair | [odd-button](bonuses/odd-button.svg) |
+| Bonus | Even Button | Bouton pair | [even-button](bonuses/even-button.svg) |
+| Bonus | Lucky Seven | Sept porte-bonheur | [lucky-seven](bonuses/lucky-seven.svg) |
+| Bonus | Black Sheep | Mouton noir | [black-sheep](bonuses/black-sheep.svg) |
+| Bonus | Me Time | Ma petite pause | [me-time](bonuses/me-time.svg) |
+| Bonus | Four-wheel Drive | Quatre roues motrices | [four-wheel-drive](bonuses/four-wheel-drive.svg) |
+| Bonus | Power Reserve | Réserve de puissance | [power-reserve](bonuses/power-reserve.svg) |
+| Bonus | Payday | Jour de paye | [payday](bonuses/payday.svg) |
+| Bonus | Paid Leave | Congé payé | [paid-leave](bonuses/paid-leave.svg) |
+| Bonus | Side Hustle | Petit boulot | [side-hustle](bonuses/side-hustle.svg) |
+| Bonus | Borderline | La frontière | [borderline](bonuses/borderline.svg) |
+| Bonus | Sandwiched | En sandwich | [sandwiched](bonuses/sandwiched.svg) |
+| Bonus | First Instinct | Premier instinct | [first-instinct](bonuses/first-instinct.svg) |
+| Bonus | Loyalty Card | Carte de fidélité | [loyalty-card](bonuses/loyalty-card.svg) |
+| Bonus | Opening Act | Lever de rideau | [opening-act](bonuses/opening-act.svg) |
+| Bonus | Grand Finale | Bouquet final | [grand-finale](bonuses/grand-finale.svg) |
 | Bonus | Echo | Écho | [echo](bonuses/echo.svg) |
-| Joker | One-man Band | Homme-orchestre | [solo_act](jokers/solo_act.svg) |
-| Joker | Lovebirds | Inséparables | [better_together](jokers/better_together.svg) |
-| Joker | Double Date | Double date | [double_date](jokers/double_date.svg) |
-| Joker | Trio | Trio | [three_company](jokers/three_company.svg) |
-| Joker | Conga Line | Chenille | [short_journey](jokers/short_journey.svg) |
-| Joker | Sardine Tin | Boîte de sardines | [open_house](jokers/open_house.svg) |
-| Joker | Road Trip | Road-trip | [long_journey](jokers/long_journey.svg) |
-| Joker | Four Corners | Quatre coins | [four_corners](jokers/four_corners.svg) |
-| Joker | Family Reunion | Réunion de famille | [family_reunion](jokers/family_reunion.svg) |
-| Joker | Matchmaker | Entremetteur | [match_master](jokers/match_master.svg) |
-| Joker | Highs and Lows | Des hauts et des bas | [bipolarity](jokers/bipolarity.svg) |
-| Joker | Bean Counter | Compteur de haricots | [mathmind](jokers/mathmind.svg) |
-| Joker | Odd Squad | Drôle de brigade | [odd_squad](jokers/odd_squad.svg) |
-| Joker | Even Squad | Brigade paire | [even_squad](jokers/even_squad.svg) |
-| Joker | Pick ’n’ Mix | Bonbons en vrac | [variety_show](jokers/variety_show.svg) |
-| Joker | Lazy Bones | Roi de la sieste | [less_is_more](jokers/less_is_more.svg) |
-| Joker | Bench Warmers | Banc de touche | [backup](jokers/backup.svg) |
+| Joker | One-man Band | Homme-orchestre | [one-man-band](jokers/one-man-band.svg) |
+| Joker | Lovebirds | Inséparables | [lovebirds](jokers/lovebirds.svg) |
+| Joker | Double Date | Double date | [double-date](jokers/double-date.svg) |
+| Joker | Trio | Trio | [trio](jokers/trio.svg) |
+| Joker | Conga Line | Chenille | [conga-line](jokers/conga-line.svg) |
+| Joker | Sardine Tin | Boîte de sardines | [sardine-tin](jokers/sardine-tin.svg) |
+| Joker | Road Trip | Road-trip | [road-trip](jokers/road-trip.svg) |
+| Joker | Four Corners | Quatre coins | [four-corners](jokers/four-corners.svg) |
+| Joker | Family Reunion | Réunion de famille | [family-reunion](jokers/family-reunion.svg) |
+| Joker | Matchmaker | Entremetteur | [matchmaker](jokers/matchmaker.svg) |
+| Joker | Highs and Lows | Des hauts et des bas | [highs-and-lows](jokers/highs-and-lows.svg) |
+| Joker | Bean Counter | Compteur de haricots | [bean-counter](jokers/bean-counter.svg) |
+| Joker | Odd Squad | Drôle de brigade | [odd-squad](jokers/odd-squad.svg) |
+| Joker | Even Squad | Brigade paire | [even-squad](jokers/even-squad.svg) |
+| Joker | Pick ’n’ Mix | Bonbons en vrac | [pick-n-mix](jokers/pick-n-mix.svg) |
+| Joker | Lazy Bones | Roi de la sieste | [lazy-bones](jokers/lazy-bones.svg) |
+| Joker | Bench Warmers | Banc de touche | [bench-warmers](jokers/bench-warmers.svg) |
 | Joker | Stonks | Stonks | [stonks](jokers/stonks.svg) |
-| Joker | Roulette | Roulette | [window_shopper](jokers/window_shopper.svg) |
-| Joker | Nest Egg | Pécule | [portfolio](jokers/portfolio.svg) |
-| Joker | Ducks in a Row | À la queue leu leu | [alignment](jokers/alignment.svg) |
-| Joker | Missing Link | Chaînon manquant | [missing_link](jokers/missing_link.svg) |
-| Joker | Last Straw | Dernière goutte | [last_chance](jokers/last_chance.svg) |
-| Joker | Overtime | Heures sup’ | [extra_time](jokers/extra_time.svg) |
-| Joker | Do-over | On recommence | [second_chance](jokers/second_chance.svg) |
-| Joker | Snowball | Boule de neige | [momentum](jokers/momentum.svg) |
-| Joker | Broken Record | Disque rayé | [habit](jokers/habit.svg) |
-| Joker | Plot Twist | Coup de théâtre | [variety](jokers/variety.svg) |
+| Joker | Roulette | Roulette | [roulette](jokers/roulette.svg) |
+| Joker | Nest Egg | Pécule | [nest-egg](jokers/nest-egg.svg) |
+| Joker | Ducks in a Row | À la queue leu leu | [ducks-in-a-row](jokers/ducks-in-a-row.svg) |
+| Joker | Missing Link | Chaînon manquant | [missing-link](jokers/missing-link.svg) |
+| Joker | Last Straw | Dernière goutte | [last-straw](jokers/last-straw.svg) |
+| Joker | Overtime | Heures sup’ | [overtime](jokers/overtime.svg) |
+| Joker | Do-over | On recommence | [do-over](jokers/do-over.svg) |
+| Joker | Snowball | Boule de neige | [snowball](jokers/snowball.svg) |
+| Joker | Broken Record | Disque rayé | [broken-record](jokers/broken-record.svg) |
+| Joker | Plot Twist | Coup de théâtre | [plot-twist](jokers/plot-twist.svg) |
 
 ## Editing and validation
 

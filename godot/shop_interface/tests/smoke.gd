@@ -44,8 +44,8 @@ func _run() -> void:
 	var catalog: EffectsCatalog = EffectsCatalog.new()
 	var run: MechanicsRun = MechanicsRun.new(60)
 	assert(run.install_upgrade(catalog.upgrade(&"jackpot")).is_empty())
-	assert(run.add_joker(catalog.joker(&"window_shopper"), 3).is_empty())
-	assert(run.equip_bonus(catalog.bonus(&"six_addict"), &"die_1", 2).is_empty())
+	assert(run.add_joker(catalog.joker(&"roulette"), 3).is_empty())
+	assert(run.equip_bonus(catalog.bonus(&"six-addict"), &"die_1", 2).is_empty())
 	var rules: ShopRules = ShopRules.new()
 	var session: ShopSession = ShopSession.new(run, rules, 2026)
 	shop_view.open_shop(session, "Before round 2")
@@ -117,7 +117,7 @@ func _run() -> void:
 	assert(run.find_owned(&"bonus:die_2").definition == session.offers[2].definition and not run.find_owned(&"bonus:die_3"))
 	# Owned Joker: drop it on the purse to sell it.
 	await _drag(_center(hud.get_node("Jokers/Joker1") as Control), _center(hud.get_node("Coins") as Control))
-	assert(not run.find_owned(&"joker:window_shopper") and run.coins == 45 and session.free_joker_slots() == 3)
+	assert(not run.find_owned(&"joker:roulette") and run.coins == 45 and session.free_joker_slots() == 3)
 	# The other known Joker takes the next free rack slot.
 	await _drag(_center(hud._slots[1]), _center(hud.get_node("Jokers/Joker3") as Control))
 	await _until_settled(shop_view)

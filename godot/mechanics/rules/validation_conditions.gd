@@ -165,7 +165,7 @@ class PreviousCombination:
 
 	# --- Member functions ---
 
-	## Habit and Variety differ only in this explicit comparison.
+	## Broken Record and Plot Twist differ only in this explicit comparison.
 	func _init(same_: bool) -> void:
 		super(&"condition.same_combination" if same_ else &"condition.different_combination")
 		same = same_

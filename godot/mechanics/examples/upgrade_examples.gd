@@ -38,4 +38,4 @@ var patient_bloom: UpgradeDefinition = UpgradeDefinition.new(
 )
 
 ## Use the authoritative catalog so illustrative code cannot drift from EFFECTS.md.
-var odd_master: UpgradeDefinition = EffectsCatalog.new().upgrade(&"odd_master")
+var odd_master: UpgradeDefinition = EffectsCatalog.new().upgrade(&"odd-master")

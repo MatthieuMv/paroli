@@ -119,7 +119,7 @@ func _run() -> void:
 		assert(not overlay.visible and not overlay.is_blocking())
 		assert(die.face_value == face, "Choice presentation applied gameplay state")
 	# A later host offer replaces every card, and localization never changes identity.
-	var replacement: Array[UpgradeDefinition] = [catalog.upgrade(&"rainbow"), catalog.upgrade(&"odd_master"), catalog.upgrade(&"all_for_one")]
+	var replacement: Array[UpgradeDefinition] = [catalog.upgrade(&"rainbow"), catalog.upgrade(&"odd-master"), catalog.upgrade(&"all-for-one")]
 	assert(overlay.open(replacement, "fr"))
 	replacement.clear()
 	assert(not overlay.open(offers.slice(0, 2)))

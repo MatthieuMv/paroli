@@ -11,11 +11,11 @@ func _initialize() -> void:
 func _run() -> void:
 	var catalog: EffectsCatalog = EffectsCatalog.new()
 	var run: MechanicsRun = MechanicsRun.new(3)
-	assert(run.install_upgrade(catalog.upgrade(&"all_for_one")).is_empty())
-	assert(run.equip_bonus(catalog.bonus(&"family_spirit"), &"die_1", 2).is_empty())
-	assert(run.equip_bonus(catalog.bonus(&"pocket_money"), &"die_2", 2).is_empty())
-	assert(run.add_joker(catalog.joker(&"match_master"), 3).is_empty())
-	assert(run.add_joker(catalog.joker(&"extra_time"), 3).is_empty())
+	assert(run.install_upgrade(catalog.upgrade(&"all-for-one")).is_empty())
+	assert(run.equip_bonus(catalog.bonus(&"copycat"), &"die_1", 2).is_empty())
+	assert(run.equip_bonus(catalog.bonus(&"payday"), &"die_2", 2).is_empty())
+	assert(run.add_joker(catalog.joker(&"matchmaker"), 3).is_empty())
+	assert(run.add_joker(catalog.joker(&"overtime"), 3).is_empty())
 	var session: RoundSession = RoundSession.new(run, 7)
 	session.coins_per_unused_play = 2
 	assert(session.begin(100000.0).errors.is_empty())
@@ -31,9 +31,9 @@ func _run() -> void:
 	var preview: PlayPreview = session.preview(selected)
 	assert(preview.combination.category == &"pair")
 	assert(preview.base_points == 10 and preview.base_mult == 2, "Preview shows base values only")
-	for owner_id: StringName in [&"upgrade:die_1", &"bonus:die_1", &"bonus:die_2", &"joker:match_master"]:
+	for owner_id: StringName in [&"upgrade:die_1", &"bonus:die_1", &"bonus:die_2", &"joker:matchmaker"]:
 		assert(owner_id in preview.eligible_owners, "Missing eligibility cue: " + String(owner_id))
-	assert(&"joker:extra_time" not in preview.eligible_owners)
+	assert(&"joker:overtime" not in preview.eligible_owners)
 	assert(preview.penalized_dice.is_empty())
 	var idle: Array[StringName] = [&"die_3"]
 	assert(preview.idle_dice == idle, "The extra 5 adds nothing to a Pair of 3s here")

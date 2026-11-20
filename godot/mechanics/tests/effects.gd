@@ -131,15 +131,15 @@ func _expect(id: StringName, context: EffectContext, points: int = 0, mult: int 
 ## Every category pair has exact-category and member-only negative cases.
 func _categories() -> void:
 	var rows: Array[CategoryCase] = [
-		CategoryCase.new(&"single", [6, 1, 2, 4, 5], &"solo_talent", &"solo_act", 6, 30),
-		CategoryCase.new(&"pair", [2, 2, 1, 4, 6], &"pair_partner", &"better_together", 6, 40),
-		CategoryCase.new(&"two_pairs", [2, 2, 5, 5, 6], &"double_partner", &"double_date", 8, 60),
-		CategoryCase.new(&"three_of_a_kind", [2, 2, 2, 4, 6], &"triple_bond", &"three_company", 10, 80),
-		CategoryCase.new(&"short_straight", [1, 2, 3, 4, 6], &"sure_footing", &"short_journey", 10, 100),
-		CategoryCase.new(&"full_house", [2, 2, 3, 3, 3], &"house_guest", &"open_house", 12, 120),
-		CategoryCase.new(&"long_straight", [1, 2, 3, 4, 5], &"last_mile", &"long_journey", 14, 140),
-		CategoryCase.new(&"four_of_a_kind", [2, 2, 2, 2, 6], &"four_together", &"four_corners", 16, 160),
-		CategoryCase.new(&"five_of_a_kind", [2, 2, 2, 2, 2], &"family_bond", &"family_reunion", 20, 200),
+		CategoryCase.new(&"single", [6, 1, 2, 4, 5], &"top-hat", &"one-man-band", 6, 30),
+		CategoryCase.new(&"pair", [2, 2, 1, 4, 6], &"sock-mate", &"lovebirds", 6, 40),
+		CategoryCase.new(&"two_pairs", [2, 2, 5, 5, 6], &"double-vision", &"double-date", 8, 60),
+		CategoryCase.new(&"three_of_a_kind", [2, 2, 2, 4, 6], &"peas-in-a-pod", &"trio", 10, 80),
+		CategoryCase.new(&"short_straight", [1, 2, 3, 4, 6], &"shortcut", &"conga-line", 10, 100),
+		CategoryCase.new(&"full_house", [2, 2, 3, 3, 3], &"couch-surfer", &"sardine-tin", 12, 120),
+		CategoryCase.new(&"long_straight", [1, 2, 3, 4, 5], &"finish-line", &"road-trip", 14, 140),
+		CategoryCase.new(&"four_of_a_kind", [2, 2, 2, 2, 6], &"four-leaf-clover", &"four-corners", 16, 160),
+		CategoryCase.new(&"five_of_a_kind", [2, 2, 2, 2, 2], &"high-five", &"family-reunion", 20, 200),
 	]
 	for row: CategoryCase in rows:
 		var context: EffectContext = _context(row.values)
@@ -157,7 +157,7 @@ func _categories() -> void:
 		context = _context(row.values)
 		for die: DieSnapshot in context.dice:
 			members += int(die.combination_member)
-		_expect(&"match_master", context, members * 15 if matching else 0)
+		_expect(&"matchmaker", context, members * 15 if matching else 0)
 
 ## Restore an attached source after a global Joker assertion.
 func _with_source(context: EffectContext, source: StringName) -> EffectContext:
@@ -170,29 +170,29 @@ func _matching_and_values() -> void:
 		var values: PackedInt32Array = [1, 2, 3, 4, 6]
 		for index: int in matches:
 			values[index + 1] = 1
-		_expect(&"all_for_one", _context(values), 0, 0, matches * 25)
-		_expect(&"family_spirit", _context(values), 0, matches * 2)
-	_expect(&"house_builder", _context([2, 2, 3, 3, 3]), 0, 0, 50)
-	_expect(&"house_builder", _context([2, 2, 3, 3, 3], 2), 0, 0, 50)
-	_expect(&"house_builder", _context([2, 2, 2, 2, 3]))
+		_expect(&"all-for-one", _context(values), 0, 0, matches * 25)
+		_expect(&"copycat", _context(values), 0, matches * 2)
+	_expect(&"house-builder", _context([2, 2, 3, 3, 3]), 0, 0, 50)
+	_expect(&"house-builder", _context([2, 2, 3, 3, 3], 2), 0, 0, 50)
+	_expect(&"house-builder", _context([2, 2, 2, 2, 3]))
 	_expect(&"jackpot", _context([6, 2, 3, 4, 5]), 0, 0, 100)
 	_expect(&"jackpot", _context([1, 2, 3, 4, 5]))
-	_expect(&"one_or_nothing", _context([1, 2, 3, 4, 5]), 0, 4)
-	_expect(&"six_addict", _context([6, 2, 3, 4, 5]), 0, 4)
-	_expect(&"bipolarity", _context([1, 6, 1, 6, 1]), 75)
-	_expect(&"bipolarity", _context([1, 6, 1, 6, 1], 0, [1, 2]), 30)
-	_expect(&"odd_master", _context([1, 3, 5, 3, 1]), 0, 0, 100)
-	_expect(&"even_master", _context([2, 4, 6, 2, 4]), 0, 0, 100)
-	_expect(&"odd_charm", _context([3, 2, 4, 6, 2]), 0, 2)
-	_expect(&"even_charm", _context([4, 1, 3, 5, 1]), 0, 2)
-	_expect(&"lucky_seven", _context([1, 6, 6, 6, 6]), 0, 4)
-	_expect(&"lucky_seven", _context([1, 2, 3, 4, 5]))
-	_expect(&"mathmind", _context([1, 2, 3, 4, 5]), 100)
-	_expect(&"mathmind", _context([1, 2, 3, 4, 6]))
-	_expect(&"odd_squad", _context([1, 3, 5, 3, 1]), 50)
-	_expect(&"even_squad", _context([2, 4, 6, 2, 4]), 50)
+	_expect(&"one-or-nothing", _context([1, 2, 3, 4, 5]), 0, 4)
+	_expect(&"six-addict", _context([6, 2, 3, 4, 5]), 0, 4)
+	_expect(&"highs-and-lows", _context([1, 6, 1, 6, 1]), 75)
+	_expect(&"highs-and-lows", _context([1, 6, 1, 6, 1], 0, [1, 2]), 30)
+	_expect(&"odd-master", _context([1, 3, 5, 3, 1]), 0, 0, 100)
+	_expect(&"even-master", _context([2, 4, 6, 2, 4]), 0, 0, 100)
+	_expect(&"odd-button", _context([3, 2, 4, 6, 2]), 0, 2)
+	_expect(&"even-button", _context([4, 1, 3, 5, 1]), 0, 2)
+	_expect(&"lucky-seven", _context([1, 6, 6, 6, 6]), 0, 4)
+	_expect(&"lucky-seven", _context([1, 2, 3, 4, 5]))
+	_expect(&"bean-counter", _context([1, 2, 3, 4, 5]), 100)
+	_expect(&"bean-counter", _context([1, 2, 3, 4, 6]))
+	_expect(&"odd-squad", _context([1, 3, 5, 3, 1]), 50)
+	_expect(&"even-squad", _context([2, 4, 6, 2, 4]), 50)
 	# Every default die effect becomes ineligible when its owner is excluded.
-	for id: StringName in [&"all_for_one", &"house_builder", &"jackpot", &"odd_master", &"even_master", &"one_or_nothing", &"six_addict", &"odd_charm", &"even_charm", &"lucky_seven"]:
+	for id: StringName in [&"all-for-one", &"house-builder", &"jackpot", &"odd-master", &"even-master", &"one-or-nothing", &"six-addict", &"odd-button", &"even-button", &"lucky-seven"]:
 		_expect(id, _context([6, 1, 1, 6, 6], 0, [1, 2, 3, 4]))
 
 ## Selection sizes and actual straight membership use the resolved snapshot.
@@ -201,40 +201,40 @@ func _selection_and_sequence() -> void:
 		var selected: PackedInt32Array = []
 		for index: int in count:
 			selected.append(index)
-		_expect(&"lone_wolf", _context([1, 2, 3, 4, 5], 0, selected), 0, 0, (5 - count) * 25)
-		_expect(&"small_circle", _context([1, 2, 3, 4, 5], 0, selected), 0, 5 - count)
-		_expect(&"less_is_more", _context([1, 2, 3, 4, 5], 0, selected), (5 - count) * 5)
-	_expect(&"squad", _context([2, 2, 5, 5, 6], 0, [0, 1, 2, 3]), 0, 8)
-	_expect(&"squad", _context([2, 2, 2, 2, 6], 0, [0, 1, 2, 3]), 0, 8)
-	_expect(&"squad", _context([2, 2, 2, 2, 6]))
-	_expect(&"stepping_stones", _context([2, 3, 4, 5, 1]), 0, 0, 75)
-	_expect(&"stepping_stones", _context([2, 3, 4, 5, 1], 0, [0, 1, 2, 3]), 0, 0, 50)
-	_expect(&"extremities", _context([1, 2, 3, 4, 5]), 0, 12)
-	_expect(&"extremities", _context([1, 2, 3, 4, 5], 4), 0, 12)
-	_expect(&"extremities", _context([1, 2, 3, 4, 5], 2))
-	_expect(&"extremities", _context([1, 2, 3, 4, 4], 4))
-	_expect(&"neighbours", _context([3, 2, 2, 4, 4]), 0, 4)
-	_expect(&"neighbours", _context([3, 2, 2, 2, 6]))
-	_expect(&"alignment", _context([1, 2, 3, 4, 5]), 75)
-	_expect(&"alignment", _context([1, 2, 3, 4, 6]), 60)
-	_expect(&"alignment", _context([2, 2, 2, 2, 2]))
+		_expect(&"lone-wolf", _context([1, 2, 3, 4, 5], 0, selected), 0, 0, (5 - count) * 25)
+		_expect(&"me-time", _context([1, 2, 3, 4, 5], 0, selected), 0, 5 - count)
+		_expect(&"lazy-bones", _context([1, 2, 3, 4, 5], 0, selected), (5 - count) * 5)
+	_expect(&"four-wheel-drive", _context([2, 2, 5, 5, 6], 0, [0, 1, 2, 3]), 0, 8)
+	_expect(&"four-wheel-drive", _context([2, 2, 2, 2, 6], 0, [0, 1, 2, 3]), 0, 8)
+	_expect(&"four-wheel-drive", _context([2, 2, 2, 2, 6]))
+	_expect(&"stepping-stones", _context([2, 3, 4, 5, 1]), 0, 0, 75)
+	_expect(&"stepping-stones", _context([2, 3, 4, 5, 1], 0, [0, 1, 2, 3]), 0, 0, 50)
+	_expect(&"borderline", _context([1, 2, 3, 4, 5]), 0, 12)
+	_expect(&"borderline", _context([1, 2, 3, 4, 5], 4), 0, 12)
+	_expect(&"borderline", _context([1, 2, 3, 4, 5], 2))
+	_expect(&"borderline", _context([1, 2, 3, 4, 4], 4))
+	_expect(&"sandwiched", _context([3, 2, 2, 4, 4]), 0, 4)
+	_expect(&"sandwiched", _context([3, 2, 2, 2, 6]))
+	_expect(&"ducks-in-a-row", _context([1, 2, 3, 4, 5]), 75)
+	_expect(&"ducks-in-a-row", _context([1, 2, 3, 4, 6]), 60)
+	_expect(&"ducks-in-a-row", _context([2, 2, 2, 2, 2]))
 	var context: EffectContext = _context([1, 2, 4, 5, 6])
 	context.event = &"recognition"
-	_expect(&"missing_link", context, 0, 0, 0, 0, RuntimeDeltaCommand.Kind.STRAIGHT_GAPS, 1)
+	_expect(&"missing-link", context, 0, 0, 0, 0, RuntimeDeltaCommand.Kind.STRAIGHT_GAPS, 1)
 
 ## Pure rule checks establish explicit economy/history rewards before lifecycle tests.
 func _economy_and_history_rules() -> void:
-	_expect(&"pocket_money", _context([2, 2, 1, 4, 6]), 0, 0, 0, 2)
-	_expect(&"pocket_money", _context([2, 2, 1, 4, 6], 4))
-	_expect(&"paid_leave", _context([2, 2, 1, 4, 6], 4, [0, 1]), 0, 0, 0, 1)
-	_expect(&"paid_leave", _context([2, 2, 1, 4, 6]))
-	_expect(&"golden_touch", _context([6, 6, 1, 2, 3]), 0, 0, 0, 6)
+	_expect(&"payday", _context([2, 2, 1, 4, 6]), 0, 0, 0, 2)
+	_expect(&"payday", _context([2, 2, 1, 4, 6], 4))
+	_expect(&"paid-leave", _context([2, 2, 1, 4, 6], 4, [0, 1]), 0, 0, 0, 1)
+	_expect(&"paid-leave", _context([2, 2, 1, 4, 6]))
+	_expect(&"golden-touch", _context([6, 6, 1, 2, 3]), 0, 0, 0, 6)
 	var context: EffectContext = _context([1, 2, 3, 4, 5])
 	context.event = &"rolled"
 	context.rolled_ids = [&"die_1"]
 	for kind: EffectContext.RollKind in [EffectContext.RollKind.OPENING, EffectContext.RollKind.COSMETIC, EffectContext.RollKind.MANUAL, EffectContext.RollKind.AUTOMATIC]:
 		context.roll_kind = kind
-		_expect(&"rolling_income", context, 0, 0, 0, 1 if kind == EffectContext.RollKind.MANUAL else 0)
+		_expect(&"side-hustle", context, 0, 0, 0, 1 if kind == EffectContext.RollKind.MANUAL else 0)
 	context = _context([1, 2, 3, 4, 5])
 	context.event = &"round_ended"
 	context.round_succeeded = true
@@ -243,50 +243,50 @@ func _economy_and_history_rules() -> void:
 	_expect(&"stonks", context)
 	context.event = &"shop_refreshed"
 	context.refresh_cost = 7
-	_expect(&"window_shopper", context, 0, 0, 0, 0, RuntimeDeltaCommand.Kind.ACCUMULATED_MULT, 1)
+	_expect(&"roulette", context, 0, 0, 0, 0, RuntimeDeltaCommand.Kind.ACCUMULATED_MULT, 1)
 	context.event = &"validation"
 	context.owner_mult = 4
-	_expect(&"window_shopper", context, 0, 4)
+	_expect(&"roulette", context, 0, 4)
 	context.joker_sell_total = 13
-	_expect(&"portfolio", context, 0, 13)
+	_expect(&"nest-egg", context, 0, 13)
 	context = _context([3, 2, 3, 4, 5])
 	context.dice[0].rerolls_since_validation = 4
 	context.dice[0].manual_rerolls_round = 4
 	_expect(&"relentless", context, 0, 0, 100)
-	_expect(&"persistence", context, 0, 12)
-	_expect(&"first_instinct", context)
+	_expect(&"loyalty-card", context, 0, 12)
+	_expect(&"first-instinct", context)
 	context.dice[0].manual_rerolls_round = 0
-	_expect(&"first_instinct", context, 0, 4)
+	_expect(&"first-instinct", context, 0, 4)
 	context.rerolls_remaining = 0
-	_expect(&"last_chance", context, 60)
+	_expect(&"last-straw", context, 60)
 	context.event = &"round_started"
-	_expect(&"extra_time", context, 0, 0, 0, 0, RuntimeDeltaCommand.Kind.VALIDATIONS, 1)
-	_expect(&"second_chance", context, 0, 0, 0, 0, RuntimeDeltaCommand.Kind.REROLLS, 1)
+	_expect(&"overtime", context, 0, 0, 0, 0, RuntimeDeltaCommand.Kind.VALIDATIONS, 1)
+	_expect(&"do-over", context, 0, 0, 0, 0, RuntimeDeltaCommand.Kind.REROLLS, 1)
 	context = _context([3, 2, 3, 4, 5])
-	_expect(&"opening_act", context, 0, 8)
+	_expect(&"opening-act", context, 0, 8)
 	context.previous_validations = 2
-	_expect(&"opening_act", context)
+	_expect(&"opening-act", context)
 	context.validations_remaining = 1
-	_expect(&"grand_finale", context, 0, 12)
-	_expect(&"momentum", context, 50)
+	_expect(&"grand-finale", context, 0, 12)
+	_expect(&"snowball", context, 50)
 	context = _context([3, 2, 3, 4, 5])
 	context.dice[0].previous_validated_value = 2
 	context.dice[0].crescendo_percent = 50
 	_expect(&"crescendo", context, 0, 0, 100)
 	context.dice[0].value = 2
 	_expect(&"crescendo", context, 0, 0, 50)
-	_expect(&"deja_vu", context, 0, 0, 50)
+	_expect(&"deja-vu", context, 0, 0, 50)
 	_expect(&"echo", context, 0, 8)
 	context.dice[0].previous_validated_value = 0
 	_expect(&"echo", context)
-	_expect(&"deja_vu", context)
+	_expect(&"deja-vu", context)
 	context.previous_combination = context.combination
-	_expect(&"habit", context, 50)
+	_expect(&"broken-record", context, 50)
 	context.previous_combination = &"five_of_a_kind"
-	_expect(&"variety", context, 50)
+	_expect(&"plot-twist", context, 50)
 	context.previous_combination = &""
-	_expect(&"habit", context)
-	_expect(&"variety", context)
+	_expect(&"broken-record", context)
+	_expect(&"plot-twist", context)
 
 ## Recognition validates actual distinct values, gap bounds, scoring rank, and stable ties.
 func _recognition() -> void:
@@ -322,9 +322,9 @@ func _start(run: MechanicsRun, id: StringName = &"start", validations: int = 6, 
 func _runtime_history() -> void:
 	var run: MechanicsRun = MechanicsRun.new()
 	assert(run.install_upgrade(_catalog.upgrade(&"relentless")).is_empty())
-	assert(run.equip_bonus(_catalog.bonus(&"persistence"), &"die_1", 2).is_empty())
-	assert(run.equip_bonus(_catalog.bonus(&"first_instinct"), &"die_2", 2).is_empty())
-	assert(run.add_joker(_catalog.joker(&"momentum"), 3).is_empty())
+	assert(run.equip_bonus(_catalog.bonus(&"loyalty-card"), &"die_1", 2).is_empty())
+	assert(run.equip_bonus(_catalog.bonus(&"first-instinct"), &"die_2", 2).is_empty())
+	assert(run.add_joker(_catalog.joker(&"snowball"), 3).is_empty())
 	_start(run)
 	assert(run.roll(&"manual_1", {&"die_1": 1, &"die_2": 0}, EffectContext.RollKind.MANUAL).errors.is_empty())
 	assert(run.roll(&"manual_2", {&"die_1": 2}, EffectContext.RollKind.MANUAL).errors.is_empty())
@@ -344,8 +344,8 @@ func _runtime_history() -> void:
 	run = MechanicsRun.new()
 	assert(run.install_upgrade(_catalog.upgrade(&"crescendo")).is_empty())
 	assert(run.equip_bonus(_catalog.bonus(&"echo"), &"die_1", 2).is_empty())
-	assert(run.add_joker(_catalog.joker(&"habit"), 3).is_empty())
-	assert(run.add_joker(_catalog.joker(&"variety"), 3).is_empty())
+	assert(run.add_joker(_catalog.joker(&"broken-record"), 3).is_empty())
+	assert(run.add_joker(_catalog.joker(&"plot-twist"), 3).is_empty())
 	_start(run)
 	result = run.validate_dice(&"c1", [&"die_1"], 0, 1)
 	assert(result.mult_percent == 0 and result.points == 0 and result.flat_mult == 1)
@@ -368,14 +368,14 @@ func _runtime_history() -> void:
 ## Paid events, ownership growth, retries, sale, and fresh repurchase are integrated.
 func _runtime_economy() -> void:
 	var run: MechanicsRun = MechanicsRun.new(100)
-	assert(run.equip_bonus(_catalog.bonus(&"rolling_income"), &"die_1", 2).is_empty())
-	assert(run.equip_bonus(_catalog.bonus(&"paid_leave"), &"die_2", 2).is_empty())
+	assert(run.equip_bonus(_catalog.bonus(&"side-hustle"), &"die_1", 2).is_empty())
+	assert(run.equip_bonus(_catalog.bonus(&"paid-leave"), &"die_2", 2).is_empty())
 	assert(run.add_joker(_catalog.joker(&"stonks"), 4).is_empty())
-	assert(run.add_joker(_catalog.joker(&"window_shopper"), 3).is_empty())
-	assert(run.add_joker(_catalog.joker(&"portfolio"), 5).is_empty())
+	assert(run.add_joker(_catalog.joker(&"roulette"), 3).is_empty())
+	assert(run.add_joker(_catalog.joker(&"nest-egg"), 5).is_empty())
 	assert(run.paid_refresh(&"refresh1", 7).errors.is_empty())
 	assert(run.paid_refresh(&"refresh1", 7).errors.is_empty())
-	assert(run.coins == 93 and run.find_owned(&"joker:window_shopper").accumulated_mult == 1)
+	assert(run.coins == 93 and run.find_owned(&"joker:roulette").accumulated_mult == 1)
 	_start(run)
 	assert(run.coins == 93)
 	assert(run.roll(&"manual", {&"die_1": 1}, EffectContext.RollKind.MANUAL).errors.is_empty())
@@ -395,9 +395,9 @@ func _runtime_economy() -> void:
 	assert(run.finish_round(&"money_finish2", true).errors.is_empty())
 	assert(run.sell(&"sell_stonks", &"joker:stonks").errors.is_empty())
 	assert(run.coins == 102)
-	assert(run.sell(&"sell_window", &"joker:window_shopper").errors.is_empty())
-	assert(run.add_joker(_catalog.joker(&"window_shopper"), 3).is_empty())
-	assert(run.find_owned(&"joker:window_shopper").accumulated_mult == 0)
+	assert(run.sell(&"sell_window", &"joker:roulette").errors.is_empty())
+	assert(run.add_joker(_catalog.joker(&"roulette"), 3).is_empty())
+	assert(run.find_owned(&"joker:roulette").accumulated_mult == 0)
 	assert(run.add_joker(_catalog.joker(&"stonks"), 4).is_empty())
 	assert(run.find_owned(&"joker:stonks").sell_growth == 0)
 	assert(not run.paid_refresh(&"free", 0).errors.is_empty())
@@ -407,13 +407,13 @@ func _runtime_percentages_and_limits() -> void:
 	var run: MechanicsRun = MechanicsRun.new()
 	assert(run.install_upgrade(_catalog.upgrade(&"jackpot")).is_empty())
 	assert(run.install_upgrade(_catalog.upgrade(&"jackpot")).is_empty())
-	assert(run.equip_bonus(_catalog.bonus(&"six_addict"), &"die_1", 2).is_empty())
-	assert(run.add_joker(_catalog.joker(&"extra_time"), 3).is_empty())
-	assert(run.add_joker(_catalog.joker(&"second_chance"), 3).is_empty())
+	assert(run.equip_bonus(_catalog.bonus(&"six-addict"), &"die_1", 2).is_empty())
+	assert(run.add_joker(_catalog.joker(&"overtime"), 3).is_empty())
+	assert(run.add_joker(_catalog.joker(&"do-over"), 3).is_empty())
 	assert(run.add_joker(_catalog.joker(&"stonks"), 4).is_empty())
-	assert(run.add_joker(_catalog.joker(&"missing_link"), 4).is_empty())
-	assert(not run.add_joker(_catalog.joker(&"portfolio"), 4).is_empty())
-	assert(not run.equip_bonus(_catalog.bonus(&"six_addict"), &"die_2", 2).is_empty())
+	assert(run.add_joker(_catalog.joker(&"missing-link"), 4).is_empty())
+	assert(not run.add_joker(_catalog.joker(&"nest-egg"), 4).is_empty())
+	assert(not run.equip_bonus(_catalog.bonus(&"six-addict"), &"die_2", 2).is_empty())
 	assert(not run.equip_bonus(_catalog.bonus(&"echo"), &"die_1", 2).is_empty())
 	assert(run.start_round(&"percent_start", 100).errors.is_empty())
 	assert(run.validations_remaining == 4 and run.rerolls_remaining == 4)
@@ -428,7 +428,7 @@ func _runtime_percentages_and_limits() -> void:
 	assert(not run.sell(&"illegal_sale", &"upgrade:die_1").errors.is_empty())
 	assert(run.move_bonus(&"die_1", &"die_2").is_empty())
 	assert(run.find_die(&"die_2").faces == PackedInt32Array([1, 1, 1, 1, 1, 6]))
-	assert(run.sell(&"sell_extra", &"joker:extra_time").errors.is_empty())
+	assert(run.sell(&"sell_extra", &"joker:overtime").errors.is_empty())
 	_start(run, &"after_sale", 3, 3)
 	assert(run.validations_remaining == 3 and run.rerolls_remaining == 4)
 	assert(run.finish_round(&"failed", false).errors.is_empty())
@@ -441,20 +441,20 @@ func _diversity_and_support() -> void:
 	_expect(&"rainbow", _context([1, 2, 3, 4, 5]), 0, 0, 100)
 	_expect(&"rainbow", _context([1, 1, 2, 3, 6], 0, [0, 1, 2]), 0, 0, 40)
 	_expect(&"rainbow", _context([1, 1, 2, 3, 6], 0, [1, 2]))
-	_expect(&"variety_show", _context([1, 2, 3, 4, 5]), 50)
-	_expect(&"variety_show", _context([1, 1, 2, 3, 6], 0, [0, 1, 2]), 20)
-	_expect(&"unique", _context([1, 2, 2, 4, 6], 0, [0, 1, 2]), 0, 4)
-	_expect(&"unique", _context([1, 2, 3, 4, 6], 0, [0, 1]))
-	_expect(&"unique", _context([1, 1, 2, 4, 6], 0, [0, 1, 2]))
+	_expect(&"pick-n-mix", _context([1, 2, 3, 4, 5]), 50)
+	_expect(&"pick-n-mix", _context([1, 1, 2, 3, 6], 0, [0, 1, 2]), 20)
+	_expect(&"black-sheep", _context([1, 2, 2, 4, 6], 0, [0, 1, 2]), 0, 4)
+	_expect(&"black-sheep", _context([1, 2, 3, 4, 6], 0, [0, 1]))
+	_expect(&"black-sheep", _context([1, 1, 2, 4, 6], 0, [0, 1, 2]))
 	_expect(&"guardian", _context([1, 1, 1, 4, 6], 0, [1, 2]), 0, 0, 50)
 	_expect(&"guardian", _context([1, 1, 1, 4, 6]))
 	_expect(&"guardian", _context([1, 2, 3, 4, 6], 0, [1, 2]))
-	_expect(&"quiet_strength", _context([1, 2, 3, 4, 6], 0, [1, 2]), 0, 2)
-	_expect(&"quiet_strength", _context([1, 2, 3, 4, 6]))
-	_expect(&"backup", _context([1, 1, 1, 1, 1], 0, [0]), 60)
-	_expect(&"backup", _context([1, 1, 1, 1, 1], 0, [0, 1]), 45)
-	_expect(&"backup", _context([1, 1, 1, 1, 1]), 0)
-	_expect(&"backup", _context([1, 2, 3, 4, 5], 0, [0]), 0)
+	_expect(&"power-reserve", _context([1, 2, 3, 4, 6], 0, [1, 2]), 0, 2)
+	_expect(&"power-reserve", _context([1, 2, 3, 4, 6]))
+	_expect(&"bench-warmers", _context([1, 1, 1, 1, 1], 0, [0]), 60)
+	_expect(&"bench-warmers", _context([1, 1, 1, 1, 1], 0, [0, 1]), 45)
+	_expect(&"bench-warmers", _context([1, 1, 1, 1, 1]), 0)
+	_expect(&"bench-warmers", _context([1, 2, 3, 4, 5], 0, [0]), 0)
 	var context: EffectContext = _context([6, 2, 2, 2, 3])
 	_expect(&"alternator", context)
 	context.dice[0].previous_validated_value = 1
@@ -468,10 +468,10 @@ func _runtime_support_and_alternator() -> void:
 		var run: MechanicsRun = MechanicsRun.new()
 		assert(run.install_upgrade(_catalog.upgrade(&"guardian")).is_empty())
 		assert(run.install_upgrade(_catalog.upgrade(&"rainbow")).is_empty())
-		assert(run.equip_bonus(_catalog.bonus(&"quiet_strength"), &"die_1", 2).is_empty())
-		assert(run.equip_bonus(_catalog.bonus(&"unique"), &"die_2", 2).is_empty())
-		assert(run.add_joker(_catalog.joker(&"backup"), 3).is_empty())
-		assert(run.add_joker(_catalog.joker(&"variety_show"), 3).is_empty())
+		assert(run.equip_bonus(_catalog.bonus(&"power-reserve"), &"die_1", 2).is_empty())
+		assert(run.equip_bonus(_catalog.bonus(&"black-sheep"), &"die_2", 2).is_empty())
+		assert(run.add_joker(_catalog.joker(&"bench-warmers"), 3).is_empty())
+		assert(run.add_joker(_catalog.joker(&"pick-n-mix"), 3).is_empty())
 		if reversed:
 			run.owned.reverse()
 		assert(run.start_round(&"support_start", 100000).errors.is_empty())
@@ -500,9 +500,9 @@ func _runtime_support_and_alternator() -> void:
 ## Extra time delays the last-validation reward; recognition preview includes owned Missing link.
 func _runtime_tempo_and_preview() -> void:
 	var run: MechanicsRun = MechanicsRun.new()
-	assert(run.equip_bonus(_catalog.bonus(&"grand_finale"), &"die_1", 2).is_empty())
-	assert(run.add_joker(_catalog.joker(&"extra_time"), 3).is_empty())
-	assert(run.add_joker(_catalog.joker(&"momentum"), 3).is_empty())
+	assert(run.equip_bonus(_catalog.bonus(&"grand-finale"), &"die_1", 2).is_empty())
+	assert(run.add_joker(_catalog.joker(&"overtime"), 3).is_empty())
+	assert(run.add_joker(_catalog.joker(&"snowball"), 3).is_empty())
 	_start(run, &"tempo_start", 3, 3)
 	assert(run.validations_remaining == 4)
 	for index: int in 4:
@@ -514,7 +514,7 @@ func _runtime_tempo_and_preview() -> void:
 			assert(run.roll(StringName("tempo_auto%d" % index), {&"die_1": 0}, EffectContext.RollKind.AUTOMATIC).errors.is_empty())
 	assert(not run.round_active and run.run_failed)
 	run = MechanicsRun.new()
-	assert(run.add_joker(_catalog.joker(&"missing_link"), 3).is_empty())
+	assert(run.add_joker(_catalog.joker(&"missing-link"), 3).is_empty())
 	assert(run.start_round(&"preview_start", 100000).errors.is_empty())
 	assert(run.roll(&"preview_open", {&"die_1": 0, &"die_2": 1, &"die_3": 3, &"die_4": 4, &"die_5": 5}, EffectContext.RollKind.OPENING).errors.is_empty())
 	var chosen: Array[StringName] = [&"die_1", &"die_2", &"die_3", &"die_4"]

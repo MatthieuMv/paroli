@@ -12,8 +12,8 @@ func _run() -> void:
 	var catalog: EffectsCatalog = EffectsCatalog.new()
 	var run: MechanicsRun = MechanicsRun.new(40)
 	assert(run.install_upgrade(catalog.upgrade(&"jackpot")).is_empty())
-	assert(run.add_joker(catalog.joker(&"window_shopper"), 3).is_empty())
-	assert(run.equip_bonus(catalog.bonus(&"six_addict"), &"die_1", 2).is_empty())
+	assert(run.add_joker(catalog.joker(&"roulette"), 3).is_empty())
+	assert(run.equip_bonus(catalog.bonus(&"six-addict"), &"die_1", 2).is_empty())
 	var rules: ShopRules = ShopRules.new()
 	var shop: ShopSession = ShopSession.new(run, rules, 11)
 	shop.open()
@@ -21,7 +21,7 @@ func _run() -> void:
 	assert(shop.offers.size() == rules.joker_offers + rules.bonus_offers)
 	var seen: Array[StringName] = []
 	for offer: ShopOffer in shop.offers:
-		assert(offer.definition.id not in seen and offer.definition.id not in [&"window_shopper", &"six_addict"])
+		assert(offer.definition.id not in seen and offer.definition.id not in [&"roulette", &"six-addict"])
 		assert(offer.price == shop.price_of(offer.family) and not offer.sold)
 		seen.append(offer.definition.id)
 	assert(shop.offers[0].family == ShopSession.JOKER and shop.offers[rules.joker_offers].family == ShopSession.BONUS)
@@ -49,7 +49,7 @@ func _run() -> void:
 	assert(shop.sell(&"bonus:die_5") == 2 and run.coins == 32 and not run.find_owned(&"bonus:die_5"))
 	assert(shop.sell(&"upgrade:die_1") == -1 and run.coins == 32, "Upgrades are never sellable")
 	# Paid refresh: repeatable, each one dearer, restocks everything, feeds Roulette.
-	var roulette: OwnedDefinition = run.find_owned(&"joker:window_shopper")
+	var roulette: OwnedDefinition = run.find_owned(&"joker:roulette")
 	assert(shop.refresh_cost() == rules.refresh_base_cost)
 	assert(shop.refresh().errors.is_empty() and run.coins == 30 and shop.refreshes == 1)
 	assert(shop.refresh_cost() == rules.refresh_base_cost + rules.refresh_cost_step)

@@ -38,7 +38,7 @@ func _run() -> void:
 	assert(not build.disabled)
 	# Showcase: four Jokers on the rack, an upgrade tag on the first die, nothing banked yet.
 	assert(not (hud.get_node("Jokers/Joker4") as BuildCard).is_empty())
-	assert((hud.get_node("Docks/Dock1") as DieDock).upgrade.id == &"all_for_one")
+	assert((hud.get_node("Docks/Dock1") as DieDock).upgrade.id == &"all-for-one")
 	assert(hud.goal.shown_score == 0.0)
 	if capture:
 		await create_timer(0.8).timeout

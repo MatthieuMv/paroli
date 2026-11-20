@@ -1,0 +1,68 @@
+-- Run from upgrade_analysis: duckdb -markdown -bail -f render_balance.duckdb
+.read effect_balance.sql
+.mode markdown
+CREATE OR REPLACE TEMP VIEW readable_balance AS
+SELECT score_rank AS "Rank", effect AS "Effect", round(net_gain, 2) AS "Net/play",
+       round(100 * chance_of_gain, 3) AS "Gain %",
+       round(high_die, 1) AS "High Die", round(pair, 1) AS "Pair", round(two_pairs, 1) AS "Two Pairs",
+       round(three_of_a_kind, 1) AS "Triple", round(short_straight, 1) AS "Short Straight",
+       round(full_house, 1) AS "Full House", round(four_of_a_kind, 1) AS "Four of a Kind",
+       round(long_straight, 1) AS "Long Straight", round(five_of_a_kind, 1) AS "Five of a Kind", family
+FROM effect_balance;
+
+.output effect_balance.md
+.print '# Effect balance across all nine play styles'
+.print
+.print 'Each row tests one effect on a fresh play. Hand sizes 1–5 are equally likely, and physical roll probabilities determine how often each style occurs. The player commits to the selected dice before rolling. For Guardian, Power Reserve and Paid Leave the equipped die is held whenever there is room, and played at five dice.'
+.print
+.print '**Net/play** is the mean score difference from a fully plain build, including face changes. **Gain %** counts rolls where the effect adds points on the same faces. Each style column shows mean extra points on those faces, conditional on rolling that input style. Missing Link promotions count under their original style. Ranks compare all three families.'
+.print
+.print '## Highest direct gain by play style'
+.print
+.print 'The chance column is the frequency of the style with ordinary dice under the hand-size mix above. The gain is conditional on rolling that style with the listed effect.'
+.print
+WITH leaders AS (
+    SELECT * FROM balance_styles WHERE scenario = 'fresh' AND family <> 'plain'
+    QUALIFY dense_rank() OVER (PARTITION BY play_style ORDER BY round(style_gain, 10) DESC) = 1
+)
+SELECT replace(l.play_style, '_', ' ') AS "Play style",
+       round(100 * p.style_probability, 3) AS "Plain chance %",
+       string_agg(l.effect, ', ' ORDER BY l.effect) AS "Effect",
+       round(max(l.style_gain), 2) AS "Mean gain"
+FROM leaders l JOIN balance_styles p USING (play_style)
+WHERE p.family = 'plain' AND p.scenario = 'fresh'
+GROUP BY l.play_style, p.style_probability ORDER BY p.style_probability DESC;
+.print
+.print '## Bonuses'
+.print
+SELECT * EXCLUDE (family) FROM readable_balance WHERE family = 'bonus' ORDER BY "Rank", "Effect";
+.print
+.print '## Jokers'
+.print
+SELECT * EXCLUDE (family) FROM readable_balance WHERE family = 'joker' ORDER BY "Rank", "Effect";
+.print
+.print '## Upgrades'
+.print
+SELECT * EXCLUDE (family) FROM readable_balance WHERE family = 'upgrade' ORDER BY "Rank", "Effect";
+.print
+.print '## Score changes with history'
+.print
+.print 'These ranges describe the mean direct point gain across the tested states. Each endpoint assumes its stated history. When several states tie, one example is shown. The `previous_same_style` and `previous_other` states compare the prior hand with the current input style.'
+.print
+SELECT effect AS "Effect",
+       round(max(direct_gain) FILTER (WHERE scenario = 'fresh'), 2) AS "Fresh",
+       round(min(direct_gain), 2) AS "Lowest", first(scenario ORDER BY round(direct_gain, 10), scenario) AS "Example low state",
+       round(max(direct_gain), 2) AS "Highest", first(scenario ORDER BY round(direct_gain, 10) DESC, scenario) AS "Example high state"
+FROM balance_scenarios GROUP BY effect
+HAVING round(max(direct_gain) - min(direct_gain), 8) > 0
+ORDER BY max(direct_gain) DESC, effect;
+.print
+.print '## Economy and round allowances'
+.print
+.print 'Coins are mean coins earned in the indicated experiment. Plays and rerolls are extra round-start allowances. Sell growth is the change in sell value on the measured play. Each reward keeps its game unit.'
+.print
+SELECT effect AS "Effect", scenario AS "State", round(coins, 3) AS "Coins",
+       extra_plays AS "Extra plays", extra_rerolls AS "Extra rerolls", sell_growth AS "Sell growth"
+FROM balance_scenarios WHERE coins > 0 OR extra_plays > 0 OR extra_rerolls > 0 OR sell_growth > 0
+ORDER BY effect, scenario;
+.output stdout

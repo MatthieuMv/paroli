@@ -92,7 +92,7 @@ func _check_guardian(catalog: EffectsCatalog) -> void:
 
 ## A matching rule can emit a zero amount; this must not advertise a reward.
 func _check_zero_reward(catalog: EffectsCatalog) -> void:
-	var run: MechanicsRun = _make_run(catalog.upgrade(&"relentless"), catalog.bonus(&"one_or_nothing"))
+	var run: MechanicsRun = _make_run(catalog.upgrade(&"relentless"), catalog.bonus(&"one-or-nothing"))
 	assert(run.preview_active_upgrades([&"die_1"]).is_empty())
 	run.dice[0].rerolls_since_validation = 1
 	assert(run.preview_active_upgrades([&"die_1"]) == [&"die_1"])

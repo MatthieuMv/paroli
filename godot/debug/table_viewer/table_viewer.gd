@@ -101,7 +101,7 @@ func _on_effects_toggled(enabled: bool) -> void:
 	_preview_run = MechanicsRun.new() if enabled else null
 	if enabled:
 		var catalog: EffectsCatalog = EffectsCatalog.new()
-		for id: StringName in [&"all_for_one", &"guardian", &"jackpot", &"golden_touch", &"lone_wolf"]:
+		for id: StringName in [&"all-for-one", &"guardian", &"jackpot", &"golden-touch", &"lone-wolf"]:
 			var errors: PackedStringArray = _preview_run.install_upgrade(catalog.upgrade(id))
 			assert(errors.is_empty())
 		# Large allowances keep this visual sandbox usable without round controls.

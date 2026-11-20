@@ -42,5 +42,5 @@ actions = Array[ExtResource("2_5lfnn")]([SubResource("action")])
 script = ExtResource("owner")
 palette_color = &"Lavender"
 vfx_id = &"crescents"
-id = &"odd_master"
+id = &"odd-master"
 effects = Array[ExtResource("effect")]([SubResource("effect")])

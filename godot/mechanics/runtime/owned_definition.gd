@@ -14,11 +14,11 @@ var die_id: StringName
 var base_sell_value: int = 0
 ## Stonks growth survives round resets but disappears on sale.
 var sell_growth: int = 0
-## Window shopper growth survives round resets but disappears on sale.
+## Roulette growth survives round resets but disappears on sale.
 var accumulated_mult: int = 0
 
 # --- Member functions ---
 
-## Current owned value, used by Portfolio without selling.
+## Current owned value, used by Nest Egg without selling.
 func sell_value() -> int:
 	return base_sell_value + sell_growth

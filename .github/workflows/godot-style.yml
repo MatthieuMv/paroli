@@ -1,0 +1,14 @@
+name: Godot conventions
+on:
+  push:
+    paths: ['godot/**', '.github/workflows/godot-style.yml']
+  pull_request:
+    paths: ['godot/**', '.github/workflows/godot-style.yml']
+  workflow_dispatch:
+jobs:
+  style:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check typed code and feature boundaries
+        run: python3 godot/check_style.py

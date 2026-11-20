@@ -37,7 +37,7 @@ class PreviousValidations:
 	func _init(coefficient_: int) -> void:
 		super(Source.PREVIOUS_VALIDATIONS, coefficient_, &"amount.previous_validations")
 
-## Window shopper's owned persistent Mult.
+## Roulette's owned persistent Mult.
 class AccumulatedMult:
 	extends HistoryAmount
 

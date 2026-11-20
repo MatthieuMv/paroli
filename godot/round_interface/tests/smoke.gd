@@ -48,12 +48,12 @@ func _run() -> void:
 	# Showcase-like fixture; the forced table state below clears this target on the second play.
 	var catalog: EffectsCatalog = EffectsCatalog.new()
 	var run: MechanicsRun = MechanicsRun.new(4)
-	assert(run.install_upgrade(catalog.upgrade(&"all_for_one")).is_empty())
-	assert(run.install_upgrade(catalog.upgrade(&"odd_master")).is_empty())
-	assert(run.equip_bonus(catalog.bonus(&"family_spirit"), &"die_1", 2).is_empty())
-	assert(run.equip_bonus(catalog.bonus(&"pair_partner"), &"die_4", 2).is_empty())
-	assert(run.add_joker(catalog.joker(&"match_master"), 3).is_empty())
-	assert(run.add_joker(catalog.joker(&"odd_squad"), 3).is_empty())
+	assert(run.install_upgrade(catalog.upgrade(&"all-for-one")).is_empty())
+	assert(run.install_upgrade(catalog.upgrade(&"odd-master")).is_empty())
+	assert(run.equip_bonus(catalog.bonus(&"copycat"), &"die_1", 2).is_empty())
+	assert(run.equip_bonus(catalog.bonus(&"sock-mate"), &"die_4", 2).is_empty())
+	assert(run.add_joker(catalog.joker(&"matchmaker"), 3).is_empty())
+	assert(run.add_joker(catalog.joker(&"odd-squad"), 3).is_empty())
 	var session: RoundSession = RoundSession.new(run, 20261116)
 	session.coins_per_unused_play = 2
 	round_view.start_round(session, 1, 2500.0)
@@ -71,7 +71,7 @@ func _run() -> void:
 		var column: float = camera.unproject_position(dice[index].global_position).x
 		assert(absf(dock.get_global_rect().get_center().x - column) < 2.0, "Dock %d is off its die column" % index)
 	_assert_backdrop_covers(round_view)
-	assert((hud.get_node("Jokers/Joker1") as BuildCard).owner_id == &"joker:match_master")
+	assert((hud.get_node("Jokers/Joker1") as BuildCard).owner_id == &"joker:matchmaker")
 	assert((hud.get_node("Jokers/Joker3") as BuildCard).is_empty())
 	# Upgraded dice print their permanent layout on the model; ordinary dice keep 1–6.
 	assert(dice[0].faces == PackedInt32Array([1, 1, 1, 3, 3, 3]) and dice[1].faces == PackedInt32Array([1, 1, 3, 3, 5, 5]))

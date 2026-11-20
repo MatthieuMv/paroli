@@ -8,13 +8,14 @@ graph, subresource IDs, JSON, or import step is needed.
 **14 upgrades, 29 bonuses, and 28 Jokers**, covering all 71 entries in
 [docs/EFFECTS.md](../../docs/EFFECTS.md). That document supersedes the older upgrade
 proposals. Definitions use explicit named constructors; no generation step is needed.
+Use the lowercase English display name for each catalog ID, with hyphens between words and ASCII spelling. For example, Plot Twist uses `plot-twist`, Déjà vu uses `deja-vu`, and Pick ’n’ Mix uses `pick-n-mix`.
 The `examples/` directory contains smaller authoring fixtures.
 
 ## An entire upgrade
 
 ~~~gdscript
 var odd_master: UpgradeDefinition = UpgradeDefinition.new(
-	&"odd_master",
+	&"odd-master",
 	[1, 1, 3, 3, 5, 5],
 	[
 		EffectDefinition.OnValidated.new(&"odd_validated",
@@ -44,7 +45,7 @@ var straight: JokerDefinition = JokerDefinition.new(
 ~~~
 
 The Joker above is a synthetic authoring example. For actual content, use
-`EffectsCatalog.new().upgrade(&"odd_master")`, `.bonus(...)`, or `.joker(...)`.
+`EffectsCatalog.new().upgrade(&"odd-master")`, `.bonus(...)`, or `.joker(...)`.
 Catalog names are localized keywords; player descriptions are manually authored in English and French.
 
 ## Readable rule vocabulary
@@ -225,8 +226,8 @@ coins, allowances, round progress, and history. It has no scene dependency.
 var catalog: EffectsCatalog = EffectsCatalog.new()
 var run: MechanicsRun = MechanicsRun.new(20)
 assert(run.install_upgrade(catalog.upgrade(&"rainbow")).is_empty())
-assert(run.equip_bonus(catalog.bonus(&"unique"), &"die_1", 3).is_empty())
-assert(run.add_joker(catalog.joker(&"variety_show"), 5).is_empty())
+assert(run.equip_bonus(catalog.bonus(&"black-sheep"), &"die_1", 3).is_empty())
+assert(run.add_joker(catalog.joker(&"pick-n-mix"), 5).is_empty())
 var started: MechanicsEventResult = run.start_round(&"round_1", 1000.0)
 assert(started.errors.is_empty())
 var faces: Dictionary[StringName, int] = {
@@ -270,7 +271,7 @@ Runtime contracts:
 - Missing Link changes recognition before effects run. All scoring/economy effects
   then read the same snapshot. Commit rewards and update histories afterward.
 - Crescendo includes its newly earned stack in the current validation. Alternator,
-  Déjà vu, and Echo compare the die's own previous validation. Habit/Variety compare
+  Déjà vu, and Echo compare the die's own previous validation. Broken Record and Plot Twist compare
   the previous global category. Round start resets all such history.
 - Target success ends the round immediately. Exhausting validations without reaching
   it ends the run. Successful completion pays Stonks growth once, including an

@@ -20,9 +20,3 @@ class_name ShopRules
 ## Added to the refresh cost after each paid refresh in the same visit (must stay positive:
 ## each refresh costs more than the last).
 @export_range(1, 99) var refresh_cost_step: int = 1
-## Offer a random Joker at a discount.
-@export var random_joker: bool = true
-## Offer a random bonus at a discount.
-@export var random_bonus: bool = true
-## Discount of a random purchase relative to the known price of its family.
-@export_range(0, 90) var random_discount_percent: int = 40

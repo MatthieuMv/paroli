@@ -1,7 +1,6 @@
 extends Control
 class_name OfferCard
-## One slot on the shop shelf: a known offer, or an unknown discounted item of a family,
-## with its price tag. It reports presses and hover; the shop decides what a press means.
+## One slot on the shop shelf: a known offer with its price tag. It reports presses and hover; the shop decides what a press means.
 
 # --- Signals ---
 
@@ -10,17 +9,22 @@ signal pressed(slot: OfferCard)
 ## Pointer entered or left a slot that still holds something.
 signal hover_changed(slot: OfferCard, hovered: bool)
 
+# --- Constants ---
+
+## Smallest scale the price pill is drawn at, whatever the slot's own scale.
+const SMALLEST_TAG_SCALE: float = 0.8
+
 # --- Member variables ---
 
-## Index into ShopSession.offers, or -1 for a random purchase.
+## Index into ShopSession.offers.
 var offer_index: int = -1
 ## `ShopSession.JOKER` or `ShopSession.BONUS`.
 var family: StringName
-## Known content; null for a random purchase or an emptied slot.
+## Known content; null for an emptied slot.
 var definition: IllustratedDefinition
 ## Whether the slot still holds something to buy.
 var stocked: bool = false
-## Removes the deal pop and reveal flip.
+## Removes the deal pop.
 var reduced_motion: bool = false:
 	set(value):
 		reduced_motion = value
@@ -40,6 +44,13 @@ func _ready() -> void:
 	mouse_entered.connect(_on_pointer.bind(true))
 	mouse_exited.connect(_on_pointer.bind(false))
 
+## Scale the slot about its top-left corner. Small slots (phones) keep their price pill
+## readable: it shrinks less than the tile and grows downward from the tile's edge.
+func fit(slot_scale: float) -> void:
+	scale = Vector2.ONE * slot_scale
+	_tag.pivot_offset = Vector2(_tag.size.x * 0.5, 0.0)
+	_tag.scale = Vector2.ONE * maxf(1.0, SMALLEST_TAG_SCALE / slot_scale)
+
 ## Show a known offer, or the emptied slot it leaves once sold.
 func show_offer(offer: ShopOffer, index: int, affordable: bool) -> void:
 	offer_index = index
@@ -51,22 +62,6 @@ func show_offer(offer: ShopOffer, index: int, affordable: bool) -> void:
 	elif card.definition != offer.definition:
 		card.show_definition(offer.definition, &"")
 	_show_price(offer.price, affordable)
-
-## Show a random purchase of a family; an exhausted pool leaves the slot empty.
-func show_mystery(family_: StringName, price: int, in_stock: bool, affordable: bool) -> void:
-	offer_index = -1
-	family = family_
-	definition = null
-	stocked = in_stock
-	if in_stock:
-		card.show_mark("?")
-	else:
-		card.clear()
-	_show_price(price, affordable)
-
-## Whether this slot sells an unknown item.
-func is_mystery() -> bool:
-	return offer_index < 0
 
 ## Shake the tile and bump the price to refuse a press.
 func refuse() -> void:
@@ -83,17 +78,6 @@ func deal(delay: float) -> void:
 	var tween: Tween = create_tween()
 	tween.tween_interval(delay)
 	tween.tween_callback(_land)
-
-## Turn the unknown tile over to show what was bought.
-func reveal(found: IllustratedDefinition) -> void:
-	if reduced_motion:
-		card.show_definition(found, &"")
-		return
-	card.pivot_offset = card.size * 0.5
-	var tween: Tween = create_tween()
-	tween.tween_property(card, "scale:x", 0.0, 0.12).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
-	tween.tween_callback(card.show_definition.bind(found, &""))
-	tween.tween_property(card, "scale:x", 1.0, 0.22).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
 ## Second half of a deal: appear with a pop.
 func _land() -> void:

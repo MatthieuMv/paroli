@@ -7,6 +7,11 @@ extends SceneTree
 ## Reusable scene under test; the debug host is not required.
 const ROUND: PackedScene = preload("res://round_interface/round_interface.tscn")
 
+## Window pixels per logical pixel of the phone the layout checks stand in for.
+const PHONE_DENSITY: float = 2.625
+## Smallest side, in logical pixels, of anything the player presses.
+const TOUCH_TARGET: float = 44.0
+
 # --- Member variables ---
 
 ## Offscreen viewport standing in for the game window.
@@ -239,8 +244,87 @@ func _run() -> void:
 	if capture:
 		await _settle(0.6)
 		await _save("/tmp/paroli-round-portrait.png")
-	print("PASS: round interface layout, preview boundary, reveal, banking, result, portrait.")
+	# Phones: the HUD is sized in logical pixels, so a 1080-pixel-wide screen at density
+	# 2.625 gets finger-sized targets instead of a shrunken desktop layout.
+	round_view.display_density = PHONE_DENSITY
+	for phone: Vector2i in [Vector2i(1080, 2378), Vector2i(2378, 1080), Vector2i(1080, 1920)]:
+		_viewport.size = phone
+		await process_frame
+		await process_frame
+		await _assert_phone_layout(round_view, phone)
+		if capture:
+			await _settle(0.4)
+			await _save("/tmp/paroli-round-phone-%dx%d.png" % [phone.x, phone.y])
+	# A small desktop window is a different case from a dense phone screen of the same shape.
+	round_view.display_density = 1.0
+	_viewport.size = Vector2i(2378, 1080)
+	await process_frame
+	await process_frame
+	assert(hud.layout.shape == HudLayout.Shape.WIDE, "A large desktop window keeps the desktop arrangement")
+	round_view.display_density = 0.0
+	print("PASS: round interface layout, preview boundary, reveal, banking, result, portrait, phones.")
 	quit()
+
+## Phone arrangements: everything on screen, nothing overlapping, every target finger-sized,
+## and explanations opening clear of the dice.
+func _assert_phone_layout(round_view: RoundInterface, phone: Vector2i) -> void:
+	var hud: RoundHud = round_view.get_node("Interface/Hud") as RoundHud
+	var stage: TableStage = round_view.stage
+	var window: Rect2 = Rect2(Vector2.ZERO, Vector2(phone))
+	var tall: bool = phone.x < phone.y
+	assert(hud.layout.shape == (HudLayout.Shape.TALL if tall else HudLayout.Shape.SIDE), "Wrong arrangement at %s" % phone)
+	var roll: ActionButton = hud.get_node("Roll") as ActionButton
+	var play: ActionButton = hud.get_node("Play") as ActionButton
+	var coins: Control = hud.get_node("Coins") as Control
+	var table_rect: Rect2 = stage.camera.framed_rect
+	var gear: Rect2 = hud.settings.button_rect()
+	var blocks: Array[Rect2] = [hud.goal.get_global_rect(), hud.score.get_global_rect(), roll.get_global_rect(), play.get_global_rect(), coins.get_global_rect(), gear]
+	assert(gear.size.x / PHONE_DENSITY >= TOUCH_TARGET, "The settings button is too small at %s" % phone)
+	for card: Control in hud.get_node("Jokers").get_children():
+		blocks.append(card.get_global_rect())
+		assert(card.get_global_rect().size.x / PHONE_DENSITY >= TOUCH_TARGET, "Rack tile too small at %s" % phone)
+	var columns: PackedFloat32Array = stage.columns()
+	for index: int in 5:
+		var dock: DieDock = hud.get_node("Docks").get_child(index) as DieDock
+		blocks.append(dock.get_global_rect())
+		assert(absf(dock.get_global_rect().get_center().x - columns[index]) < 2.0, "Dock %d is off its die column at %s" % [index, phone])
+		assert(dock.card.get_global_rect().size.x / PHONE_DENSITY >= TOUCH_TARGET, "Bonus tile too small at %s" % phone)
+		# One kind of object, one size: Joker tiles match the bonus tiles.
+		assert(absf(dock.card.get_global_rect().size.x - (hud.get_node("Jokers/Joker1") as Control).get_global_rect().size.x) < 1.0, "Joker and bonus tiles differ in size at %s" % phone)
+		assert(dock.get_global_rect().position.y >= table_rect.end.y, "Dock %d climbs onto the table at %s" % [index, phone])
+	for index: int in blocks.size():
+		assert(window.encloses(blocks[index]), "Widget %d leaves the window at %s" % [index, phone])
+		for other: int in range(index + 1, blocks.size()):
+			assert(not blocks[index].intersects(blocks[other]), "Widgets %d and %d overlap at %s" % [index, other, phone])
+	for action: ActionButton in [roll, play]:
+		assert(action.get_global_rect().size.y / PHONE_DENSITY >= TOUCH_TARGET, "%s is too short to press at %s" % [action.name, phone])
+	# Dice drawn smaller than a fingertip get an invisible margin around them.
+	for die: ParoliDie in stage.dice():
+		var reach: float = (ParoliDie.BODY_SIZE + die.pick_padding * 2.0) * table_rect.size.y / (StageCamera.TABLE_TOP - StageCamera.TABLE_BOTTOM)
+		assert(reach / PHONE_DENSITY >= TOUCH_TARGET, "Dice are too small to press at %s" % phone)
+	if tall:
+		# One hand: the rack, the table, the columns, and both actions sit in the lower part
+		# of the screen, in that order, with the actions along the bottom edge.
+		assert((hud.get_node("Jokers/Joker1") as Control).get_global_rect().position.y > float(phone.y) * 0.25, "The rack is out of the thumb's reach")
+		assert(table_rect.get_center().y > float(phone.y) * 0.5, "The table sits too high for one hand")
+		assert(play.get_global_rect().end.y > float(phone.y) * 0.95, "The actions are not at the bottom edge")
+		assert(hud.goal.get_global_rect().end.y <= hud.score.get_global_rect().position.y, "The goal sits above the scoreboard")
+	# A pressed die column explains itself right next to the column, above it in portrait,
+	# where the finger that pressed it is not in the way.
+	var tooltip: BuildTooltip = hud.get_node("Tooltip") as BuildTooltip
+	var dock_one: Control = hud.get_node("Docks/Dock1") as Control
+	await _click(dock_one.get_global_rect().get_center())
+	await process_frame
+	await process_frame
+	assert(tooltip.visible, "A pressed column opens its sheet at %s" % phone)
+	var sheet: Rect2 = tooltip.get_global_rect()
+	assert(window.grow(1.0).encloses(sheet), "The sheet leaves the window at %s" % phone)
+	assert(not sheet.intersects(dock_one.get_global_rect()), "The sheet covers the column that opened it at %s" % phone)
+	assert(not tall or sheet.end.y <= dock_one.get_global_rect().position.y, "The sheet opens under the finger at %s" % phone)
+	assert(sheet.grow(80.0 * PHONE_DENSITY).intersects(dock_one.get_global_rect()), "The sheet opens far from its column at %s" % phone)
+	# The goal meter ignores the pointer and no die lies under it: a neutral place to press.
+	await _click(hud.goal.get_global_rect().get_center())
+	assert(not tooltip.visible, "A press elsewhere closes the sheet at %s" % phone)
 
 ## Overwrite logical die values so assertions do not depend on the sampled faces.
 func _force_values(run: MechanicsRun, values: PackedInt32Array) -> void:

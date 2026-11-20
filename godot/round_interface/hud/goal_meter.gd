@@ -42,6 +42,14 @@ func _ready() -> void:
 	_track.resized.connect(_refresh)
 	_refresh()
 
+## Localized caption above the target, in spaced eyebrow lettering.
+func set_target_caption(caption: String) -> void:
+	(%TargetEyebrow as Label).text = caption
+
+## Rename the round in place; the target, gauge, and celebration are left alone.
+func set_caption(caption: String) -> void:
+	_eyebrow.text = caption
+
 ## Establish a new round immediately, cancelling any count-up and celebration.
 func set_round(caption: String, target: float, score: float) -> void:
 	if _count:

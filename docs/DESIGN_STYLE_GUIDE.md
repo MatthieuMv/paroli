@@ -147,6 +147,28 @@ controls distinguishable and keep text readable at the actual target size.
 Adapt spacing and touch targets to the device rather than shrinking the entire
 desktop layout.
 
+### Phones
+
+Size the interface in logical pixels (window pixels divided by the display's density),
+so a dense phone screen gets the same physical sizes as any other. On a phone:
+
+- Anything pressed is at least 44 logical pixels on its short side; primary actions
+  are about 68 tall. Dice drawn smaller than that keep a larger invisible target.
+- Portrait is for one hand. Actions run along the bottom edge; the die columns, the
+  table, and the rack stack directly above them, within a thumb's reach. Read-only
+  status (goal, scoreboard) takes the top.
+- Landscape is for two thumbs. The table takes the full height; status reads on the
+  left, the rack and actions sit on the right.
+- One kind of object, one size: Joker tiles, bonus tiles, and goods for sale share the
+  size set by the die columns. Status cards and actions stay in proportion to them.
+- Keep what is for sale and what is owned visibly apart: goods sit together on one
+  labelled card; everything outside it belongs to the player.
+- Interface copy follows the game's language everywhere; no screen mixes two.
+- Keep small text readable instead of scaling it with its container. Names that do not
+  fit a narrow column alternate between two lanes.
+- Explanations open in a fixed place away from the dice and from the finger that asked.
+- Nothing depends on hover: a tap does one thing.
+
 ## Motion and direct interaction
 
 Motion explains state changes. Use a short roll with a clear landing, and a

@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://cnxgc0ja11oue"]
+
+[ext_resource type="PackedScene" path="res://round_interface/audio/round_audio.tscn" id="audio"]
+[ext_resource type="PackedScene" path="res://main_menu/main_menu_hud.tscn" id="hud"]
+[ext_resource type="Script" uid="uid://c865mdwpqmqge" path="res://main_menu/main_menu.gd" id="script"]
+[ext_resource type="PackedScene" path="res://table_stage/table_stage.tscn" id="stage"]
+
+[node name="MainMenu" type="Node3D" unique_id=188699933]
+script = ExtResource("script")
+
+[node name="Stage" parent="." unique_id=1841924549 instance=ExtResource("stage")]
+
+[node name="Audio" parent="." unique_id=830847281 instance=ExtResource("audio")]
+
+[node name="Interface" type="CanvasLayer" parent="." unique_id=255521134]
+
+[node name="Hud" parent="Interface" unique_id=689288814 instance=ExtResource("hud")]

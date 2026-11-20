@@ -14,15 +14,11 @@ signal play_pressed
 signal continue_pressed
 ## The pointer reached an interactive element; hosts may answer with a soft tick.
 signal hover_ticked
+## The player asked for the main menu from the settings card.
+signal main_menu_requested
 
 # --- Constants ---
 
-## Reference window for the landscape arrangement; larger windows scale the HUD up.
-const WIDE_DESIGN: Vector2 = Vector2(1280.0, 900.0)
-## Reference window for the portrait arrangement.
-const TALL_DESIGN: Vector2 = Vector2(540.0, 960.0)
-## Aspect ratio below which the portrait arrangement is used.
-const TALL_ASPECT: float = 1.1
 ## Popup fill colors by semantic role; plum outlines keep them readable on felt and paper.
 const POPUP_COLORS: Dictionary[StringName, Color] = {
 	&"points": GameColors.SKY,
@@ -30,10 +26,8 @@ const POPUP_COLORS: Dictionary[StringName, Color] = {
 	&"coins": GameColors.BUTTER,
 	&"tempo": GameColors.TANGERINE,
 }
-## Unscaled die dock footprint in HUD units.
-const DOCK_SIZE: Vector2 = Vector2(104.0, 126.0)
-## Clear space kept between the docks and the action buttons below them.
-const DOCK_GAP: float = 14.0
+## Result card height, as a share of the window, in portrait: low enough for a thumb.
+const TALL_CARD_LEVEL: float = 0.6
 ## Floating increment scene; instances free themselves.
 const POPUP: PackedScene = preload("res://round_interface/hud/score_popup.tscn")
 
@@ -49,12 +43,16 @@ var reduced_motion: bool = false:
 var words: KeywordCatalog
 ## Explicit locale for rendered names; empty follows the game locale.
 var locale: String = ""
+## Arrangement solved by the last `arrange()`: shape, scale, and every widget's slot.
+var layout: HudLayout = HudLayout.new()
 ## Round target and banked score.
 @onready var goal: GoalMeter = $Goal
 ## Combination plate, factor tiles, and revealed total.
 @onready var score: ScoreBoard = $Score
 ## End-of-round card.
 @onready var banner: ResultBanner = $Banner
+## Settings button and card, above everything else.
+@onready var settings: SettingsMenu = $Settings
 ## Four Joker slots in rack order.
 @onready var _jokers: Control = $Jokers
 ## Five die columns in run order.
@@ -77,10 +75,6 @@ var locale: String = ""
 @onready var _zone_roll: Label = $ZoneRoll
 ## Window pixels per HUD unit.
 var _ui_scale: float = 1.0
-## Whether the portrait arrangement is active.
-var _tall: bool = false
-## Top of the bottom tray in HUD units; docks and actions hang below it.
-var _tray_top: float = 0.0
 ## Displayed allowances; the host remains authoritative.
 var _plays: int = 0
 ## Plays granted this round.
@@ -95,8 +89,6 @@ var _coin_balance: int = 0
 var _tooltip_owner: Control
 ## A press or tap pins the tooltip until the next press elsewhere; hover alone never pins.
 var _tooltip_pinned: bool = false
-## Top of the action buttons in HUD units; docks must end above it.
-var _actions_top: float = 0.0
 
 # --- Member functions ---
 
@@ -105,6 +97,8 @@ func _ready() -> void:
 	_roll.pressed.connect(_on_roll)
 	_play.pressed.connect(_on_play)
 	banner.action_pressed.connect(_on_continue)
+	settings.main_menu_requested.connect(main_menu_requested.emit)
+	settings.open_changed.connect(_on_settings_open)
 	_roll.mouse_entered.connect(_on_action_hover.bind(_roll))
 	_play.mouse_entered.connect(_on_action_hover.bind(_play))
 	for card: BuildCard in _jokers.get_children():
@@ -115,35 +109,50 @@ func _ready() -> void:
 		dock.pressed.connect(_on_dock_pressed)
 	_apply_motion()
 
-## Lay out for a window size and return the free rectangle (window pixels) left for the table.
-func arrange(viewport: Vector2) -> Rect2:
-	_tall = viewport.x / viewport.y < TALL_ASPECT
-	var design: Vector2 = TALL_DESIGN if _tall else WIDE_DESIGN
-	_ui_scale = clampf(minf(viewport.x / design.x, viewport.y / design.y), 0.4, 2.0)
+## Lay out for a window size and return the rectangle (window pixels) kept for the table.
+## `density` is window pixels per logical pixel; zero asks the display. Phones get a larger
+## HUD and their own arrangements (see `HudLayout`).
+func arrange(viewport: Vector2, density: float = 0.0) -> Rect2:
+	layout = HudLayout.solve(viewport, density)
+	_ui_scale = layout.ui_scale
 	scale = Vector2.ONE * _ui_scale
 	position = Vector2.ZERO
-	size = viewport / _ui_scale
-	var top: float = _arrange_tall() if _tall else _arrange_wide()
-	banner.position = Vector2.ZERO
-	banner.size = size
+	size = layout.size
+	goal.size = Vector2(layout.status.size.x / layout.status_scale, HudLayout.STATUS_HEIGHT)
+	_place(goal, layout.status.position, layout.status_scale)
+	score.set_stacked(layout.board_stacked)
+	# Only the desktop band leaves the space under the scoreboard free for a popup.
+	score.merge_above = layout.shape != HudLayout.Shape.WIDE
+	_place(score, layout.board.position, layout.board_scale)
+	_place_rack()
+	_coins.position = layout.purse
+	_hint.visible = layout.hint.has_area()
+	_hint.position = layout.hint.position
+	_hint.size = layout.hint.size
+	_roll.position = layout.secondary.position
+	_roll.size = layout.secondary.size
+	_play.position = layout.primary.position
+	_play.size = layout.primary.size
+	banner.arrange(size, TALL_CARD_LEVEL if layout.shape == HudLayout.Shape.TALL else 0.5)
 	_popups.size = size
+	settings.arrange(size, layout.settings)
 	dismiss_tooltip()
-	return Rect2(0.0, top * _ui_scale, viewport.x, (_tray_top - top) * _ui_scale)
+	# A rotation moves every tile away from the pointer without telling them it left.
+	for card: BuildCard in _cards():
+		card.set_hovered(false)
+	return Rect2(layout.table.position * _ui_scale, layout.table.size * _ui_scale)
 
 ## Align die docks and row captions with the framed table (all inputs in window pixels).
-## Docks hang just below `table_bottom`, so they stay with the table when it has spare room.
+## Docks hang just below `table_bottom` and take their size from the die columns' spacing.
 func align_table(columns: PackedFloat32Array, pixels_per_unit: float, table_bottom: float, play_point: Vector2, roll_point: Vector2) -> void:
-	# Docks shrink together when die columns are closer than a dock is wide, and again if
-	# they would otherwise reach the action buttons (portrait only; landscape has them aside).
 	var spacing: float = absf(columns[1] - columns[0]) / _ui_scale if columns.size() > 1 else 200.0
-	var dock_scale: float = _dock_scale(spacing)
-	var dock_top: float = table_bottom / _ui_scale + (6.0 if _tall else 14.0)
-	if _tall:
-		dock_scale = minf(dock_scale, maxf(0.4, (_actions_top - DOCK_GAP - dock_top) / DOCK_SIZE.y))
+	var foot: Vector2 = DieDock.footprint(spacing)
+	var dock_top: float = table_bottom / _ui_scale + layout.dock_gap
 	for index: int in mini(columns.size(), _docks.get_child_count()):
 		var dock: DieDock = _docks.get_child(index) as DieDock
-		dock.scale = Vector2.ONE * dock_scale
-		dock.position = Vector2(columns[index] / _ui_scale - DOCK_SIZE.x * 0.5 * dock_scale, dock_top)
+		# Neighbors alternate name lanes, like the dice alternate rows on the felt.
+		dock.fit(spacing, index % 2)
+		dock.position = Vector2(columns[index] / _ui_scale - foot.x * 0.5, dock_top)
 	_zone_play.position = play_point / _ui_scale - Vector2(0.0, _zone_play.size.y * 0.5)
 	_zone_roll.position = roll_point / _ui_scale - Vector2(0.0, _zone_roll.size.y * 0.5)
 	_zone_play.visible = pixels_per_unit / _ui_scale > 24.0
@@ -158,6 +167,8 @@ func show_build(run: MechanicsRun, words_: KeywordCatalog, locale_: String) -> v
 	_play.title = words.render(&"validation", {}, locale).capitalize()
 	_zone_play.text = _spaced(words.render(&"validation", {}, locale))
 	_zone_roll.text = _spaced(words.render(&"roll", {}, locale))
+	goal.set_target_caption(_spaced(words.render(&"ui.target", {}, locale)))
+	_hint.text = words.render(&"ui.round_hint", {}, locale)
 	var rack: int = 0
 	for card: BuildCard in _jokers.get_children():
 		card.clear()
@@ -171,9 +182,13 @@ func show_build(run: MechanicsRun, words_: KeywordCatalog, locale_: String) -> v
 		var bonus: OwnedDefinition = run.find_owned(StringName("bonus:" + String(die.id)))
 		(_docks.get_child(index) as DieDock).show_die(die.id, index + 1, upgrade.definition as UpgradeDefinition if upgrade else null, bonus.definition as BonusDefinition if bonus else null, words, locale)
 
-## Establish the round caption, target, and banked score without animation.
-func show_round(round_number: int, target: float, banked: float) -> void:
-	goal.set_round(_spaced("%s %d" % [words.render(&"round", {}, locale), round_number]), target, banked)
+## Establish the round's name, target, and banked score without animation.
+func show_round(title: String, target: float, banked: float) -> void:
+	goal.set_round(_spaced(title), target, banked)
+
+## Rename the round in place, leaving its target, gauge, and stamp as they are.
+func show_round_title(title: String) -> void:
+	goal.set_caption(_spaced(title))
 
 ## Show remaining plays and manual rolls; `animate` pops the pip that changed.
 func show_allowances(plays: int, plays_total: int, rerolls: int, rerolls_total: int, animate: bool) -> void:
@@ -212,12 +227,6 @@ func mark_eligible(owner_ids: Array[StringName]) -> int:
 		if card.set_eligible(not card.is_empty() and card.owner_id in owner_ids):
 			started += 1
 	return started
-
-## Open or close a die's sheet from outside, for example while the pointer rests on the die.
-func inspect_die(die_id: StringName, inspecting: bool) -> void:
-	for dock: DieDock in _docks.get_children():
-		if dock.die_id == die_id and dock.has_details():
-			_on_dock_hover(dock, inspecting)
 
 ## Punch the card of a resolving bonus or Joker; unknown owners are ignored.
 func trigger_owner(owner_id: StringName, strength: float = 1.0) -> void:
@@ -267,67 +276,21 @@ func _input(event: InputEvent) -> void:
 	if _tooltip_pinned and button and button.pressed and not _tooltip_owner.get_global_rect().has_point(button.position):
 		dismiss_tooltip()
 
-## Landscape: goal, scoreboard, and rack share one band; docks and actions share the tray.
-func _arrange_wide() -> float:
-	var margin: float = 28.0
-	_place(goal, Vector2(margin, 30.0), 1.0)
-	_place(score, Vector2((size.x - 360.0) * 0.5, 24.0), 1.0)
-	_place_rack(Vector2(size.x - margin - (98.0 * 4.0 + 8.0 * 3.0), 32.0), 98.0, 8.0)
-	_tray_top = size.y - 160.0
-	_actions_top = _tray_top
-	_coins.position = Vector2(margin, _tray_top + 26.0)
-	_hint.visible = true
-	_hint.position = Vector2(margin, _tray_top + 86.0)
-	_hint.size = Vector2(250.0, 54.0)
-	_roll.position = Vector2(size.x - margin - 176.0, _tray_top + 12.0)
-	_roll.size = Vector2(176.0, 62.0)
-	_play.position = Vector2(size.x - margin - 176.0, _tray_top + 84.0)
-	_play.size = Vector2(176.0, 62.0)
-	return 168.0
-
-## Portrait: scaled goal and scoreboard side by side, rack below, actions along the bottom.
-func _arrange_tall() -> float:
-	var margin: float = 16.0
-	var shrink: float = 0.74
-	var gap: float = size.x - margin * 2.0 - (300.0 + 360.0) * shrink
-	_place(goal, Vector2(margin, 34.0), shrink)
-	_place(score, Vector2(margin + 300.0 * shrink + gap, 28.0), shrink)
-	var card: float = 84.0
-	_place_rack(Vector2((size.x - (card * 4.0 + 8.0 * 3.0)) * 0.5, 142.0), card, 8.0)
-	# Reserve exactly what the docks need at this width, so wide portrait windows (tablets)
-	# never push full-size docks into the action row.
-	var row: float = size.y - 16.0 - 62.0
-	var widest_spacing: float = size.x / (StageCamera.TABLE_HALF_WIDTH * 2.0) * 3.5
-	_actions_top = row
-	_tray_top = row - DOCK_GAP - DOCK_SIZE.y * _dock_scale(widest_spacing) - 6.0
-	_hint.visible = false
-	_coins.position = Vector2(margin, row + 7.0)
-	var left: float = margin + 112.0
-	var width: float = (size.x - margin - left - 10.0) * 0.5
-	_roll.position = Vector2(left, row)
-	_roll.size = Vector2(width, 62.0)
-	_play.position = Vector2(left + width + 10.0, row)
-	_play.size = Vector2(width, 62.0)
-	return 142.0 + card + 12.0
-
-## Dock scale for a die column spacing in HUD units; full size once columns are wide enough.
-func _dock_scale(spacing: float) -> float:
-	return clampf((spacing - 6.0) / DOCK_SIZE.x, 0.5, 1.0)
-
-## Position a fixed-size widget and scale it about its top-left corner.
+## Position a widget and scale it about its top-left corner.
 func _place(widget: Control, at: Vector2, widget_scale: float) -> void:
 	widget.pivot_offset = Vector2.ZERO
 	widget.position = at
 	widget.scale = Vector2.ONE * widget_scale
 
-## Lay the four rack cards out left to right.
-func _place_rack(at: Vector2, card_size: float, gap: float) -> void:
-	_jokers.position = at
+## Lay the four rack cards out in the layout's rows: one line, or a 2 × 2 block.
+func _place_rack() -> void:
+	_jokers.position = layout.rack
+	var step: float = layout.rack_card + layout.rack_gap
 	for index: int in _jokers.get_child_count():
 		var card: BuildCard = _jokers.get_child(index) as BuildCard
-		card.custom_minimum_size = Vector2.ONE * card_size
-		card.size = Vector2.ONE * card_size
-		card.position = Vector2(float(index) * (card_size + gap), 0.0)
+		card.custom_minimum_size = Vector2.ONE * layout.rack_card
+		card.size = Vector2.ONE * layout.rack_card
+		card.position = Vector2(float(index % layout.rack_columns), floorf(float(index) / float(layout.rack_columns))) * step
 
 ## Every bonus and Joker tile, occupied or not.
 func _cards() -> Array[BuildCard]:
@@ -354,6 +317,7 @@ func _apply_motion() -> void:
 	_roll.reduced_motion = reduced_motion
 	_play.reduced_motion = reduced_motion
 	_tooltip.reduced_motion = reduced_motion
+	settings.reduced_motion = reduced_motion
 	for card: BuildCard in _cards():
 		card.reduced_motion = reduced_motion
 
@@ -415,16 +379,22 @@ func _open_dock(dock: DieDock) -> void:
 		definitions.append(dock.bonus)
 	_open_tooltip(dock, eyebrows, definitions)
 
-## Place the explanation next to its source.
+## Open the explanation next to its source. Phones open it above the source first, clear of
+## the finger that asked.
 func _open_tooltip(source: Control, eyebrows: PackedStringArray, definitions: Array[BuildDefinition]) -> void:
 	_tooltip_owner = source
 	_tooltip_pinned = false
 	var rect: Rect2 = source.get_global_rect()
-	_tooltip.present(Rect2(rect.position / _ui_scale, rect.size / _ui_scale), size, eyebrows, definitions, words, locale)
+	_tooltip.present(Rect2(rect.position / _ui_scale, rect.size / _ui_scale), size, eyebrows, definitions, words, locale, layout.shape != HudLayout.Shape.WIDE)
 
 ## Only the element that opened an unpinned explanation may close it.
 func _close_tooltip(source: Control) -> void:
 	if _tooltip_owner == source and not _tooltip_pinned:
+		dismiss_tooltip()
+
+## An opening settings card closes any explanation under it.
+func _on_settings_open(open: bool) -> void:
+	if open:
 		dismiss_tooltip()
 
 ## Available actions acknowledge the pointer.

@@ -3,6 +3,17 @@ class_name ScoreBoard
 ## Combination plate with the Points × Mult readouts and the revealed total.
 ## It animates host-supplied values; scoring arithmetic and timing belong to the host.
 
+# --- Constants ---
+
+## Footprint with the two tiles side by side, as authored in the scene.
+const ROW_SIZE: Vector2 = Vector2(360.0, 132.0)
+## Footprint with Points stacked over Mult, for narrow rails.
+const STACK_SIZE: Vector2 = Vector2(200.0, 250.0)
+## Factor tile footprint in both arrangements.
+const TILE_SIZE: Vector2 = Vector2(150.0, 90.0)
+## Top of the tiles, below the combination plate.
+const TILES_TOP: float = 42.0
+
 # --- Member variables ---
 
 ## Removes springs, digit rolls, and travel; values still update in order.
@@ -24,6 +35,11 @@ var shown_total: float = 0.0:
 		if is_node_ready():
 			_total_value.text = Juice.number(roundf(value))
 			Juice.fit(_total_value, 46, 22)
+## Whether Points is stacked over Mult instead of beside it.
+var stacked: bool = false
+## Whether the folded-percentage popup appears above the Mult tile instead of below it.
+## The HUD sets it where something else sits under the scoreboard.
+var merge_above: bool = false
 ## Whether the tiles currently show numbers instead of the resting dash.
 var _has_values: bool = false
 ## Digit-roll tweens, one per readout, replaced by newer values.
@@ -63,6 +79,39 @@ func _ready() -> void:
 	for label: Label in [%Mult, %MultTitle, %PercentText]:
 		_tone(label, &"mult")
 	show_hint("")
+
+## Choose between the authored row (Points × Mult) and a stack (Points over Mult).
+## The widget keeps its unscaled footprint, `ROW_SIZE` or `STACK_SIZE`; the HUD scales it.
+func set_stacked(stacked_: bool) -> void:
+	stacked = stacked_
+	custom_minimum_size = STACK_SIZE if stacked else ROW_SIZE
+	size = custom_minimum_size
+	var total_size: Vector2 = _total.size
+	if stacked:
+		var left: float = (STACK_SIZE.x - TILE_SIZE.x) * 0.5
+		var gap: float = STACK_SIZE.y - TILES_TOP - TILE_SIZE.y * 2.0
+		_points_tile.position = Vector2(left, TILES_TOP)
+		_times.position = Vector2(left, TILES_TOP + TILE_SIZE.y - 4.0)
+		_times.size = Vector2(TILE_SIZE.x, gap + 8.0)
+		_mult_tile.position = Vector2(left, TILES_TOP + TILE_SIZE.y + gap)
+		_percent.position = Vector2(left + TILE_SIZE.x - 60.0, _mult_tile.position.y - 14.0)
+		# The total covers the seam between the tiles, no wider than the rail.
+		total_size.x = STACK_SIZE.x
+		_total_home = Vector2(0.0, TILES_TOP + TILE_SIZE.y + gap * 0.5 - total_size.y * 0.5)
+	else:
+		var gap: float = ROW_SIZE.x - TILE_SIZE.x * 2.0
+		_points_tile.position = Vector2(0.0, TILES_TOP)
+		_times.position = Vector2(TILE_SIZE.x, TILES_TOP)
+		_times.size = Vector2(gap, TILE_SIZE.y)
+		_mult_tile.position = Vector2(TILE_SIZE.x + gap, TILES_TOP)
+		_percent.position = Vector2(ROW_SIZE.x - 60.0, TILES_TOP - 14.0)
+		total_size.x = 250.0
+		_total_home = Vector2((ROW_SIZE.x - total_size.x) * 0.5, TILES_TOP - 6.0)
+	_total.size = total_size
+	# A total in flight keeps its course; it returns home with the next reveal.
+	if not _total.visible:
+		_total.position = _total_home
+	_plate.position.x = (size.x - _plate.size.x) * 0.5
 
 ## Localized captions for the two factors.
 func set_titles(points_title: String, mult_title: String) -> void:
@@ -183,10 +232,16 @@ func drop_total(seconds: float) -> void:
 	tween.tween_property(_total, "modulate:a", 0.0, seconds)
 	tween.chain().tween_callback(_total.hide)
 
-## Global top-center of a tile, where increments should aim.
-func tile_anchor(mult: bool) -> Vector2:
-	var tile: Control = _mult_tile if mult else _points_tile
-	return tile.get_global_transform() * Vector2(tile.size.x * 0.5, 0.0)
+## Global point just outside the Mult tile for the folded-percentage popup: under the
+## tile, or over it when `merge_above` is set.
+func merge_anchor() -> Vector2:
+	var local: Vector2 = Vector2(_mult_tile.size.x * 0.5, -12.0 if merge_above else _mult_tile.size.y + 16.0)
+	return _mult_tile.get_global_transform() * local
+
+## Signed vertical travel, in HUD units, for the popup placed at `merge_anchor()`: away
+## from the tile.
+func merge_drift() -> float:
+	return -30.0 if merge_above else 30.0
 
 ## Arc the plate slightly upward on its way to the goal meter.
 func _fly_step(progress: float, start: Vector2, end: Vector2) -> void:

@@ -57,27 +57,19 @@ func _run() -> void:
 	assert(shop.offers.size() == 5)
 	for offer: ShopOffer in shop.offers:
 		assert(not offer.sold and offer.definition.id != joker_offer.definition.id, "Owned identities stay off the shelf")
-	# Random purchases: discounted, never owned, never a duplicate of the shelf.
-	assert(shop.random_price(ShopSession.JOKER) == 4 and shop.random_price(ShopSession.BONUS) == 3)
-	var shelf: Array[StringName] = []
-	for offer: ShopOffer in shop.offers:
-		shelf.append(offer.definition.id)
-	var surprise: IllustratedDefinition = shop.buy_random(ShopSession.JOKER)
-	assert(surprise is JokerDefinition and surprise.id not in shelf and run.coins == 23)
-	assert(shop.owned_sell_value(StringName("joker:" + String(surprise.id))) == 2, "Sale value follows the discounted price paid")
-	var lucky: IllustratedDefinition = shop.buy_random(ShopSession.BONUS, &"die_2")
-	assert(lucky is BonusDefinition and run.find_owned(&"bonus:die_2").definition == lucky and run.coins == 20)
-	assert(shop.buy_random(ShopSession.BONUS, &"die_2") == null and run.coins == 20, "A random bonus needs a free die too")
 	# Capacity and funds refuse cleanly.
-	assert(shop.buy(shop.offers[0]).is_empty() and shop.free_joker_slots() == 0)
-	assert(shop.buy_block(shop.offers[1]) == ShopSession.NO_JOKER_SLOT and shop.random_block(ShopSession.JOKER) == ShopSession.NO_JOKER_SLOT)
+	assert(shop.buy(shop.offers[0]).is_empty() and shop.buy(shop.offers[1]).is_empty())
+	assert(run.coins == 27 - rules.joker_price * 2 and shop.free_joker_slots() == 0)
+	var extra: ShopOffer = ShopOffer.new()
+	extra.family = ShopSession.JOKER
+	extra.definition = catalog.jokers[0]
+	extra.price = rules.joker_price
+	assert(shop.buy_block(extra) == ShopSession.NO_JOKER_SLOT)
 	run.coins = 1
 	assert(shop.buy_block(shop.offers[2]) == ShopSession.NO_COINS)
 	assert(not shop.refresh().errors.is_empty() and shop.refreshes == 2 and run.coins == 1)
-	# A new visit resets the refresh cost; rules can remove random purchases.
+	# A new visit resets the refresh cost.
 	shop.open()
 	assert(shop.refresh_cost() == rules.refresh_base_cost)
-	rules.random_bonus = false
-	assert(shop.random_block(ShopSession.BONUS) == ShopSession.INVALID)
-	print("PASS: shop stock, purchases, placement, moves, sales, rising refresh, random purchases, refusals.")
+	print("PASS: shop stock, purchases, placement, moves, sales, rising refresh, refusals.")
 	quit()

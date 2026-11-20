@@ -8,6 +8,8 @@ class_name ShopInterface
 
 ## The player pressed the leave action; the host starts whatever comes next.
 signal leave_requested
+## The player asked for the main menu from the settings card.
+signal main_menu_requested
 
 # --- Constants ---
 
@@ -15,6 +17,14 @@ signal leave_requested
 const SHELF_BACK_LEFT: Vector3 = Vector3(-9.7, 0.0, -6.35)
 ## Front-right corner of the shelf area, short of the row where the dice rest.
 const SHELF_FRONT_RIGHT: Vector3 = Vector3(9.7, 0.0, -1.2)
+## Glossary key for each reason the session gives when it refuses a purchase.
+const REFUSAL_WORDS: Dictionary[String, StringName] = {
+	ShopSession.NO_COINS: &"ui.shop.refusal.no_coins",
+	ShopSession.NO_JOKER_SLOT: &"ui.shop.refusal.no_joker_slot",
+	ShopSession.NO_BONUS_SLOT: &"ui.shop.refusal.no_bonus_slot",
+	ShopSession.SOLD: &"ui.shop.refusal.sold",
+	ShopSession.INVALID: &"ui.shop.refusal.invalid",
+}
 
 # --- Member variables ---
 
@@ -32,6 +42,20 @@ const SHELF_FRONT_RIGHT: Vector3 = Vector3(9.7, 0.0, -1.2)
 			_audio.muted = value
 ## Explicit locale for names and captions; empty follows the game locale.
 @export var locale: String = ""
+## Window pixels per logical pixel, which sizes the HUD for the screen it is on. Zero follows
+## the display; checks set it to lay a phone out in an offscreen viewport.
+@export_range(0.0, 4.0, 0.125) var display_density: float = 0.0:
+	set(value):
+		display_density = value
+		if is_node_ready():
+			_layout()
+## Whether the settings card offers the way back to the main menu; hosts that have one
+## enable it and listen to `main_menu_requested`.
+@export var main_menu_available: bool = false:
+	set(value):
+		main_menu_available = value
+		if is_node_ready():
+			_hud.settings.main_menu_available = value
 ## Shared table set: wallpaper, camera, table, and dice. Hosts may restyle its wallpaper.
 @onready var stage: TableStage = $Stage
 ## Heads-up display.
@@ -44,13 +68,14 @@ var _session: ShopSession
 var _caption: String = ""
 ## Glossary for names and captions.
 var _words: KeywordCatalog = GameKeywords.new()
+## Language the texts on screen are written in.
+var _shown_locale: String = TranslationServer.get_locale()
 
 # --- Member functions ---
 
 ## Ready callback: connect the HUD's intents and frame the table.
 func _ready() -> void:
 	_hud.buy_requested.connect(_on_buy_requested)
-	_hud.random_requested.connect(_on_random_requested)
 	_hud.sell_requested.connect(_on_sell_requested)
 	_hud.move_requested.connect(_on_move_requested)
 	_hud.refresh_pressed.connect(_on_refresh_pressed)
@@ -59,6 +84,11 @@ func _ready() -> void:
 	_hud.picked.connect(_audio.play.bind(&"pickup", 0, 0.0, 0.06))
 	_hud.dealt.connect(_on_dealt)
 	_hud.hover_ticked.connect(_audio.play.bind(&"hover", 0, 0.0, 0.1))
+	_hud.main_menu_requested.connect(main_menu_requested.emit)
+	_hud.settings.main_menu_available = main_menu_available
+	GameSettings.shared().changed.connect(_on_settings_changed)
+	if not GameSettings.shared().sound_enabled:
+		muted = true
 	stage.backdrop_changed.connect(_on_backdrop_changed)
 	_on_backdrop_changed()
 	_audio.muted = muted
@@ -70,6 +100,10 @@ func _ready() -> void:
 func is_busy() -> bool:
 	return _hud.locked
 
+## Localized caption for the visit before a given round, for hosts that have no better line.
+func round_caption(round_number: int) -> String:
+	return _words.render(&"ui.shop.before_round", {"round": str(round_number)}, locale)
+
 ## Start a shop visit on the host's session: fresh stock, refresh cost back at its base.
 func open_shop(session: ShopSession, caption: String) -> void:
 	_session = session
@@ -78,6 +112,11 @@ func open_shop(session: ShopSession, caption: String) -> void:
 	session.open()
 	_show_dice()
 	_hud.show_shop(session, caption, _words, locale, true)
+
+## Replace the line under the shop's name; hosts call it again after a language change.
+func set_caption(caption: String) -> void:
+	_caption = caption
+	_hud.show_caption(caption)
 
 ## Redraw after the host changed the run outside the shop's own actions (debug coins, for example).
 func sync() -> void:
@@ -90,7 +129,8 @@ func _layout() -> void:
 	if not is_inside_tree():
 		return
 	var viewport: Vector2 = get_viewport().get_visible_rect().size
-	stage.frame(_hud.arrange(viewport), viewport)
+	var free: Rect2 = _hud.arrange(viewport, display_density)
+	stage.frame(free, viewport, _hud.layout.table_half_width)
 	var corner: Vector2 = stage.project(SHELF_BACK_LEFT)
 	var die_rects: Array[Rect2] = []
 	for die_id: StringName in stage.views:
@@ -111,23 +151,6 @@ func _on_buy_requested(offer_index: int, die_id: StringName) -> void:
 		_on_refused(block, _hud.purse_anchor())
 		return
 	_present_purchase(offer.definition, coins, die_id)
-
-## Buy an unknown item: pay, turn the tile over, then let it fly to its place.
-func _on_random_requested(family: StringName, die_id: StringName) -> void:
-	var coins: int = _session.run.coins
-	var found: IllustratedDefinition = _session.buy_random(family, die_id)
-	if not found:
-		_on_refused(_session.random_block(family), _hud.purse_anchor())
-		return
-	# The reveal is a short beat; the HUD ignores presses until the item has a home.
-	_hud.reveal_random(family, found)
-	_hud.locked = true
-	_audio.play(&"reveal")
-	_hud.popup(_hud.purse_anchor(), Juice.signed(float(_session.run.coins - coins)), GameColors.BUTTER, 26, true)
-	_hud.show_coins(_session.run.coins, true)
-	await _pause(0.75)
-	_hud.locked = false
-	_present_purchase(found, _session.run.coins, die_id)
 
 ## Sell an owned bonus or Joker into the purse.
 func _on_sell_requested(owner_id: StringName) -> void:
@@ -208,14 +231,26 @@ func _show_dice() -> void:
 		die.effect_enabled = false
 		die.shine_enabled = false
 
-## Say why a press did nothing.
+## Say why a press did nothing, in the player's language. The session's reason is a
+## stable English code; unknown ones are shown as they are.
 func _on_refused(reason: String, at: Vector2) -> void:
-	_hud.popup(at, reason, GameColors.CHERRY, 19)
+	var text: String = _words.render(REFUSAL_WORDS[reason], {}, locale) if REFUSAL_WORDS.has(reason) else reason
+	_hud.popup(at, text, GameColors.CHERRY, 19)
 	_audio.play(&"deny")
 
 ## Each slot of a new shelf lands with a tick that climbs the ladder.
 func _on_dealt(order: int) -> void:
 	_audio.play(&"deal", order, 0.0, 0.05)
+
+## Follow the shared preferences: sound at once; a new language rewrites the shop's texts
+## in place, without dealing the shelf again.
+func _on_settings_changed() -> void:
+	muted = not GameSettings.shared().sound_enabled
+	if TranslationServer.get_locale() == _shown_locale:
+		return
+	_shown_locale = TranslationServer.get_locale()
+	if _session and not is_busy():
+		_hud.show_shop(_session, _caption, _words, locale, false)
 
 ## The wallpaper changed: recolor the marks the HUD draws straight on the wall.
 func _on_backdrop_changed() -> void:

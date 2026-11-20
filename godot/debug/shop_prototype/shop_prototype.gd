@@ -25,16 +25,29 @@ var _visit: int = 1
 
 # --- Member functions ---
 
-## Ready callback: connect debug controls and open the first shop.
+## Ready callback: load the player's preferences, connect debug controls, and open the
+## first shop.
 func _ready() -> void:
+	GameSettings.shared().changed.connect(_on_settings_changed)
+	GameSettings.shared().load_saved()
+	_on_settings_changed()
 	(%Toggle as Button).pressed.connect(_toggle_panel)
 	(%Build as Button).pressed.connect(_next_build)
 	(%Restock as Button).pressed.connect(_open)
 	(%Coins as Button).pressed.connect(_grant_coins)
 	(%Motion as Button).toggled.connect(_on_motion_toggled)
 	(%Sound as Button).toggled.connect(_on_sound_toggled)
+	get_viewport().size_changed.connect(_scale_debug)
+	_scale_debug()
 	_shop.leave_requested.connect(_on_shop_left)
 	_new_run()
+
+## Draw the debug controls at the display's density, so they stay pressable on a phone.
+## They sit in the top-left corner, about which the layer scales; the top-right corner
+## belongs to the settings button.
+func _scale_debug() -> void:
+	var layer: CanvasLayer = $Debug as CanvasLayer
+	layer.scale = Vector2.ONE * HudLayout.display_density()
 
 ## Start a fresh run with the selected fixture and open its first shop.
 func _new_run() -> void:
@@ -45,7 +58,7 @@ func _new_run() -> void:
 
 ## Open (or reopen) a visit: fresh stock, refresh cost back at its base.
 func _open() -> void:
-	_shop.open_shop(_session, "Before round %d" % (_visit + 1))
+	_shop.open_shop(_session, _shop.round_caption(_visit + 1))
 
 ## Leaving simply starts the next visit; there is no round in this fixture.
 func _on_shop_left() -> void:
@@ -70,6 +83,12 @@ func _grant_coins() -> void:
 func _on_motion_toggled(enabled: bool) -> void:
 	_shop.reduced_motion = enabled
 
-## Toggle sound effects.
+## Toggle sound effects through the shared preferences, as the settings card does.
 func _on_sound_toggled(enabled: bool) -> void:
-	_shop.muted = not enabled
+	GameSettings.shared().set_sound_enabled(enabled)
+
+## Mirror the shared preferences: the Sound toggle, and the caption this host writes.
+func _on_settings_changed() -> void:
+	(%Sound as Button).set_pressed_no_signal(GameSettings.shared().sound_enabled)
+	if _session:
+		_shop.set_caption(_shop.round_caption(_visit + 1))

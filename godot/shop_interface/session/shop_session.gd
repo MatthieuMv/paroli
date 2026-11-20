@@ -20,8 +20,6 @@ const NO_JOKER_SLOT: String = "No free Joker slot"
 const NO_BONUS_SLOT: String = "No free bonus slot"
 ## Refusal: the offer was already bought this stock.
 const SOLD: String = "Already sold"
-## Refusal: every identity of that family is owned or already on the shelf.
-const EMPTY_POOL: String = "Nothing left to find"
 ## Refusal: the mechanics rejected the request (invalid die, owner, or transfer).
 const INVALID: String = "Not possible"
 
@@ -31,13 +29,13 @@ const INVALID: String = "Not possible"
 var run: MechanicsRun
 ## Prices, stock sizes, and refresh costs for this run.
 var rules: ShopRules
-## Seedable sampler for stock and random purchases.
+## Seedable sampler for stock.
 var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 ## Shelf in display order: Jokers, then bonuses.
 var offers: Array[ShopOffer] = []
 ## Paid refreshes so far in the current visit; drives the rising refresh cost.
 var refreshes: int = 0
-## Content source for stock and random purchases.
+## Content source for stock.
 var _catalog: EffectsCatalog = EffectsCatalog.new()
 ## Monotonic suffix keeps every committed event ID unique across the run.
 var _event_serial: int = 0
@@ -59,10 +57,6 @@ func open() -> void:
 ## Known price of a family.
 func price_of(family: StringName) -> int:
 	return rules.joker_price if family == JOKER else rules.bonus_price
-
-## Discounted price of a random purchase; never free.
-func random_price(family: StringName) -> int:
-	return maxi(1, int(ceilf(float(price_of(family)) * float(100 - rules.random_discount_percent) / 100.0)))
 
 ## Cost of the next paid refresh; rises with each refresh in this visit.
 func refresh_cost() -> int:
@@ -109,23 +103,6 @@ func buy(offer: ShopOffer, die_id: StringName = &"") -> String:
 	if block.is_empty():
 		offer.sold = true
 	return block
-
-## Why a random purchase of a family is unavailable, or an empty string when it is possible.
-func random_block(family: StringName) -> String:
-	if not (rules.random_joker if family == JOKER else rules.random_bonus):
-		return INVALID
-	if _pool(family).is_empty():
-		return EMPTY_POOL
-	return _family_block(family, random_price(family))
-
-## Pay the discounted price for an unknown item of a family and acquire it immediately.
-## Returns the item, or null when the purchase was refused.
-func buy_random(family: StringName, die_id: StringName = &"") -> IllustratedDefinition:
-	if not random_block(family).is_empty():
-		return null
-	var pool: Array[IllustratedDefinition] = _pool(family)
-	var pick: IllustratedDefinition = pool[rng.randi_range(0, pool.size() - 1)]
-	return pick if _acquire(pick, random_price(family), die_id).is_empty() else null
 
 ## Sell an owned bonus or Joker. Returns the coins gained, or -1 when refused.
 func sell(owner_id: StringName) -> int:

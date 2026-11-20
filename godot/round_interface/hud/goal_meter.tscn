@@ -44,7 +44,7 @@ corner_detail = 8
 anti_aliasing_size = 1.2
 
 [node name="GoalMeter" type="Control"]
-custom_minimum_size = Vector2(300, 118)
+custom_minimum_size = Vector2(180, 118)
 layout_mode = 3
 anchors_preset = 0
 offset_right = 300.0
@@ -74,10 +74,12 @@ theme_override_styles/panel = SubResource("face")
 [node name="Eyebrow" type="Label" parent="Body"]
 unique_name_in_owner = true
 modulate = Color(1, 1, 1, 0.72)
-layout_mode = 0
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 0.5
 offset_left = 20.0
 offset_top = 12.0
-offset_right = 170.0
+offset_right = 20.0
 offset_bottom = 30.0
 mouse_filter = 2
 theme_override_colors/font_color = Color(0.188235, 0.133333, 0.239216, 1)
@@ -87,10 +89,12 @@ text = "R O U N D   1"
 [node name="TargetEyebrow" type="Label" parent="Body"]
 unique_name_in_owner = true
 modulate = Color(1, 1, 1, 0.72)
-layout_mode = 0
-offset_left = 150.0
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_right = 1.0
 offset_top = 12.0
-offset_right = 280.0
+offset_right = -20.0
 offset_bottom = 30.0
 mouse_filter = 2
 theme_override_colors/font_color = Color(0.188235, 0.133333, 0.239216, 1)
@@ -100,10 +104,12 @@ horizontal_alignment = 2
 
 [node name="Score" type="Label" parent="Body"]
 unique_name_in_owner = true
-layout_mode = 0
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 0.5
 offset_left = 20.0
 offset_top = 28.0
-offset_right = 170.0
+offset_right = 20.0
 offset_bottom = 78.0
 mouse_filter = 2
 theme_override_colors/font_color = Color(0.188235, 0.133333, 0.239216, 1)
@@ -115,10 +121,12 @@ vertical_alignment = 1
 
 [node name="Target" type="Label" parent="Body"]
 unique_name_in_owner = true
-layout_mode = 0
-offset_left = 150.0
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_right = 1.0
 offset_top = 28.0
-offset_right = 280.0
+offset_right = -20.0
 offset_bottom = 78.0
 mouse_filter = 2
 theme_override_colors/font_color = Color(0.188235, 0.133333, 0.239216, 1)
@@ -131,10 +139,12 @@ vertical_alignment = 1
 
 [node name="Track" type="Panel" parent="Body"]
 unique_name_in_owner = true
-layout_mode = 0
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
 offset_left = 18.0
 offset_top = 80.0
-offset_right = 282.0
+offset_right = -18.0
 offset_bottom = 102.0
 mouse_filter = 2
 theme_override_styles/panel = SubResource("track")
@@ -152,10 +162,13 @@ theme_override_styles/panel = SubResource("fill")
 [node name="Stamp" type="Label" parent="Body"]
 unique_name_in_owner = true
 visible = false
-layout_mode = 0
-offset_left = 96.0
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -204.0
 offset_top = 60.0
-offset_right = 296.0
+offset_right = -4.0
 offset_bottom = 104.0
 mouse_filter = 2
 theme_override_colors/font_color = Color(0.298039, 0.433333, 0.468627, 1)

@@ -69,7 +69,7 @@ anti_aliasing_size = 1.2
 [sub_resource type="StyleBoxEmpty" id="focus"]
 
 [node name="ActionButton" type="Button"]
-custom_minimum_size = Vector2(176, 62)
+custom_minimum_size = Vector2(96, 48)
 offset_right = 176.0
 offset_bottom = 62.0
 focus_mode = 0
@@ -94,7 +94,9 @@ mouse_filter = 2
 layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
+offset_left = 10.0
 offset_top = 5.0
+offset_right = -10.0
 offset_bottom = 37.0
 grow_horizontal = 2
 mouse_filter = 2

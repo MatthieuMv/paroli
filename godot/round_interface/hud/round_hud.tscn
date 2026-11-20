@@ -9,6 +9,7 @@
 [ext_resource type="PackedScene" path="res://round_interface/hud/action_button.tscn" id="action"]
 [ext_resource type="PackedScene" path="res://round_interface/hud/result_banner.tscn" id="banner"]
 [ext_resource type="PackedScene" path="res://round_interface/hud/build_tooltip.tscn" id="tooltip"]
+[ext_resource type="PackedScene" path="res://settings/settings_menu.tscn" id="settings"]
 
 [node name="RoundHud" type="Control"]
 layout_mode = 3
@@ -116,4 +117,7 @@ anchor_right = 0.0
 anchor_bottom = 0.0
 
 [node name="Tooltip" parent="." instance=ExtResource("tooltip")]
+layout_mode = 0
+
+[node name="Settings" parent="." instance=ExtResource("settings")]
 layout_mode = 0

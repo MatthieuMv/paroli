@@ -117,7 +117,8 @@ func clear() -> void:
 	_eligible = false
 	_hover_target = 0.0
 
-## Tint the free-slot outline for the wall it sits on; faint on any scheme.
+## Tint the free-slot outline for the surface it sits on; faint on any scheme. Each tile
+## owns its outline, so tiles on the wallpaper and tiles on the felt can differ.
 func set_slot_ink(ink: Color) -> void:
 	var style: StyleBoxFlat = _slot.get_theme_stylebox("panel") as StyleBoxFlat
 	# Cream needs a little more opacity than plum to read as the same quiet outline.
@@ -194,7 +195,9 @@ func _process(delta: float) -> void:
 			spring *= cos(_punch_clock * 24.0)
 	var tilt: float = 0.0
 	if not reduced_motion and _hover > 0.01:
-		tilt = (get_local_mouse_position().x / maxf(size.x, 1.0) - 0.5) * 0.2 * _hover
+		# Bounded, so a pointer left far away (a finger lifted before a rotation) cannot
+		# spin the tile.
+		tilt = clampf(get_local_mouse_position().x / maxf(size.x, 1.0) - 0.5, -0.5, 0.5) * 0.2 * _hover
 	# An eligible tile rides higher and breathes, so it reads even between sweeps.
 	var breath: float = 0.0
 	if _eligible:

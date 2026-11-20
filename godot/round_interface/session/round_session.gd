@@ -2,7 +2,8 @@ extends RefCounted
 class_name RoundSession
 ## Host-side round logic around MechanicsRun: samples faces, supplies D-022 base scores,
 ## and mints unique event IDs. No scene, node, or rendering dependency.
-## The unused-play coin rate is an explicit host fixture; the design has not fixed one yet.
+## The cleared-round and unused-play coin rates are explicit host fixtures; the design has
+## not fixed either yet.
 
 # --- Member variables ---
 
@@ -12,6 +13,9 @@ var run: MechanicsRun
 var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 ## Placeholder conversion for unused plays on success; not an accepted economy value.
 var coins_per_unused_play: int = 1
+## Placeholder reward for clearing a round, paid even when every play was used; not an
+## accepted economy value.
+var coins_per_round: int = 0
 ## Plays granted at the start of the current round, after allowance Jokers.
 var plays_granted: int = 0
 ## Manual rolls granted at the start of the current round, after allowance Jokers.
@@ -129,8 +133,9 @@ func play(selected: Array[StringName]) -> PlayOutcome:
 	outcome.succeeded = outcome.completed and not run.run_failed
 	outcome.unused_plays = run.validations_remaining
 	if outcome.succeeded:
+		outcome.round_coins = coins_per_round
 		outcome.unused_play_coins = outcome.unused_plays * coins_per_unused_play
-		run.coins += outcome.unused_play_coins
+		run.coins += outcome.round_coins + outcome.unused_play_coins
 	return outcome
 
 ## Dice that will reroll automatically after a non-final play.

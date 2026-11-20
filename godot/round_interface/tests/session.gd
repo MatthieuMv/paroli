@@ -75,7 +75,29 @@ func _run() -> void:
 	assert(easy.open().errors.is_empty())
 	var win: PlayOutcome = easy.play([&"die_1"])
 	assert(win.succeeded and win.completed and win.unused_plays == 2)
-	assert(win.unused_play_coins == 4 and easy.run.coins == 4)
+	assert(win.unused_play_coins == 4 and win.round_coins == 0 and easy.run.coins == 4)
+	# A cleared round also pays its base reward, even with every play spent.
+	var spent: RoundSession = RoundSession.new(MechanicsRun.new(), 3)
+	spent.coins_per_round = 4
+	spent.coins_per_unused_play = 1
+	assert(spent.begin(1000000.0).errors.is_empty() and spent.open().errors.is_empty())
+	for play: int in 2:
+		assert(not spent.play([&"die_1"]).completed)
+		assert(spent.automatic_roll([&"die_1"]).errors.is_empty())
+	spent.run.round_target = 1.0
+	var final_play: PlayOutcome = spent.play([&"die_1"])
+	assert(final_play.succeeded and final_play.unused_plays == 0 and final_play.unused_play_coins == 0)
+	assert(final_play.round_coins == 4 and spent.run.coins == 4, "The base reward needs no unused play")
+	# A failed round pays nothing.
+	var lost: RoundSession = RoundSession.new(MechanicsRun.new(), 3)
+	lost.coins_per_round = 4
+	assert(lost.begin(1000000.0).errors.is_empty() and lost.open().errors.is_empty())
+	var outcome_lost: PlayOutcome
+	for play: int in 3:
+		outcome_lost = lost.play([&"die_1"])
+		if not outcome_lost.completed:
+			assert(lost.automatic_roll([&"die_1"]).errors.is_empty())
+	assert(outcome_lost.completed and not outcome_lost.succeeded and outcome_lost.round_coins == 0 and lost.run.coins == 0)
 	assert(ScoreScript.build(win, easy.run).size() == 1, "A bare single die only scores its face")
 	print("PASS: round session preview boundary, reveal order, running totals, completion.")
 	quit()

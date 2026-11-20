@@ -19,6 +19,7 @@ func _initialize() -> void:
 
 ## Check orientation changes, retained choice, and overlay input ownership.
 func _run() -> void:
+	create_timer(90.0).timeout.connect(_abort)
 	var viewport: SubViewport = SubViewport.new()
 	viewport.size = Vector2i(1280, 900)
 	viewport.msaa_3d = root.msaa_3d
@@ -56,7 +57,7 @@ func _run() -> void:
 		assert(preview.face_value == offers[card.get_index()].faces[0])
 		assert(card.focus_mode == Control.FOCUS_NONE)
 		assert((card.get_node("Margin/Layout/Copy/Title") as Label).text == words.render(String(offers[card.get_index()].name_keyword), {}, "en"))
-		assert((card.get_node("Margin/Layout/Copy/Description") as Label).text == offers[card.get_index()].describe(words, "en"))
+		assert(card.description_text() == offers[card.get_index()].describe(words, "en"))
 	for dimensions: Vector2i in [Vector2i(1280, 900), Vector2i(540, 960), Vector2i(390, 844), Vector2i(320, 568), Vector2i(844, 390)]:
 		viewport.size = dimensions
 		for frame: int in 8:
@@ -65,7 +66,7 @@ func _run() -> void:
 		for card: AugmentCard in cards.get_children():
 			assert(card.size.x > 0.0)
 			var content: BoxContainer = card.get_node("Margin/Layout") as BoxContainer
-			assert(content.get_combined_minimum_size().y + 44.0 <= card.size.y + 1.0)
+			assert(content.get_combined_minimum_size().y + AugmentCard.CONTENT_MARGIN <= card.size.y + 1.0)
 			assert(card.global_position.x >= 0.0)
 			assert(card.global_position.x + card.size.x <= float(dimensions.x))
 		if "--capture" in OS.get_cmdline_user_args():
@@ -92,6 +93,13 @@ func _run() -> void:
 		viewport.get_texture().get_image().save_png("/tmp/paroli-augments-inspection.png")
 	await _click(viewport, (overlay.get_node("Restore") as Button).get_global_rect().get_center())
 	assert(overlay.is_blocking())
+	# Pressing a keyword reads its glossary; it never commits the card around it.
+	var described: KeywordText = first.get_node("Margin/Layout/Copy/Description") as KeywordText
+	first.button_down.emit()
+	described.meta_clicked.emit("points")
+	first.pressed.emit()
+	assert(_selections.is_empty() and overlay.is_blocking() and not first.button_pressed, "A keyword press is not a choice")
+	described.dismiss()
 	# Each native effect must finish before dismissal; a repeated click emits nothing.
 	for index: int in cards.get_child_count():
 		if index > 0:
@@ -116,7 +124,7 @@ func _run() -> void:
 	replacement.clear()
 	assert(not overlay.open(offers.slice(0, 2)))
 	assert(first.upgrade_id == &"rainbow")
-	assert((first.get_node("Margin/Layout/Copy/Description") as Label).text == catalog.upgrade(&"rainbow").describe(words, "fr"))
+	assert(first.description_text() == catalog.upgrade(&"rainbow").describe(words, "fr"))
 	first.pressed.emit()
 	assert(_selections.back() == &"rainbow")
 	await first.activation_finished
@@ -152,3 +160,8 @@ func _key(viewport: SubViewport, key: Key, shift: bool = false) -> void:
 		event.shift_pressed = shift
 		viewport.push_input(event, true)
 		await process_frame
+
+## Watchdog: a failed assertion stops the run; report it instead of hanging.
+func _abort() -> void:
+	push_error("Augment overlay smoke check stalled")
+	quit(1)

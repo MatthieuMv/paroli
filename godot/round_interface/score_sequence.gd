@@ -54,7 +54,7 @@ func play(outcome: PlayOutcome, steps: Array[ScoreStep], title: String) -> void:
 	if result.mult_percent != 0:
 		await _beat(0.12)
 		_hud.score.merge_percent(result.final_mult)
-		_hud.popup(_hud.score.tile_anchor(true) + Vector2(0.0, 106.0) * _hud.scale, "×" + Juice.number(1.0 + float(result.mult_percent) / 100.0), &"mult", 34, 30.0)
+		_hud.popup(_hud.score.merge_anchor(), "×" + Juice.number(1.0 + float(result.mult_percent) / 100.0), &"mult", 34, _hud.score.merge_drift())
 		_audio.play(&"tick_percent", steps.size())
 		_camera.add_trauma(0.22)
 		await _beat(0.52)
@@ -122,13 +122,18 @@ func _activate(die: ParoliDie, index: int) -> void:
 	die.activate()
 	_audio.play(&"consume", 0, -float(index), 0.12)
 
-## Stamp the goal, then turn each unused play into coins.
+## Stamp the goal, pay the round's reward from it, then turn each unused play into coins.
 func _celebrate(outcome: PlayOutcome) -> void:
-	_hud.goal.celebrate("CLEARED")
+	_hud.goal.celebrate(_hud.words.render(&"ui.cleared", {}, _hud.locale).to_upper())
 	_audio.play(&"stamp")
 	_audio.play(&"win")
 	_camera.add_trauma(0.5)
 	await _beat(0.8)
+	if outcome.round_coins > 0:
+		_hud.popup(_hud.goal.score_anchor(), Juice.signed(float(outcome.round_coins)), &"coins", 32, 44.0, true)
+		_hud.add_coins(outcome.round_coins)
+		_audio.play(&"coin", 2)
+		await _beat(0.4)
 	if outcome.unused_play_coins > 0:
 		var each: int = outcome.unused_play_coins / maxi(outcome.unused_plays, 1)
 		for index: int in outcome.unused_plays:

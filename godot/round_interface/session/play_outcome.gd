@@ -33,3 +33,6 @@ var coins_before: int = 0
 var unused_plays: int = 0
 ## Host-policy coins granted for unused plays; zero unless the round succeeded.
 var unused_play_coins: int = 0
+## Host-policy coins every cleared round pays, however many plays it took; zero unless the
+## round succeeded.
+var round_coins: int = 0

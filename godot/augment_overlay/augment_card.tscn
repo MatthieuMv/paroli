@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://augment_overlay/augment_card.gd" id="script"]
 [ext_resource type="Theme" path="res://augment_overlay/card_theme.tres" id="theme"]
 [ext_resource type="PackedScene" path="res://die/die.tscn" id="die"]
+[ext_resource type="PackedScene" path="res://keyword_text/keyword_text.tscn" id="keywords"]
 
 [node name="AugmentCard" type="Button"]
 custom_minimum_size = Vector2(0, 330)
@@ -19,10 +20,10 @@ anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
-theme_override_constants/margin_left = 22
-theme_override_constants/margin_right = 22
-theme_override_constants/margin_top = 22
-theme_override_constants/margin_bottom = 22
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_top = 14
+theme_override_constants/margin_bottom = 18
 
 [node name="Layout" type="BoxContainer" parent="Margin"]
 layout_mode = 2
@@ -62,15 +63,27 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
 mouse_filter = 2
-theme_override_constants/separation = 10
+theme_override_constants/separation = 6
+
+[node name="Eyebrow" type="Label" parent="Margin/Layout/Copy"]
+modulate = Color(1, 1, 1, 0.72)
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.188235, 0.133333, 0.239216, 1)
+theme_override_font_sizes/font_size = 12
+text = "U P G R A D E"
 
 [node name="Title" type="Label" parent="Margin/Layout/Copy"]
 layout_mode = 2
 mouse_filter = 2
-theme_override_font_sizes/font_size = 25
+theme_override_colors/font_color = Color(0.188235, 0.133333, 0.239216, 1)
+theme_override_colors/font_outline_color = Color(0.188235, 0.133333, 0.239216, 1)
+theme_override_constants/outline_size = 1
+theme_override_font_sizes/font_size = 21
 autowrap_mode = 2
 
-[node name="Description" type="Label" parent="Margin/Layout/Copy"]
+[node name="Description" parent="Margin/Layout/Copy" instance=ExtResource("keywords")]
 layout_mode = 2
-mouse_filter = 2
+mouse_filter = 1
+theme_override_font_sizes/normal_font_size = 15
 autowrap_mode = 2

@@ -1,10 +1,81 @@
 # Paroli Godot
 
-Open `project.godot` in Godot 4.7 and press **F5** to run the table preview.
+Open `project.godot` in Godot 4.7 and press **F5** to play the [game](#game): the main
+menu, then a full run.
 Open `debug/die_viewer/die_viewer.tscn` and press **F6** for the individual die studio.
 See [AGENTS.md](AGENTS.md) for typed, documented, feature-owned coding conventions.
 See the [design style guide](../docs/DESIGN_STYLE_GUIDE.md) for visual direction,
 palette, camera, interface, motion, and interaction rules.
+
+## Game
+
+[game/game.tscn](game/game.tscn) is the project's main scene. It opens on the
+[main menu](#main-menu); **New run** starts a run along the design's route (D-016):
+
+| Per biome, five times | Screen |
+| --- | --- |
+| Upgrade choice | [Upgrade cards](#upgrade-card-overlay) over the resting table; the choice installs on the next ordinary die (D-012) |
+| Round 1, then a shop | [Round](#round-interface-prototype), then [shop](#shop-interface-prototype) |
+| Round 2, then a shop | The shop's sign reads "Before the boss" |
+| Boss | A round named "Boss N"; no shop follows it |
+
+Clearing the fifth boss shows **Run complete!** and returns to the menu. A failed round
+ends the run (D-007): its card leads back to the menu, and the build is gone. The settings
+card's **Main menu** abandons a run from a round, a shop, or an upgrade choice (press
+**Inspect deck** first to reach the cog); a throw or reveal finishes before the screen
+changes. Nothing is saved between sessions except the settings.
+
+Choosing an upgrade plays a purchase chime and the die's burst sound (`buy` and `consume`
+from the round's cues), following the sound setting.
+
+Under an upgrade choice the table shows the build so far and the coming round's name and
+target. **Inspect deck** hides the cards to look at it; **Show upgrades** then sits on the
+felt's empty play row, clear of the dice and the die columns.
+
+### Run numbers you can tune
+
+[run_rules.tres](game/session/run_rules.tres) holds the numbers the design has left open.
+Edit it in the Inspector; shop prices stay in [shop_rules.tres](#rules-you-can-tune).
+
+| Setting | Default | Meaning |
+| --- | ---: | --- |
+| `biomes` | 5 | Biomes in a run; lower it for a short test run |
+| `regular_rounds` | 2 | Rounds before each biome's boss, each followed by a shop |
+| `starting_coins` | 0 | Purse at the start of a run |
+| `coins_per_round` | 4 | Coins for clearing a round, however many plays it took |
+| `coins_per_unused_play` | 1 | Extra coins for each play left when a round is cleared (D-021) |
+| `first_target` / `target_growth` | 100 / 1.6 | Round 1's target, and the factor from each round to the next |
+
+Targets are rounded to two significant digits and always rise (D-017): 100, 160, 260, 410,
+660, 1 000 … 72 000 for the fifteenth round. These are placeholders taken from the round
+prototype, not balance. Fixture decisions made so a run is playable, all in
+[run_session.gd](game/session/run_session.gd): a boss is a plain round with the next
+target, because the design has not defined boss rules yet (so nothing is revealed after
+the upgrade choice); an upgrade a die already wears is never offered again; plays and
+manual rolls stay at three each.
+
+### Structure
+
+- `session/`: scene-free run logic. `RunSession` lays out the route as `RunStop`s (upgrade
+  choice, round, shop), samples the three upgrade offers once per choice, installs the
+  chosen one, and owns the run's `MechanicsRun`, `RoundSession`, and `ShopSession`.
+  `RunRules` is the tunable fixture.
+- `game.gd`: shows the screen each stop needs and writes the captions that name it. One
+  table screen is in the tree at a time; the menu, round, and shop wait parked outside it.
+  It is also the app's entry point, so it loads the saved settings.
+
+```sh
+godot --headless --path godot --script res://game/tests/session.gd
+godot --headless --path godot --script res://game/tests/smoke.gd
+# With a working display; saves /tmp/paroli-game-*.png:
+godot --disable-vsync --path godot --script res://game/tests/smoke.gd -- --capture
+```
+
+The session check traces the whole route (five upgrades, ten shops, fifteen rounds), the
+rising targets, upgrade order, and a failed run. The game check plays a two-biome run to
+its end with real pointer presses on the menu, the cards, the result card, and the shop,
+then covers a failed round, leaving from the settings card (in a shop, during an upgrade
+choice, and during a throw), and the upgrade choice on a phone in portrait.
 
 ## Local Web export
 
@@ -22,7 +93,7 @@ python3 -m http.server 8000 --bind 127.0.0.1 --directory build/web
 ```
 
 Open <http://127.0.0.1:8000> in Brave or another WebGL 2/WebAssembly-capable
-browser. The build opens the table preview, just like F5 in the editor.
+browser. The build opens the game on its main menu, just like F5 in the editor.
 Stop the server with Ctrl+C. After edits, repeat the export command and refresh
 the browser. Use `--export-release Web` instead for a release build.
 
@@ -247,7 +318,8 @@ selection and movement separately from the reusable die and table. `return_to_ro
 puts a held die back on its roll marker without a slide, including a consumed one.
 `show_highlight = false` hides the gold ring for hosts that mark selection another way. Configure it
 with a table and a typed dice array in roll-slot order. The die emits `clicked`
-on a press or held-pointer sweep when interaction is enabled; the controller
+on a press or held-pointer sweep when interaction is enabled (a touch counts once: its
+emulated mouse copy is ignored); the controller
 exposes `is_held()`, `can_mutate()`, `can_roll()`,
 `held_count()`, and `changed`. Clicks during rolls or transfers are ignored.
 Reduced-motion dice move immediately. This is presentation state, not scoring
@@ -275,7 +347,10 @@ cards and overlay controls accept mouse/touch input without keyboard focus.
 Each card contains an actual native die in its own
 transparent 3D viewport with 8× MSAA and live VFX. The viewer supplies Jackpot, Guardian, and Crescendo from the real effects catalog.
 Cards render each definition’s localized name, description, six-face layout, palette,
-and VFX.
+and VFX. Below the die, the copy is written like the round's explanation card (the
+`BuildTooltip`): cream card with the plum outline and thicker bottom edge, a spaced
+**UPGRADE** eyebrow, the name, and the description with colored keywords. Hovering a
+keyword opens its glossary; pressing one pins it and never chooses the card.
 
 Landscape uses one row; portrait uses one column. Small windows scroll
 vertically. Window stretching is disabled so responsive UI uses window dimensions
@@ -300,6 +375,13 @@ the tree. Supply exactly three non-null definitions for a fresh offer. The metho
 returns false for invalid input or during activation, leaving the offer unchanged.
 The overlay starts hidden and never generates offers or installs upgrades. Use `presentation_changed` or `is_blocking()` to coordinate host
 shortcuts. Reopening during a committed animation is ignored.
+
+`closed` fires once the committed choice has finished its activation and the overlay has
+dismissed itself; the [game](#game) starts the biome's first round on it. `cancel()`
+withdraws an offer without a choice. The heading and both actions are `ui.upgrade.*`
+glossary keys; `relabel()` rewrites them and the cards after a language change, keeping
+inspection as it is. `dim_opacity` darkens the backdrop for hosts with a HUD underneath,
+and `place_restore(center)` moves **Show upgrades** off the host's own controls.
 
 ```sh
 godot --headless --path godot --script res://augment_overlay/tests/smoke.gd
@@ -448,7 +530,8 @@ with the artwork when adding or regenerating icons.
 
 Open [debug/round_prototype/round_prototype.tscn](debug/round_prototype/round_prototype.tscn)
 and press **F6** to play a full round on the table: five dice, a build, a target,
-three plays, and three manual rolls. The project's main scene is unchanged.
+three plays, and three manual rolls. This is a debug host with fixture builds; the
+[game](#game) plays the real run.
 
 The felt has two rows. Dice start on the front **Roll** row. **Press a die** (or
 sweep across several) to move it to the back **Play** row: that is the selection
@@ -478,7 +561,7 @@ score appear before the reveal.
 
 Upgraded dice print their permanent face layout on the model. Each die's column
 below the table is one hover and tap target: it opens a die sheet with the upgrade
-and the bonus. Resting the pointer on the die itself opens the same sheet. A press
+and the bonus. Hovering the die itself on the table opens nothing. A press
 or tap pins a sheet or a Joker's explanation until the next press elsewhere.
 
 The reveal resolves one source per beat: member dice left to right, each die's
@@ -488,7 +571,7 @@ steps the matching tile, and plays a tick one rung higher on a pentatonic ladder
 Beats accelerate and hit harder as the chain grows. Percentages then fold into Mult
 once, the total counts up over the tiles, flies to the goal meter, and banks. Played
 dice burst with their native activation and roll back in. Clearing the target stamps
-the meter, converts unused plays into coins, and shows the result card.
+the meter, pays the round's coin reward from it, converts unused plays into coins, and shows the result card.
 
 Other feedback: staggered throws with three felt knocks per die and a touch of
 camera shake, select/deselect pops pitched per die, hover hops and ticks, idle sway and
@@ -507,9 +590,10 @@ reusable scene; it works without the debug host.
   and `ScoreScript` orders an outcome into `ScoreStep` beats with running totals.
 - `round_interface.gd`: phases, input, and preview refresh. `score_sequence.gd`:
   the reveal choreography.
-- `hud/`: `RoundHud` lays out and exposes the widgets (goal meter, scoreboard, Joker
-  rack, die docks, coin chip, action buttons, popups, tooltip, result banner). It
-  reports intents and animates host-supplied values; no rules live there.
+- `hud/`: `RoundHud` places and exposes the widgets (goal meter, scoreboard, Joker
+  rack, die docks, coin chip, action buttons, popups, tooltip, result banner) in the
+  slots `HudLayout` solves. It reports intents and animates host-supplied values; no
+  rules live there.
 - `juice/`: `Juice` helpers for punches, hops, and number formatting.
 - The table, dice, camera, and wallpaper come from the shared
   [table stage](#table-stage), exposed as `RoundInterface.stage`.
@@ -530,8 +614,47 @@ lock. `reduced_motion`, `tempo`, `muted`, and `locale` are exported. A host may 
 scene outside the tree (the round prototype does during a shop visit); it lays out again
 when it returns.
 
-The HUD scales from a 1280×900 landscape or 540×960 portrait reference and frames
-the table in the space it leaves; die docks follow the dice columns on screen.
+Hosts that run more than one round shape what surrounds it:
+
+- `preview_round(session, round_number, target)` lays the run out between rounds without
+  dealing: build, round name, target, and purse, with the dice at rest and input closed.
+  The game shows it under an upgrade choice.
+- `set_round_caption("Boss 2")` names the round on the goal card and the result card; an
+  empty caption restores "Round N". It is host-written text, so set it again after a
+  language change.
+- `cleared_title`, `cleared_action`, and `failed_action` are the glossary keys of the result
+  card's headline and action, so the card can say what the host does next.
+- `main_menu_available` switches on the settings card's **Main menu** action (the shop
+  has the same property); `main_menu_requested` reports the press.
+
+### Screen sizes and phones
+
+`HudLayout` (`round_interface/hud/hud_layout.gd`) decides where everything goes for a
+window, and the shop solves the same layout, so the rack, table, die columns, purse, and
+actions do not move between the two screens. It works in logical pixels: window pixels
+divided by the display's density (screen DPI ÷ 160 on Android and iOS, the reported scale
+elsewhere). A 1080-pixel-wide phone is therefore laid out as a 411-unit-wide screen, with
+text and touch targets at their physical size, instead of a shrunken desktop window.
+
+| Arrangement | Used when | Layout |
+| --- | --- | --- |
+| Wide | Desktop and tablet landscape | Goal, scoreboard, and rack in a top band; purse, die columns, and actions in a bottom tray. Unchanged 1280×900 reference. |
+| Side | Landscape windows at least 3:2 and under about 920×650 logical pixels (phones) | The table takes the full height. Goal, stacked scoreboard, and purse on a left rail; a 2 × 2 rack and both actions on a narrower right rail, under the thumb. |
+| Tall | Portrait (aspect under 1.1) | Everything pressed hangs from the bottom edge: actions, die columns, table, rack. The goal bar and the scoreboard fill what is left above. The felt runs off both sides of the window, so the dice are as large as the width allows. |
+
+Phone rules, covered by the smoke checks: anything pressed measures at least 44 logical
+pixels; Joker tiles are exactly the size of the bonus tiles (one kind of object, one
+size), and both follow the die columns' spacing; dice drawn smaller than 56 units get an invisible touch margin
+(`TableStage.set_touch_reach`, `ParoliDie.pick_padding`); die columns keep upgrade names
+at a readable size by alternating them between two lanes instead of shrinking them; and
+explanations open right next to what was tapped, above it first so the finger never
+covers them (beside it when neither above nor below has room). A finger cannot hover, so a tap on a
+die only selects it; its sheet opens from its column. The result card sits low in portrait
+so its action stays in reach. Displays that report cutouts get matching margins.
+
+`RoundInterface.display_density` and `ShopInterface.display_density` override the density
+(zero follows the display). Checks use it to lay a phone out in an offscreen viewport:
+`display_density = 2.625` with a 1080×2378 viewport reproduces a current phone.
 
 ### Placeholders
 
@@ -539,10 +662,11 @@ the table in the space it leaves; die docks follow the dice columns on screen.
   [synth_sfx.py](../docs/audio_explorations/round_sfx/synth_sfx.py) into
   `round_interface/audio/sfx/`. The WAV files are the runtime source; replace them
   freely. Pitched ticks share a C5 root so chains can climb by `pitch_scale`.
-- `RoundSession.coins_per_unused_play`, the fixture targets and their 1.6× growth,
+- `RoundSession.coins_per_round` and `coins_per_unused_play`, the fixture targets and their 1.6× growth,
   and fixture sell values are test inputs. The design has not fixed these values.
-- Interface copy outside the keyword glossary (Target, Keep, hints, result card) is
-  English only.
+- Interface copy (captions, hints, the result card, the shop's help lines and refusals)
+  lives in the glossary under `ui.*` keys in `game_keywords.gd`, in English and French,
+  and follows the game locale like every other term. The debug panels stay in English.
 
 ### Validation
 
@@ -557,9 +681,34 @@ godot --disable-vsync --path godot --script res://debug/round_prototype/tests/sm
 
 The session check covers the preview boundary, reveal order, running totals, and
 round completion without any scene. The interface check drives real pointer presses
-through the HUD, the reveal lock, banking, the result card, and the portrait layout.
+through the HUD, the reveal lock, banking, the result card, and the window shapes, then
+lays out three phones (portrait, landscape, and a short 16:9 screen) at density 2.625.
+Its capture run also saves `/tmp/paroli-round-phone-<width>x<height>.png`.
 The prototype check cycles every fixture and chains rounds. `--disable-vsync` keeps
 captures running when the test window is hidden or occluded.
+
+## Main menu
+
+[main_menu/main_menu.tscn](main_menu/main_menu.tscn) is the title screen: the shared
+table stage with five colored dice tumbling onto it, the title, **New run**, **Quit**, and
+the settings button. It frames the table exactly where the round does, so a run can
+replace the menu without the table moving. Pressing a die rerolls it, for show only.
+
+- `new_run_requested` reports the press; the host builds the run. The [game](#game)
+  listens to it. Open the menu scene and press **F6** to try it on its own.
+- **Quit** closes the game on desktop builds. Web and phone builds hide it.
+- Its captions are `ui.menu.*` glossary keys and follow the game language.
+
+```sh
+godot --headless --path godot --script res://main_menu/tests/smoke.gd
+# With a working display; saves /tmp/paroli-main-menu-{desktop,portrait,landscape}.png:
+godot --disable-vsync --path godot --script res://main_menu/tests/smoke.gd -- --capture
+```
+
+The check lays the menu out on desktop and on a phone in portrait and landscape. It
+verifies that the title and actions stay clear of the table and that touch targets are
+at least 44 logical pixels. It then presses New run, a die, and the settings card with
+real pointer input, and switches the language.
 
 ## Table stage
 
@@ -568,9 +717,12 @@ round and the shop: wallpaper, framed orthographic camera, table, and the run's 
 on their roll markers. Instancing it keeps the build looking the same on every screen.
 It owns presentation only.
 
-- `frame(rect, viewport)` fits the table into the space a HUD leaves and returns pixels
-  per world unit. `columns()`, `project(table_point)`, and `die_rect(die_id)` map the
-  table to window pixels for HUD alignment and 2D hit tests.
+- `frame(rect, viewport, half_width)` fits the table into the space a HUD leaves and
+  returns pixels per world unit; a `half_width` under `StageCamera.TABLE_HALF_WIDTH`
+  lets the side rails run off a narrow window. `columns()`, `project(table_point)`, and
+  `die_rect(die_id)` map the table to window pixels for HUD alignment and 2D hit tests.
+- `set_touch_reach(reach, pixels_per_unit)` widens each die's pointer target to at least
+  `reach` window pixels, for screens that draw the dice small.
 - `views` maps `die_1`…`die_5` to the native dice; `dice()` returns them in run order.
 - `StageCamera` (`camera`) adds trauma shake through lens offsets.
 - `backdrop/`: `StageBackdrop`, a wallpaper quad parented to the camera. A
@@ -586,8 +738,9 @@ It owns presentation only.
 
 Open [debug/shop_prototype/shop_prototype.tscn](debug/shop_prototype/shop_prototype.tscn)
 and press **F6** to try the shop on its own, or play the round prototype: a cleared
-round leads here. The shop uses the same table: stock lies on the felt's back half, the
-dice rest in front, and the Joker rack and die columns sit where they do in a round.
+round leads here. The shop uses the same table. On desktop the stock lies on the felt's
+back half, the dice rest in front, and the Joker rack and die columns sit where they do
+in a round; phones gather the stock in a counter card (see below).
 
 Everything in the shop is drag and drop. Pressing an item picks it up: it lifts, the
 places it can go light up, and its explanation opens. Dragging carries it; the
@@ -597,13 +750,27 @@ plain press only inspects.
 - **Buy a Joker:** drag it onto the rack.
 - **Buy a bonus:** drag it onto a die or its column with a free slot. A die that already
   has a bonus refuses and the item goes back.
-- **Lucky dip:** the two `?` tiles sell a random Joker or bonus at a discount. Drag them
-  like known goods; the tile turns over to show what was found before it flies home.
 - **Move a bonus:** drag an owned bonus onto a die with a free slot.
 - **Sell:** drag an owned bonus or Joker onto the purse; a **Sell +N** badge shows its
   value while you hold it. Upgrades cannot be sold.
 - **Refresh** restocks the whole shelf for coins; each refresh in a visit costs more.
 - **Next round** leaves.
+
+On a phone (see [screen sizes](#screen-sizes-and-phones)) the sign becomes a **counter**:
+one lavender card that holds the heading, the help line, and everything for sale, each
+group under its caption. Whatever is outside the card belongs to the player.
+
+- **Portrait:** the counter fills the space above the table, with Jokers on one row and
+  bonuses on the next. The rack moves onto the free back half of the
+  felt, under a "Your Jokers" caption, so the table holds everything owned: Jokers,
+  dice, then bonuses.
+- **Landscape:** the counter lies across the top, over the status rail and the far side
+  of the table, with one row of goods; Jokers are last in the row, next to the rack.
+
+Goods are drawn at the size of the tiles they become, prices keep a readable size, and a
+press must travel six logical pixels before it becomes a drag. A held item's explanation
+opens next to it, above it first, and closes once the item starts moving. The help line
+stays visible while goods are held.
 
 Hovering goods, rack Jokers, a die, or its column explains them; the sign's second line
 says where the held item can go. Goods the purse or the build cannot take shake and say
@@ -622,15 +789,13 @@ has left open (D-015). Edit it in the Inspector; both prototypes use it.
 | `joker_price` / `bonus_price` | 6 / 4 | Known prices, in coins |
 | `sell_percent` | 50 | Share of the price paid that selling returns, rounded down |
 | `refresh_base_cost` / `refresh_cost_step` | 2 / 1 | First refresh in a visit, and how much each next one adds |
-| `random_joker` / `random_bonus` | on / on | Whether each lucky dip is offered |
-| `random_discount_percent` | 40 | Lucky dip discount off the known price |
 
 Fixture decisions made so the prototype is playable, all easy to change in
 [shop_session.gd](shop_interface/session/shop_session.gd): prices are flat per family;
-a shelf never repeats an identity and never offers something owned; a lucky dip draws
-from what is neither owned nor on the shelf; sold items can reappear in later stock;
-a refresh restocks every slot, bought ones included; the refresh cost resets each visit;
-sale value follows the price actually paid, so a discounted item sells for less.
+a shelf never repeats an identity and never offers something owned; sold items can
+reappear in later stock; a refresh restocks every slot, bought ones included; the refresh
+cost resets each visit; sale value follows the price actually paid. The design's
+discounted random purchases (D-015) are left out of the prototype to keep the shelf simple.
 Occupied bonus slots never swap (D-014).
 
 ### Structure
@@ -648,7 +813,7 @@ scene; it works without the debug host.
 
 ```gdscript
 var shop: ShopSession = ShopSession.new(run, rules)  # Once per run.
-shop_interface.open_shop(shop, "Before round 2")     # Each visit; restocks the shelf.
+shop_interface.open_shop(shop, shop_interface.round_caption(2))  # Each visit; restocks the shelf.
 shop_interface.leave_requested.connect(_on_shop_left)
 ```
 
@@ -669,5 +834,31 @@ godot --disable-vsync --path godot --script res://debug/shop_prototype/tests/smo
 
 The session check walks the D-015 cases without any scene. The interface check drives
 every path with real pointer input: dragged purchases onto the rack, a column, or the
-die itself, moves, sales, both lucky dips, refused and abandoned drops, refresh, and
-tablet and phone layouts. The round prototype check covers the round → shop → round loop.
+die itself, moves, sales, refused and abandoned drops, refresh, window
+shapes, and both phone orientations at density 2.625: goods inside the counter and sized
+like owned tiles, the portrait rack on the felt, explanations clear of the held item, and
+a dragged purchase. The round prototype check covers the round → shop → round loop.
+
+## Settings
+
+The cog on every table screen opens the settings card: sound on or off, French or
+English, and **Main menu**, which abandons the run in the game and is greyed out on the
+menu itself and in the debug hosts. On desktop the cog sits
+right of the goal card, beside the purse on landscape phones, and in the top-right corner
+in portrait, where the goal card is narrower to make room for it. The debug hosts' own
+panel moved to the top-left corner and stays until the game has a real menu.
+
+[settings/](settings/) owns the feature. `GameSettings.shared()` holds the preferences
+for the session and saves them to `user://settings.cfg`; only the app's entry point calls
+`load_saved()`, so checks never depend on a player's choices (they also clear
+`storage_path`). `SettingsMenu` is the cog and its card; each HUD places it with
+`arrange()`. Round and shop interfaces follow `GameSettings.changed`: sound applies at
+once, and a new language rewrites names, captions, and the result card in place (a round
+waits until its throw or reveal ends). Hosts that write a shop caption call
+`ShopInterface.set_caption()` again. `main_menu_requested` travels up through both
+interfaces to the game, which enables the action with their `main_menu_available`.
+
+```sh
+godot --headless --path godot --script res://settings/tests/smoke.gd
+```
+

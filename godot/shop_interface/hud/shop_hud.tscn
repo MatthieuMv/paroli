@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" path="res://round_interface/hud/coin_icon.tscn" id="coin"]
 [ext_resource type="PackedScene" path="res://round_interface/hud/action_button.tscn" id="action"]
 [ext_resource type="PackedScene" path="res://round_interface/hud/build_tooltip.tscn" id="tooltip"]
+[ext_resource type="PackedScene" path="res://settings/settings_menu.tscn" id="settings"]
 
 [sub_resource type="StyleBoxFlat" id="sign"]
 bg_color = Color(1, 0.980392, 0.941176, 1)
@@ -51,41 +52,8 @@ offset_bottom = 900.0
 mouse_filter = 2
 script = ExtResource("script")
 
-[node name="CaptionJokers" type="Label" parent="."]
-visible = false
-modulate = Color(1, 1, 1, 0.5)
-layout_mode = 0
-offset_right = 140.0
-offset_bottom = 16.0
-mouse_filter = 2
-theme_override_colors/font_color = Color(0.188235, 0.133333, 0.239216, 1)
-theme_override_font_sizes/font_size = 11
-text = "J O K E R S"
-
-[node name="CaptionBonuses" type="Label" parent="."]
-visible = false
-modulate = Color(1, 1, 1, 0.5)
-layout_mode = 0
-offset_right = 140.0
-offset_bottom = 16.0
-mouse_filter = 2
-theme_override_colors/font_color = Color(0.188235, 0.133333, 0.239216, 1)
-theme_override_font_sizes/font_size = 11
-text = "B O N U S E S"
-
-[node name="CaptionLucky" type="Label" parent="."]
-visible = false
-modulate = Color(1, 1, 1, 0.5)
-layout_mode = 0
-offset_right = 140.0
-offset_bottom = 16.0
-mouse_filter = 2
-theme_override_colors/font_color = Color(0.188235, 0.133333, 0.239216, 1)
-theme_override_font_sizes/font_size = 11
-text = "L U C K Y   D I P"
-
 [node name="Sign" type="Control" parent="."]
-custom_minimum_size = Vector2(300, 118)
+custom_minimum_size = Vector2(180, 118)
 layout_mode = 0
 offset_right = 300.0
 offset_bottom = 118.0
@@ -102,6 +70,7 @@ mouse_filter = 2
 theme_override_styles/panel = SubResource("sign")
 
 [node name="Eyebrow" type="Label" parent="Sign"]
+unique_name_in_owner = true
 modulate = Color(1, 1, 1, 0.72)
 layout_mode = 0
 offset_left = 20.0
@@ -143,6 +112,39 @@ theme_override_constants/line_spacing = 0
 theme_override_font_sizes/font_size = 13
 text = "Press an item, then where it goes. You can drag it too."
 autowrap_mode = 2
+
+[node name="CaptionJokers" type="Label" parent="."]
+visible = false
+modulate = Color(1, 1, 1, 0.5)
+layout_mode = 0
+offset_right = 140.0
+offset_bottom = 16.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.188235, 0.133333, 0.239216, 1)
+theme_override_font_sizes/font_size = 11
+text = "J O K E R S"
+
+[node name="CaptionBonuses" type="Label" parent="."]
+visible = false
+modulate = Color(1, 1, 1, 0.5)
+layout_mode = 0
+offset_right = 140.0
+offset_bottom = 16.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.188235, 0.133333, 0.239216, 1)
+theme_override_font_sizes/font_size = 11
+text = "B O N U S E S"
+
+[node name="CaptionRack" type="Label" parent="."]
+visible = false
+modulate = Color(1, 1, 1, 0.5)
+layout_mode = 0
+offset_right = 140.0
+offset_bottom = 16.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.188235, 0.133333, 0.239216, 1)
+theme_override_font_sizes/font_size = 11
+text = "Y O U R   J O K E R S"
 
 [node name="Jokers" type="Control" parent="."]
 layout_mode = 0
@@ -241,4 +243,7 @@ layout_mode = 0
 interactive = false
 
 [node name="Tooltip" parent="." instance=ExtResource("tooltip")]
+layout_mode = 0
+
+[node name="Settings" parent="." instance=ExtResource("settings")]
 layout_mode = 0

@@ -12,7 +12,7 @@ code, tests, and code emitted by generators.
   `augment_overlay/` owns upgrade card presentation; `table_stage/` owns the shared 3D set (wallpaper, framed camera,
   table, dice) that table screens instance; `round_interface/` owns the playable
   round presentation (HUD, scoring reveal, sound) and its host-side session; `shop_interface/`
-  owns the between-round shop presentation, its session, and its tunable rules; mechanics/ owns immutable rules, localized
+  owns the between-round shop presentation, its session, and its tunable rules; `settings/` owns player preferences (sound, language) and the settings button and card; `main_menu/` owns the title screen and reports the request for a new run; `game/` owns the main scene: the run's route and tunable rules, and the switching between menu, upgrade choice, round, and shop; mechanics/ owns immutable rules, localized
   descriptions, pure command planning, and the isolated run coordinator; and `debug/` contains their separate development viewers. Keep a scene, script, shaders, resources, and tests with the feature that owns them. Do not introduce root
   `scripts/`, `assets/`, `shaders/`, or `scenes/` buckets.
 - Author stable node hierarchies, layout, themes, and resources in `.tscn` and

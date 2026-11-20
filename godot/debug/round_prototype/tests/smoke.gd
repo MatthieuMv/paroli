@@ -22,6 +22,8 @@ func _run() -> void:
 	viewport.msaa_3d = root.msaa_3d
 	viewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS
 	root.add_child(viewport)
+	# Checks never read or write the player's saved preferences.
+	GameSettings.shared().storage_path = ""
 	var prototype: Node = PROTOTYPE.instantiate()
 	viewport.add_child(prototype)
 	var round_view: RoundInterface = prototype.get_node("Round") as RoundInterface
@@ -109,7 +111,7 @@ func _run() -> void:
 	var shop_view: ShopInterface = prototype.get_node_or_null("Shop") as ShopInterface
 	assert(shop_view != null and shop_view.is_inside_tree() and not round_view.is_inside_tree(), "Only the shop is on stage")
 	var shop_hud: ShopHud = shop_view.get_node("Interface/Hud") as ShopHud
-	assert(shop_hud._coin_balance == coins and shop_hud._slots.size() == 7)
+	assert(shop_hud._coin_balance == coins and shop_hud._slots.size() == 5)
 	assert((shop_hud.get_node("%Title") as Label).text == "Before round 2")
 	assert(shop_view.reduced_motion and shop_view.stage.backdrop_preset == round_view.stage.backdrop_preset, "The shop inherits the host's settings")
 	shop_hud.leave_pressed.emit()

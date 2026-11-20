@@ -22,6 +22,11 @@ signal hover_changed(hovered: bool)
 const NORMALS: Array[Vector3] = [Vector3.UP, Vector3.BACK, Vector3.RIGHT, Vector3.LEFT, Vector3.FORWARD, Vector3.DOWN]
 ## Ordinary layout: the six physical faces print 1 to 6.
 const STANDARD_FACES: PackedInt32Array = [1, 2, 3, 4, 5, 6]
+## Edge length of the die's body in world units; the pointer target is at least this large.
+const BODY_SIZE: float = 2.3
+## Largest extra reach of the pointer target per side. Neighboring die columns are 3.5 units
+## apart, so targets padded this far still never overlap.
+const MAX_PICK_PADDING: float = 0.5
 
 # --- Member variables ---
 
@@ -113,8 +118,18 @@ const STANDARD_FACES: PackedInt32Array = [1, 2, 3, 4, 5, 6]
 		if is_instance_valid(_pick_area):
 			_pick_area.input_ray_pickable = value
 
+## Extra reach of the pointer target beyond the body, in world units per side. Hosts raise
+## it where dice are drawn small, so a finger does not have to land exactly on the die.
+@export_range(0.0, 0.5, 0.05) var pick_padding: float = 0.0:
+	set(value):
+		pick_padding = clampf(value, 0.0, MAX_PICK_PADDING)
+		if is_node_ready():
+			_resize_pick_shape()
+
 ## Picking volume follows the visual rig but never participates in gameplay physics.
 @onready var _pick_area: Area3D = $DieRig/PickArea
+## This die's own picking box; the scene's shape is shared, so it is copied before resizing.
+var _pick_shape: BoxShape3D
 ## Presentation-only selection cue; hold ownership belongs to the containing controller.
 @onready var _hold_highlight: MeshInstance3D = $HoldHighlight
 
@@ -175,6 +190,10 @@ var _impact: MeshInstance3D
 
 ## Ready callback: bind the native model beneath the scene-owned rig.
 func _ready() -> void:
+	var pick_collider: CollisionShape3D = $DieRig/PickArea/Shape as CollisionShape3D
+	_pick_shape = pick_collider.shape.duplicate() as BoxShape3D
+	pick_collider.shape = _pick_shape
+	_resize_pick_shape()
 	_pick_area.input_ray_pickable = interaction_enabled
 	_pick_area.input_event.connect(_on_pointer_input)
 	_pick_area.mouse_entered.connect(_on_pointer_hover.bind(true))
@@ -392,6 +411,9 @@ func set_hold_highlight(enabled: bool) -> void:
 func _on_pointer_input(_camera: Node, event: InputEvent, _position: Vector3, _normal: Vector3, _shape_index: int) -> void:
 	if not interaction_enabled or is_rolling() or is_consumed():
 		return
+	# A touch also arrives as an emulated mouse event; acting on both would toggle twice.
+	if event.device == InputEvent.DEVICE_ID_EMULATION:
+		return
 	var requested: bool = false
 	if event is InputEventMouseButton:
 		var mouse: InputEventMouseButton = event as InputEventMouseButton
@@ -409,6 +431,10 @@ func _on_pointer_input(_camera: Node, event: InputEvent, _position: Vector3, _no
 	if requested:
 		clicked.emit()
 		get_viewport().set_input_as_handled()
+
+## Grow the picking box sideways and in depth; its height stays the body's.
+func _resize_pick_shape() -> void:
+	_pick_shape.size = Vector3(BODY_SIZE + pick_padding * 2.0, BODY_SIZE, BODY_SIZE + pick_padding * 2.0)
 
 ## Relay passive hover so hosts can add feedback without reaching into the picking volume.
 func _on_pointer_hover(hovered: bool) -> void:

@@ -4,6 +4,7 @@
 [ext_resource type="Shader" path="res://round_interface/hud/shine.gdshader" id="shine"]
 
 [sub_resource type="StyleBoxFlat" id="slot"]
+resource_local_to_scene = true
 bg_color = Color(0.188235, 0.133333, 0.239216, 0.035)
 border_width_left = 2
 border_width_top = 2

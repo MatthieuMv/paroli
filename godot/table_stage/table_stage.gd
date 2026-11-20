@@ -58,11 +58,19 @@ func dice() -> Array[ParoliDie]:
 	return result
 
 ## Fit the table into `rect` (window pixels) and keep the wallpaper filling the view.
+## `half_width` is how much of the table must stay in view (see `StageCamera.frame`).
 ## Returns pixels per world unit.
-func frame(rect: Rect2, viewport: Vector2) -> float:
-	var pixels_per_unit: float = camera.frame(rect, viewport)
+func frame(rect: Rect2, viewport: Vector2, half_width: float = StageCamera.TABLE_HALF_WIDTH) -> float:
+	var pixels_per_unit: float = camera.frame(rect, viewport, half_width)
 	_backdrop.cover(camera.size, viewport)
 	return pixels_per_unit
+
+## Widen every die's pointer target so it measures at least `reach` window pixels across.
+## Dice drawn small on a phone stay easy to hit; dice already that large are unchanged.
+func set_touch_reach(reach: float, pixels_per_unit: float) -> void:
+	var padding: float = (reach / maxf(pixels_per_unit, 0.001) - ParoliDie.BODY_SIZE) * 0.5
+	for die: ParoliDie in views.values():
+		die.pick_padding = padding
 
 ## Window-pixel x of each die's roll marker, in run order.
 func columns() -> PackedFloat32Array:

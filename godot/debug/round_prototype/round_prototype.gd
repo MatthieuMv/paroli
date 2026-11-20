@@ -65,8 +65,12 @@ var _target: float = 0.0
 
 # --- Member functions ---
 
-## Ready callback: connect debug controls and deal the first round.
+## Ready callback: load the player's preferences, connect debug controls, and deal the
+## first round.
 func _ready() -> void:
+	GameSettings.shared().changed.connect(_on_settings_changed)
+	GameSettings.shared().load_saved()
+	_on_settings_changed()
 	(%Toggle as Button).pressed.connect(_toggle_panel)
 	(%Build as Button).pressed.connect(_next_build)
 	(%Restart as Button).pressed.connect(_new_run)
@@ -79,8 +83,17 @@ func _ready() -> void:
 	(%Shops as Button).toggled.connect(_on_shops_toggled)
 	_round.continue_requested.connect(_on_continue_requested)
 	_round.busy_changed.connect(_on_busy_changed)
+	get_viewport().size_changed.connect(_scale_debug)
+	_scale_debug()
 	_refresh_labels()
 	_new_run()
+
+## Draw the debug controls at the display's density, so they stay pressable on a phone.
+## They sit in the top-left corner, about which the layer scales; the top-right corner
+## belongs to the settings button.
+func _scale_debug() -> void:
+	var layer: CanvasLayer = $Debug as CanvasLayer
+	layer.scale = Vector2.ONE * HudLayout.display_density()
 
 ## Start a fresh run with the selected fixture.
 func _new_run() -> void:
@@ -88,7 +101,8 @@ func _new_run() -> void:
 	var build: RunFixtures.Build = _builds[_build_index]
 	var run: MechanicsRun = RunFixtures.equip(build, 4)
 	_session = RoundSession.new(run)
-	_session.coins_per_unused_play = 2
+	_session.coins_per_unused_play = 1
+	_session.coins_per_round = 4
 	_shop_session = ShopSession.new(run, shop_rules)
 	_round_number = 1
 	_target = build.target
@@ -120,7 +134,7 @@ func _show_shop() -> void:
 	_shop.muted = _round.muted
 	_shop.stage.backdrop_preset = _round.stage.backdrop_preset
 	_shop.stage.backdrop_motif = _round.stage.backdrop_motif
-	_shop.open_shop(_shop_session, "Before round %d" % _round_number)
+	_shop.open_shop(_shop_session, _shop.round_caption(_round_number))
 
 ## Bring the round back, wherever the host currently is.
 func _show_round() -> void:
@@ -194,11 +208,15 @@ func _on_motion_toggled(enabled: bool) -> void:
 	if _shop:
 		_shop.reduced_motion = enabled
 
-## Toggle sound effects.
+## Toggle sound effects through the shared preferences, as the settings card does.
 func _on_sound_toggled(enabled: bool) -> void:
-	_round.muted = not enabled
+	GameSettings.shared().set_sound_enabled(enabled)
+
+## Mirror the shared preferences: the Sound toggle, and the shop's host-written caption.
+func _on_settings_changed() -> void:
+	(%Sound as Button).set_pressed_no_signal(GameSettings.shared().sound_enabled)
 	if _shop:
-		_shop.muted = not enabled
+		_shop.set_caption(_shop.round_caption(_round_number))
 
 ## Choose whether cleared rounds lead to the shop.
 func _on_shops_toggled(enabled: bool) -> void:

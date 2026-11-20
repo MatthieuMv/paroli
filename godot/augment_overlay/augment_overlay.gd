@@ -8,9 +8,26 @@ class_name AugmentOverlay
 signal presentation_changed(blocking: bool)
 ## Emitted exactly once on commitment, before activation; the host owns game rules.
 signal upgrade_selected(upgrade_id: StringName)
+## The committed choice finished its activation and the overlay dismissed itself; the host
+## resumes the game. A withdrawn offer (`cancel()`) does not emit it.
+signal closed
+
+# --- Constants ---
+
+## Smallest size of the Show upgrades action; longer captions widen it.
+const RESTORE_SIZE: Vector2 = Vector2(180.0, 44.0)
 
 # --- Member variables ---
 
+## Opacity of the dimmer behind the cards. The light default keeps a bare table visible;
+## hosts with a HUD underneath raise it so the heading stays readable over it.
+@export_range(0.0, 1.0, 0.01) var dim_opacity: float = 0.28:
+	set(value):
+		dim_opacity = value
+		if is_node_ready():
+			_dimmer.color.a = value
+## Translucent backdrop behind the cards; it never takes input.
+@onready var _dimmer: ColorRect = $Presentation/Dimmer
 ## Full-screen card presentation blocks pointer input to the underlying game.
 @onready var _presentation: Control = $Presentation
 ## Centered authored layout receives responsive bounds.
@@ -23,6 +40,10 @@ signal upgrade_selected(upgrade_id: StringName)
 @onready var _inspect: Button = $Presentation/Frame/Inspect
 ## Read-only vocabulary used to render the supplied definitions.
 var _words: KeywordCatalog = GameKeywords.new()
+## Definitions on the cards, kept so a language change can rewrite them.
+var _offer: Array[UpgradeDefinition] = []
+## Locale the offer is written in; empty follows the game locale.
+var _locale: String = ""
 ## Guard against repeat input and reentrant signal handlers during activation.
 var _choosing: bool = false
 
@@ -35,6 +56,7 @@ func _ready() -> void:
 	for card: AugmentCard in _cards.get_children():
 		card.pressed.connect(_on_card_pressed.bind(card))
 		card.activation_finished.connect(_on_activation_finished)
+	_dimmer.color.a = dim_opacity
 	resized.connect(_resize_layout)
 	_resize_layout()
 
@@ -46,13 +68,47 @@ func open(upgrades: Array[UpgradeDefinition], locale: String = "") -> bool:
 	for upgrade: UpgradeDefinition in upgrades:
 		if not upgrade:
 			return false
-	for index: int in upgrades.size():
-		var card: AugmentCard = _cards.get_child(index) as AugmentCard
-		card.configure(upgrades[index], _words, locale)
+	_offer = upgrades.duplicate()
+	_locale = locale
+	_write()
 	_inspect.disabled = false
 	show()
 	show_cards()
 	return true
+
+## Rewrite the heading, actions, and cards in another language, keeping the offer and
+## whether the player is inspecting the table. Ignored once a choice is committed.
+func relabel(locale: String = "") -> void:
+	if _choosing or not visible:
+		return
+	_locale = locale
+	_write()
+
+## Withdraw the offer without a choice, for a host that abandons the game underneath.
+## Returns false, changing nothing, while a committed choice is still playing.
+func cancel() -> bool:
+	if _choosing:
+		return false
+	if visible:
+		hide()
+		presentation_changed.emit(false)
+	return true
+
+## Center the Show upgrades action on a point of this overlay, so a host can keep it off
+## its own controls. Unplaced, it stays at the bottom of the overlay.
+func place_restore(center: Vector2) -> void:
+	_restore.set_anchors_preset(Control.PRESET_TOP_LEFT)
+	_restore.size = RESTORE_SIZE.max(_restore.get_combined_minimum_size())
+	_restore.position = center - _restore.size * 0.5
+
+## Write the heading, the actions, and every card in the offer's language.
+func _write() -> void:
+	($Presentation/Frame/Heading as Label).text = _words.render(&"ui.upgrade.title", {}, _locale)
+	_inspect.text = _words.render(&"ui.upgrade.inspect", {}, _locale)
+	_restore.text = _words.render(&"ui.upgrade.show", {}, _locale)
+	for index: int in _offer.size():
+		var card: AugmentCard = _cards.get_child(index) as AugmentCard
+		card.configure(_offer[index], _words, _locale)
 
 ## Hide the dimmer and cards so the host game receives input normally.
 func inspect_game() -> void:
@@ -101,7 +157,7 @@ func _fit_frame(dimensions: Vector2) -> void:
 
 ## Commit once, notify game logic, then play the selected die's real activation.
 func _on_card_pressed(card: AugmentCard) -> void:
-	if _choosing or not is_blocking():
+	if card.take_keyword_press() or _choosing or not is_blocking():
 		return
 	_choosing = true
 	_inspect.disabled = true
@@ -117,3 +173,4 @@ func _on_activation_finished() -> void:
 	hide()
 	_choosing = false
 	presentation_changed.emit(false)
+	closed.emit()

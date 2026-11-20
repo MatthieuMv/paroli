@@ -7,6 +7,11 @@ extends SceneTree
 ## Reusable scene under test; the debug host is not required.
 const SHOP: PackedScene = preload("res://shop_interface/shop_interface.tscn")
 
+## Window pixels per logical pixel of the phone the layout checks stand in for.
+const PHONE_DENSITY: float = 2.625
+## Smallest side, in logical pixels, of anything the player presses.
+const TOUCH_TARGET: float = 44.0
+
 # --- Member variables ---
 
 ## Offscreen viewport standing in for the game window.
@@ -48,8 +53,8 @@ func _run() -> void:
 	if capture:
 		await create_timer(1.2).timeout
 		await _save("/tmp/paroli-shop-open.png")
-	# Shelf: five known offers and two random purchases, all inside the felt.
-	assert(hud._slots.size() == 7)
+	# Shelf: five known offers, all inside the felt.
+	assert(hud._slots.size() == 5)
 	var docks: Node = hud.get_node("Docks")
 	var stage: TableStage = shop_view.stage
 	for index: int in 5:
@@ -113,29 +118,28 @@ func _run() -> void:
 	# Owned Joker: drop it on the purse to sell it.
 	await _drag(_center(hud.get_node("Jokers/Joker1") as Control), _center(hud.get_node("Coins") as Control))
 	assert(not run.find_owned(&"joker:window_shopper") and run.coins == 45 and session.free_joker_slots() == 3)
-	# Random Joker: dropped on the rack, revealed, and racked at a discount.
-	await _drag(_center(hud._slots[5]), _center(hud.get_node("Jokers/Joker3") as Control))
-	assert(shop_view.is_busy() or shop_view.reduced_motion, "The reveal locks the shop for a beat")
+	# The other known Joker takes the next free rack slot.
+	await _drag(_center(hud._slots[1]), _center(hud.get_node("Jokers/Joker3") as Control))
 	await _until_settled(shop_view)
-	assert(session.free_joker_slots() == 2 and run.coins == 45 - session.random_price(ShopSession.JOKER))
-	# Random bonus: the die it is dropped on receives whatever turns up.
-	await _drag(_center(hud._slots[6]), _center(docks.get_child(2) as Control))
+	assert(session.free_joker_slots() == 2 and run.coins == 39)
+	# Paid refresh: new shelf, dearer next time.
+	var refresh: ActionButton = hud.get_node("Refresh") as ActionButton
+	await _click(_center(refresh))
+	await _frames(2)
+	assert(run.coins == 37 and session.refresh_cost() == 3 and hud._slots.size() == 5)
+	assert(hud._slots[0].stocked and (refresh.get_node("Content/Cost/Amount") as Label).text == "3")
+	# The last free die takes a bonus from the new stock.
+	await _drag(_center(hud._slots[2]), _center(docks.get_child(2) as Control))
 	await _until_settled(shop_view)
-	assert(run.find_owned(&"bonus:die_3") != null and run.coins == 38)
+	assert(run.find_owned(&"bonus:die_3") != null and run.coins == 33)
 	if capture:
 		await create_timer(0.8).timeout
 		await _save("/tmp/paroli-shop-bought.png")
 	# Every die now has a bonus: bonus goods refuse to be picked up.
 	assert(session.free_bonus_dice().is_empty())
 	_refusals.clear()
-	await _click(_center(hud._slots[6]))
+	await _click(_center(hud._slots[3]))
 	assert(_refusals == PackedStringArray([ShopSession.NO_BONUS_SLOT]) and hud._held == ShopHud.Held.NONE)
-	# Paid refresh: new shelf, dearer next time.
-	var refresh: ActionButton = hud.get_node("Refresh") as ActionButton
-	await _click(_center(refresh))
-	await _frames(2)
-	assert(run.coins == 36 and session.refresh_cost() == 3 and hud._slots.size() == 7)
-	assert(hud._slots[0].stocked and (refresh.get_node("Content/Cost/Amount") as Label).text == "3")
 	# An empty purse refuses purchases and disables the refresh.
 	run.coins = 0
 	hud.sync()
@@ -146,7 +150,8 @@ func _run() -> void:
 	shop_view.leave_requested.connect(func() -> void: left.append(true))
 	await _click(_center(hud.get_node("Leave") as Control))
 	assert(left.size() == 1)
-	# Tablet and phone shapes: columns clear the buttons, the shelf stays on the felt.
+	# Window shapes: columns clear the buttons and the stock never covers the dice. On
+	# desktop the whole shelf lies on the felt; narrow windows may keep part of it elsewhere.
 	for shape: Vector2i in [Vector2i(1000, 1000), Vector2i(768, 1024), Vector2i(1024, 768), Vector2i(540, 960), Vector2i(1280, 900)]:
 		_viewport.size = shape
 		await _frames(2)
@@ -158,14 +163,75 @@ func _run() -> void:
 		var felt_right: float = stage.project(Vector3(ParoliTable.PLAY_HALF_EXTENTS.x, 0.0, 0.0)).x
 		for slot: OfferCard in hud._slots:
 			var slot_rect: Rect2 = slot.get_global_rect()
-			assert(slot_rect.position.x >= felt_left and slot_rect.end.x <= felt_right, "Shelf leaves the felt at %s" % shape)
+			if hud.layout.shape == HudLayout.Shape.WIDE:
+				assert(slot_rect.position.x >= felt_left and slot_rect.end.x <= felt_right, "Shelf leaves the felt at %s" % shape)
+			assert(Rect2(Vector2.ZERO, Vector2(shape)).encloses(slot_rect), "Shelf leaves the window at %s" % shape)
 			assert(slot_rect.end.y < stage.die_rect(&"die_1").position.y + 6.0, "Shelf covers the dice at %s" % shape)
 		if capture and shape == Vector2i(540, 960):
 			run.coins = 30
 			hud.sync()
 			await create_timer(0.5).timeout
 			await _save("/tmp/paroli-shop-portrait.png")
-	print("PASS: shop interface drag-and-drop purchases, placement, move, sale, random purchases, refresh, refusals, layouts.")
+	# Phones: a dense screen gets finger-sized goods, all of them inside one counter card,
+	# and the same tile size for what is sold and what is owned.
+	shop_view.display_density = PHONE_DENSITY
+	run.coins = 60
+	for phone: Vector2i in [Vector2i(1080, 2378), Vector2i(2378, 1080)]:
+		_viewport.size = phone
+		shop_view.open_shop(session, "Before round 3")
+		await _frames(3)
+		if capture:
+			# With motion on, freshly dealt goods pop in; measure them at rest.
+			await create_timer(1.0).timeout
+		var window: Rect2 = Rect2(Vector2.ZERO, Vector2(phone))
+		var tall: bool = phone.x < phone.y
+		assert(hud.layout.shape == (HudLayout.Shape.TALL if tall else HudLayout.Shape.SIDE), "Wrong arrangement at %s" % phone)
+		var rack_tile: Rect2 = (hud.get_node("Jokers/Joker1") as Control).get_global_rect()
+		var counter: Rect2 = (hud.get_node("Sign") as Control).get_global_rect()
+		var tiles: Array[Rect2] = []
+		for slot: OfferCard in hud._slots:
+			var tile: Rect2 = slot.card.get_global_rect()
+			assert(tile.size.x / PHONE_DENSITY >= TOUCH_TARGET, "Goods too small to pick up at %s" % phone)
+			assert(window.encloses(slot.get_global_rect()), "Goods leave the window at %s" % phone)
+			for die_id: StringName in stage.views:
+				assert(not tile.intersects(stage.die_rect(die_id).grow(-4.0)), "Goods cover %s at %s" % [die_id, phone])
+			for other: Rect2 in tiles:
+				assert(not tile.intersects(other), "Goods overlap at %s" % phone)
+			tiles.append(tile)
+			# Everything for sale sits on the counter, at about the size of an owned tile.
+			assert(counter.encloses(slot.get_global_rect()), "Goods leave the counter at %s" % phone)
+			assert(absf(tile.size.x / rack_tile.size.x - 1.0) < 0.15, "Goods and owned tiles differ in size at %s" % phone)
+		for index: int in 4:
+			var owned: Rect2 = (hud.get_node("Jokers").get_child(index) as Control).get_global_rect()
+			assert(not counter.intersects(owned), "The rack hides under the counter at %s" % phone)
+			# In portrait the rack lies on the felt, above the dice it shares the table with.
+			assert(not tall or (stage.camera.framed_rect.encloses(owned) and owned.end.y <= stage.die_rect(&"die_1").position.y + 6.0), "The rack is off the felt at %s" % phone)
+		for index: int in 5:
+			var dock: DieDock = docks.get_child(index) as DieDock
+			assert(absf(dock.get_global_rect().get_center().x - stage.columns()[index]) < 2.0, "Dock %d is off its die column at %s" % [index, phone])
+			assert(dock.card.get_global_rect().size.x / PHONE_DENSITY >= TOUCH_TARGET, "Bonus slot too small at %s" % phone)
+			assert(absf(dock.card.get_global_rect().size.x - rack_tile.size.x) < 1.0, "Joker and bonus tiles differ in size at %s" % phone)
+		for action: Control in [refresh, hud.get_node("Leave") as Control, hud.get_node("Coins") as Control]:
+			assert(window.encloses(action.get_global_rect()), "%s leaves the window at %s" % [action.name, phone])
+		# The same gestures work at this scale: a held item explains itself clear of the
+		# goods, and a drag buys it.
+		var goods: OfferCard = hud._slots[0]
+		var jokers_before: int = run.owned.filter(func(item: OwnedDefinition) -> bool: return item.definition is JokerDefinition).size()
+		_move(_center(goods.card))
+		_button(_center(goods.card), true)
+		await _frames(3)
+		var sheet: Rect2 = (hud.get_node("Tooltip") as Control).get_global_rect()
+		assert((hud.get_node("Tooltip") as Control).visible and window.grow(1.0).encloses(sheet), "A held item explains itself on screen at %s" % phone)
+		assert(not sheet.intersects(goods.card.get_global_rect()), "The explanation covers the held item at %s" % phone)
+		_button(_center(goods.card), false)
+		await _frames(2)
+		await _drag(_center(goods.card), _center(hud.get_node("Jokers/Joker4") as Control))
+		await _until_settled(shop_view)
+		assert(run.owned.filter(func(item: OwnedDefinition) -> bool: return item.definition is JokerDefinition).size() == jokers_before + 1, "A drag buys a Joker at %s" % phone)
+		if capture:
+			await create_timer(0.5).timeout
+			await _save("/tmp/paroli-shop-phone-%dx%d.png" % [phone.x, phone.y])
+	print("PASS: shop interface drag-and-drop purchases, placement, move, sale, refresh, refusals, layouts, phones.")
 	quit()
 
 ## Window-pixel center of a control.

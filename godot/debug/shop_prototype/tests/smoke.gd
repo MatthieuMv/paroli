@@ -22,6 +22,8 @@ func _run() -> void:
 	viewport.msaa_3d = root.msaa_3d
 	viewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS
 	root.add_child(viewport)
+	# Checks never read or write the player's saved preferences.
+	GameSettings.shared().storage_path = ""
 	var prototype: ShopPrototype = PROTOTYPE.instantiate() as ShopPrototype
 	viewport.add_child(prototype)
 	var shop_view: ShopInterface = prototype.get_node("Shop") as ShopInterface
@@ -36,7 +38,7 @@ func _run() -> void:
 	# Starter fixture: one upgrade, one bonus, one Joker, twenty coins, a stocked shelf.
 	var session: ShopSession = prototype._session
 	assert(session.run.coins == 20 and session.free_joker_slots() == 3 and session.free_bonus_dice().size() == 4)
-	assert(hud._slots.size() == 7 and (hud.get_node("%Title") as Label).text == "Before round 2")
+	assert(hud._slots.size() == 5 and (hud.get_node("%Title") as Label).text == "Before round 2")
 	assert((hud.get_node("Docks/Dock1") as DieDock).upgrade.id == &"jackpot")
 	# Debug coins reach the purse and the price tags without restocking.
 	var first: IllustratedDefinition = session.offers[0].definition

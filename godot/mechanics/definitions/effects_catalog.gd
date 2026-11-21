@@ -24,6 +24,7 @@ func _init() -> void:
 		# House builder
 		UpgradeDefinition.new(&"house-builder", [2, 2, 3, 3, 3, 3], [
 			EffectDefinition.OnValidated.new(&"reward", Conditions.All.new([Conditions.Member.new(), Conditions.Combination.new([&"full_house"])]), [ScoreAction.MultPercent.new(50)]),
+			EffectDefinition.OnValidated.new(&"two_pairs", Conditions.All.new([Conditions.Member.new(), Conditions.Combination.new([&"two_pairs"])]), [ScoreAction.MultPercent.new(25)]),
 		], &"Cocoa", &"ribbons"),
 		# Jackpot
 		UpgradeDefinition.new(&"jackpot", [1, 1, 1, 1, 1, 6], [
@@ -151,7 +152,7 @@ func _init() -> void:
 		]),
 		# Power Reserve
 		BonusDefinition.new(&"power-reserve", [
-			EffectDefinition.OnValidation.new(&"reward", Conditions.All.new([Conditions.Held.new(), Conditions.NotValidated.new()]), [ScoreAction.Mult.new(2)]),
+			EffectDefinition.OnValidation.new(&"reward", Conditions.All.new([Conditions.Held.new(), Conditions.NotValidated.new()]), [ScoreAction.Mult.new(6)]),
 		]),
 		# Payday
 		BonusDefinition.new(&"payday", [
@@ -199,14 +200,16 @@ func _init() -> void:
 		# One-man Band
 		JokerDefinition.new(&"one-man-band", [
 			EffectDefinition.OnValidation.new(&"reward", Conditions.Combination.new([&"single"]), [ScoreAction.Points.new(30)]),
+			EffectDefinition.OnValidation.new(&"earned_points", Conditions.Combination.new([&"single"]), [ScoreAction.Calculated.new(ScoreDeltaCommand.Channel.POINTS, HistoryAmount.AccumulatedPoints.new())]),
+			EffectDefinition.OnRoundEnd.new(&"clear_growth", Conditions.All.new([ValidationConditions.SuccessfulRound.new(), Conditions.Combination.new([&"single"])]), [RuntimeAction.AccumulatePoints.new(10)]),
 		]),
 		# Lovebirds
 		JokerDefinition.new(&"lovebirds", [
-			EffectDefinition.OnValidation.new(&"reward", Conditions.Combination.new([&"pair"]), [ScoreAction.Points.new(40)]),
+			EffectDefinition.OnValidation.new(&"reward", Conditions.Combination.new([&"pair"]), [ScoreAction.Points.new(70)]),
 		]),
 		# Double Date
 		JokerDefinition.new(&"double-date", [
-			EffectDefinition.OnValidation.new(&"reward", Conditions.Combination.new([&"two_pairs"]), [ScoreAction.Points.new(60)]),
+			EffectDefinition.OnValidation.new(&"reward", Conditions.Combination.new([&"two_pairs"]), [ScoreAction.Points.new(85)]),
 		]),
 		# Trio
 		JokerDefinition.new(&"trio", [
@@ -262,7 +265,7 @@ func _init() -> void:
 		]),
 		# Bench Warmers
 		JokerDefinition.new(&"bench-warmers", [
-			EffectDefinition.OnValidation.new(&"reward", null, [ScoreAction.PointsPerDie.new(15, DieQuery.HeldMatching.new())]),
+			EffectDefinition.OnValidation.new(&"reward", null, [ScoreAction.PointsPerDie.new(45, DieQuery.HeldMatching.new())]),
 		]),
 		# Stonks
 		JokerDefinition.new(&"stonks", [

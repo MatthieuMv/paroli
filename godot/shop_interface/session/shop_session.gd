@@ -36,14 +36,15 @@ var offers: Array[ShopOffer] = []
 ## Paid refreshes so far in the current visit; drives the rising refresh cost.
 var refreshes: int = 0
 ## Content source for stock.
-var _catalog: EffectsCatalog = EffectsCatalog.new()
+var _catalog: EffectsCatalog
 ## Monotonic suffix keeps every committed event ID unique across the run.
 var _event_serial: int = 0
 
 # --- Member functions ---
 
 ## Bind to a run between rounds; a zero seed keeps the generator's own random seed.
-func _init(run_: MechanicsRun = null, rules_: ShopRules = null, seed_: int = 0) -> void:
+func _init(run_: MechanicsRun = null, rules_: ShopRules = null, seed_: int = 0, catalog: EffectsCatalog = null) -> void:
+	_catalog = catalog if catalog else EffectsCatalog.new()
 	run = run_ if run_ else MechanicsRun.new()
 	rules = rules_ if rules_ else ShopRules.new()
 	if seed_ != 0:

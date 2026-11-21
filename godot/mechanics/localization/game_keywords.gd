@@ -95,6 +95,8 @@ func _init() -> void:
 		KeywordDefinition.new(&"amount.die_value", {"en": "this die’s value", "fr": "la valeur de ce dé"}),
 		KeywordDefinition.new(&"amount.manual_rerolls", {"en": "{amount} per manual roll of this die since its last play or round start", "fr": "{amount} par lancer manuel de ce dé depuis son dernier coup ou le début de la manche"}),
 		KeywordDefinition.new(&"amount.previous_validations", {"en": "{amount} per previous play this round", "fr": "{amount} par coup précédent de cette manche"}),
+		KeywordDefinition.new(&"action.accumulate_points", {"en": "gain {amount} permanent points until sold", "fr": "gagner {amount} points permanents jusqu’à la vente"}),
+		KeywordDefinition.new(&"amount.accumulated_points", {"en": "this Joker’s accumulated points", "fr": "les points accumulés par ce Joker"}),
 		KeywordDefinition.new(&"amount.accumulated_mult", {"en": "the Mult accumulated by this owned Joker", "fr": "le Mult accumulé par ce Joker possédé"}),
 		KeywordDefinition.new(&"amount.portfolio", {"en": "the total current sell value of all owned Jokers, including this one", "fr": "la valeur de vente actuelle totale des Jokers possédés, y compris celui-ci"}),
 		KeywordDefinition.new(&"amount.crescendo", {"en": "the accumulated percentage, adding 50 now if this value exceeds this die’s previous played value; reset each round", "fr": "le pourcentage accumulé, augmenté de 50 maintenant si cette valeur dépasse la précédente valeur jouée de ce dé ; réinitialisé à chaque manche"}),

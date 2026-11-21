@@ -66,6 +66,7 @@ func _run() -> void:
 	_selection_and_sequence()
 	_economy_and_history_rules()
 	_recognition()
+	_band_growth()
 	_runtime_history()
 	_runtime_support_and_alternator()
 	_runtime_economy()
@@ -132,8 +133,8 @@ func _expect(id: StringName, context: EffectContext, points: int = 0, mult: int 
 func _categories() -> void:
 	var rows: Array[CategoryCase] = [
 		CategoryCase.new(&"single", [6, 1, 2, 4, 5], &"top-hat", &"one-man-band", 6, 30),
-		CategoryCase.new(&"pair", [2, 2, 1, 4, 6], &"sock-mate", &"lovebirds", 6, 40),
-		CategoryCase.new(&"two_pairs", [2, 2, 5, 5, 6], &"double-vision", &"double-date", 8, 60),
+		CategoryCase.new(&"pair", [2, 2, 1, 4, 6], &"sock-mate", &"lovebirds", 6, 70),
+		CategoryCase.new(&"two_pairs", [2, 2, 5, 5, 6], &"double-vision", &"double-date", 8, 85),
 		CategoryCase.new(&"three_of_a_kind", [2, 2, 2, 4, 6], &"peas-in-a-pod", &"trio", 10, 80),
 		CategoryCase.new(&"short_straight", [1, 2, 3, 4, 6], &"shortcut", &"conga-line", 10, 100),
 		CategoryCase.new(&"full_house", [2, 2, 3, 3, 3], &"couch-surfer", &"sardine-tin", 12, 120),
@@ -174,6 +175,8 @@ func _matching_and_values() -> void:
 		_expect(&"copycat", _context(values), 0, matches * 2)
 	_expect(&"house-builder", _context([2, 2, 3, 3, 3]), 0, 0, 50)
 	_expect(&"house-builder", _context([2, 2, 3, 3, 3], 2), 0, 0, 50)
+	_expect(&"house-builder", _context([2, 2, 3, 3, 6]), 0, 0, 25)
+	_expect(&"house-builder", _context([2, 2, 3, 3, 6], 4))
 	_expect(&"house-builder", _context([2, 2, 2, 2, 3]))
 	_expect(&"jackpot", _context([6, 2, 3, 4, 5]), 0, 0, 100)
 	_expect(&"jackpot", _context([1, 2, 3, 4, 5]))
@@ -318,6 +321,26 @@ func _start(run: MechanicsRun, id: StringName = &"start", validations: int = 6, 
 	assert(run.start_round(id, 1000000, validations, rerolls).errors.is_empty())
 	assert(run.roll(StringName(String(id) + ":opening"), {&"die_1": 0, &"die_2": 0, &"die_3": 0, &"die_4": 0, &"die_5": 0}, EffectContext.RollKind.OPENING).errors.is_empty())
 
+## The clearing play scores before growth, retries pay once, and a repurchase has no history.
+func _band_growth() -> void:
+	var session: RoundSession = RoundSession.new(null, 70)
+	var run: MechanicsRun = session.run
+	var band: JokerDefinition = _catalog.joker(&"one-man-band")
+	assert(run.add_joker(band, 3).is_empty())
+	var owner: OwnedDefinition = run.find_owned(&"joker:one-man-band")
+	assert(session.begin(1).errors.is_empty() and session.open().errors.is_empty())
+	var first: MechanicsEventResult = run.validate_dice(&"clear", [&"die_1"], 5, 1)
+	assert(first.points == 35 and owner.accumulated_points == 10)
+	assert(run.validate_dice(&"clear", [&"die_1"], 5, 1) == first and owner.accumulated_points == 10)
+	_start(run, &"next")
+	assert(run.validate_dice(&"again", [&"die_1"], 5, 1).points == 45)
+	assert(owner.accumulated_points == 10)
+	assert(run.roll(&"auto", {&"die_1": 0}, EffectContext.RollKind.AUTOMATIC).errors.is_empty())
+	assert(run.validate_dice(&"pair_clear", [&"die_1", &"die_2"], 1000000, 1).points == 1000000)
+	assert(owner.accumulated_points == 10)
+	assert(run.sell(&"sell_band", owner.id).errors.is_empty())
+	assert(run.add_joker(band, 3).is_empty() and run.find_owned(owner.id).accumulated_points == 0)
+
 ## History updates happen after scoring and reset at the documented boundaries.
 func _runtime_history() -> void:
 	var run: MechanicsRun = MechanicsRun.new()
@@ -449,10 +472,10 @@ func _diversity_and_support() -> void:
 	_expect(&"guardian", _context([1, 1, 1, 4, 6], 0, [1, 2]), 0, 0, 50)
 	_expect(&"guardian", _context([1, 1, 1, 4, 6]))
 	_expect(&"guardian", _context([1, 2, 3, 4, 6], 0, [1, 2]))
-	_expect(&"power-reserve", _context([1, 2, 3, 4, 6], 0, [1, 2]), 0, 2)
+	_expect(&"power-reserve", _context([1, 2, 3, 4, 6], 0, [1, 2]), 0, 6)
 	_expect(&"power-reserve", _context([1, 2, 3, 4, 6]))
-	_expect(&"bench-warmers", _context([1, 1, 1, 1, 1], 0, [0]), 60)
-	_expect(&"bench-warmers", _context([1, 1, 1, 1, 1], 0, [0, 1]), 45)
+	_expect(&"bench-warmers", _context([1, 1, 1, 1, 1], 0, [0]), 180)
+	_expect(&"bench-warmers", _context([1, 1, 1, 1, 1], 0, [0, 1]), 135)
 	_expect(&"bench-warmers", _context([1, 1, 1, 1, 1]), 0)
 	_expect(&"bench-warmers", _context([1, 2, 3, 4, 5], 0, [0]), 0)
 	var context: EffectContext = _context([6, 2, 2, 2, 3])
@@ -478,8 +501,8 @@ func _runtime_support_and_alternator() -> void:
 		assert(run.roll(&"support_open", {&"die_1": 0, &"die_2": 0, &"die_3": 1, &"die_4": 1, &"die_5": 0}, EffectContext.RollKind.OPENING).errors.is_empty())
 		var result: MechanicsEventResult = run.validate_dice(&"support_v", [&"die_2", &"die_3", &"die_4"], 10, 1)
 		assert(result.errors.is_empty())
-		assert(result.points == 60 and result.flat_mult == 7 and result.mult_percent == 90)
-		assert(is_equal_approx(result.credited_score, 798.0))
+		assert(result.points == 120 and result.flat_mult == 11 and result.mult_percent == 90)
+		assert(is_equal_approx(result.credited_score, 2508.0))
 		assert(run.find_die(&"die_1").previous_validated_value == 0)
 	var run: MechanicsRun = MechanicsRun.new()
 	assert(run.install_upgrade(_catalog.upgrade(&"alternator")).is_empty())

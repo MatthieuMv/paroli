@@ -29,6 +29,8 @@ var round_succeeded: bool = false
 var refresh_cost: int = 0
 ## Persistent accumulated Mult belonging to the evaluated Joker.
 var owner_mult: int = 0
+## Permanent point growth for the evaluated owner.
+var owner_points: int = 0
 ## Snapshot total before any commands from the current event are applied.
 var joker_sell_total: int = 0
 

@@ -1,5 +1,31 @@
 # Combination balance reports
 
+## Full-run balance
+
+Read the [run balance results](run_balance.md) for the catalog decisions, boss-clear rates, supplied builds, and target-curve trials. The run benchmark uses the real run, round, and shop sessions. A strategy sees the five rolled faces before choosing its dice. It can buy, sell, refresh, keep dice for the next play, and take a fallback hand.
+
+From the repository root, run the following after importing the Godot project.
+
+```sh
+python godot/debug/upgrade_analysis/benchmark.py hands --first 10001 --seeds 2000 --mode draft
+python godot/debug/upgrade_analysis/benchmark.py hands --first 10001 --seeds 250 --mode supplied
+python godot/debug/upgrade_analysis/benchmark.py candidates --seeds 250 --growth 1.60
+python godot/debug/upgrade_analysis/benchmark.py themes --first 10001 --seeds 250 --mode draft
+python godot/debug/upgrade_analysis/benchmark.py ablations --seeds 50
+```
+
+- **Hands** compares each exact hand with flexible play. **Draft** starts with the normal opening choice, purse, and empty slots. **Supplied** conditions the opening choice on the route’s first upgrade and grants its first bonus and joker on entry. Every supplied route gets the same 10 coins of stock at normal resale values. All later shops and upgrades use normal offers.
+- **Candidates** uses the pre-pass catalog as its control. Each variant changes one rule. The Opening Act and Nest Egg experiments use the same shopping preferences and purchase costs as the control.
+- **Themes** covers holding, parity, 1s and 6s, diversity, sum 15, rerolls, repeat and switch play, tempo, and three economy builds. **Ablations** repeats the supplied route with one item’s rewards disabled. The item still occupies its slot and an upgraded die keeps its faces. Use these runs to estimate what a scoring rule or extra action contributes after its opportunity cost is paid.
+- To reproduce the original 2,000-seed curve test, use `first-pass --growth 1.60`. The `followups --growth 1.45 --seeds 150` suite tests Pair and held support against that first catalog pass. Use `slots --seeds 100` to replace the supplied specialist with Opening Act or Nest Egg, `broad --seeds 100` to reduce their values on the live curve, and `chase --first 10001 --seeds 500` for the four-match reroll comparison. To repeat a curve sweep with the first catalog pass, use `first-pass --mode draft --growth 1.44`. To extend the three lower-scoring theme cohorts, use `themes --mode draft --first 10001 --seeds 2000 --route held --route economy --route portfolio`.
+- Use `--mode draft`, repeatable `--route` filters, or `--growth 1.48` for a focused comparison. `--first` sets the first positive seed. `--jobs` controls concurrent Godot processes. Completed seed batches are cached under `build/balance/` by engine version, gameplay source, and curve. Use the same seed range and batch size when resuming.
+- The policy evaluates all 31 legal selections from the visible faces and known rules. It favors its signature hand by 20% when comparing scores, gives immediate clears a premium, and normally rerolls when the best play falls below the remaining target divided by plays left. Reroll-saving builds accept a lower score. Reroll-spending builds chase until they can clear or exhaust their rolls. Reroll choices use matching groups and straight runs. Each committed score is checked against the game's result.
+- Prices, fallback preferences and placement matter. A held-support purchase goes on the last free die, other bonuses go on the first free die. The policy buys its highest-ranked affordable piece and may sell a less-preferred item to acquire a favorite. It can pay for one refresh per shop, or three on the refresh route. A flexible player and a specialist use the same decision budget. Seed pairing shares starting random streams. Different actions can consume those streams differently.
+- **Late signature score** measures the share of all score in biomes 4–5 earned by the named hand, including failed rounds. **Decisive clears** counts a signature play that clears when no alternative category on that board could have cleared immediately. It measures the current decision. A later play might still have saved the round.
+- Each compressed JSON-lines batch contains one record per seed. It records the last cleared round, late score by hand, score-effect activations, purchases by item, on-theme offers and affordability by biome, income, refreshes, spending, and rare-hand chase failures. Additional counters record when a preserved die scores on the next play, the base score forgone by the selection, and clears that used an extra action. Results include win-rate Wilson intervals and paired differences against the same seeds. Absolute difficulty remains a playtest decision.
+
+To reproduce the exact ordinary-dice selection odds, generate the category Parquet files below and run `python godot/debug/upgrade_analysis/selection_odds.py`. It enumerates every legal keep and maximizes the chance of reaching each hand separately with the available manual rolls.
+
 ## Start a balance pass
 
 Open [the current balance report](effect_balance.md). It covers 29 bonuses, 14 upgrades and 28 jokers, each equipped alone, across all 461 unordered plain hands of one to five dice. The tuning goal is comparable **expected extra score per play** for scoring bonuses, accounting for how often each can help. The report measures a single committed play. Projecting an entire round or a multi-effect build requires assumptions about player choices and synergies.
@@ -21,6 +47,7 @@ From the repository root, with Godot and the DuckDB CLI on the path, run the fol
   done
   cd godot/debug/upgrade_analysis
   duckdb -bail -f tests/pair_weights.sql
+  duckdb -bail -f tests/catalog_balance.sql
   duckdb -markdown -bail -f render_balance.duckdb
 )
 ```

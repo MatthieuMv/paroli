@@ -34,7 +34,7 @@ func _run() -> void:
 				assert(after_round.boss == route[index + 2].boss, "The shop knows whether the boss is next")
 	assert(kinds[RunStop.Kind.UPGRADE] == 5 and kinds[RunStop.Kind.SHOP] == 10 and kinds[RunStop.Kind.ROUND] == 15 and bosses == 5, "D-016 full-path totals")
 	assert(route[0].kind == RunStop.Kind.UPGRADE and route[route.size() - 1].boss, "A run opens on an upgrade and ends on a boss")
-	assert(route[1].target == rules.first_target and is_equal_approx(rules.target_for(3), 260.0), "Targets round to two significant digits")
+	assert(route[1].target == rules.first_target and is_equal_approx(rules.target_for(3), 210.0), "Targets round to two significant digits")
 	# A flat curve still rises, one point at a time.
 	var flat: RunRules = RunRules.new()
 	flat.first_target = 1.0

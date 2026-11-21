@@ -1,8 +1,7 @@
 extends Resource
 class_name RunRules
-## Tunable run fixture: route length, starting purse, coin rewards, and the target curve. The
-## design fixes the route's shape (D-016) and that targets rise every round (D-017), but no
-## number here is balanced: these are placeholders to iterate on in the Inspector.
+## The standard route, starting purse, coin rewards, and target curve. The route follows
+## D-016 and its rising targets follow D-017. Seeded runs inform the default growth rate.
 
 # --- Member variables ---
 
@@ -19,7 +18,7 @@ class_name RunRules
 ## Target of the run's first round, in points.
 @export_range(1.0, 10000.0, 1.0) var first_target: float = 100.0
 ## Each round's target is the previous one times this factor, before rounding.
-@export_range(1.0, 3.0, 0.05) var target_growth: float = 1.6
+@export_range(1.0, 3.0, 0.05) var target_growth: float = 1.45
 
 # --- Member functions ---
 

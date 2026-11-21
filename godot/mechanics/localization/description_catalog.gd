@@ -13,8 +13,8 @@ static func create() -> Dictionary[StringName, AuthoredDescription]:
 			"{kw:validated|Joué} : +{n:reward:per_die} % {kw:mult} par autre dé {kw:validated|joué} de même valeur."
 		),
 		&"house-builder": AuthoredDescription.new(
-			"+{n:reward:constant}% {kw:mult} as part of a {kw:combination.full_house}.",
-			"+{n:reward:constant} % {kw:mult} dans une {kw:combination.full_house}."
+			"Gain +{n:two_pairs:constant}% {kw:mult} as part of {kw:combination.two_pairs} or +{n:reward:constant}% in a {kw:combination.full_house}.",
+			"Gagne +{n:two_pairs:constant} % {kw:mult} dans une {kw:combination.two_pairs} ou +{n:reward:constant} % dans une {kw:combination.full_house}."
 		),
 		&"jackpot": AuthoredDescription.new(
 			"{kw:validated|Played}: +{n:reward:constant}% {kw:mult} on a 6.",
@@ -69,8 +69,8 @@ static func create() -> Dictionary[StringName, AuthoredDescription]:
 			"+{n:reward:constant} {kw:mult} en tant que {kw:combination.single}."
 		),
 		&"one-man-band": AuthoredDescription.new(
-			"+{n:reward:constant} {kw:points} on {kw:combination.single}.",
-			"+{n:reward:constant} {kw:points} sur un {kw:combination.single}."
+			"+{n:reward:constant} {kw:points} on {kw:combination.single}. Each round cleared with that hand increases this reward by {n:clear_growth:constant} until sold.",
+			"+{n:reward:constant} {kw:points} sur un {kw:combination.single}. Chaque manche gagnée avec cette main augmente ce gain de {n:clear_growth:constant} jusqu’à la vente."
 		),
 		&"sock-mate": AuthoredDescription.new(
 			"+{n:reward:constant} {kw:mult} as part of a {kw:combination.pair}.",

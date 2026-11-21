@@ -5,7 +5,7 @@ class_name HistoryAmount
 # --- Types ---
 
 ## Named formula source; authors use the concrete subclasses below.
-enum Source { DIE_VALUE, MANUAL_REROLLS, PREVIOUS_VALIDATIONS, OWNER_MULT, PORTFOLIO, CRESCENDO, DISTINCT_VALUES }
+enum Source { DIE_VALUE, MANUAL_REROLLS, PREVIOUS_VALIDATIONS, OWNER_MULT, PORTFOLIO, CRESCENDO, DISTINCT_VALUES, OWNER_POINTS }
 
 ## Coins equal to the owner's current value.
 class DieValue:
@@ -36,6 +36,16 @@ class PreviousValidations:
 	## The current validation is not yet counted.
 	func _init(coefficient_: int) -> void:
 		super(Source.PREVIOUS_VALIDATIONS, coefficient_, &"amount.previous_validations")
+
+## Permanent points earned on earlier round clears.
+class AccumulatedPoints:
+	extends HistoryAmount
+
+	# --- Member functions ---
+
+	## Newly acquired jokers start at zero.
+	func _init() -> void:
+		super(Source.OWNER_POINTS, 1, &"amount.accumulated_points")
 
 ## Roulette's owned persistent Mult.
 class AccumulatedMult:
@@ -109,6 +119,8 @@ func evaluate(context: EffectContext) -> int:
 			return coefficient * die.rerolls_since_validation if die else 0
 		Source.PREVIOUS_VALIDATIONS:
 			return coefficient * context.previous_validations
+		Source.OWNER_POINTS:
+			return context.owner_points
 		Source.OWNER_MULT:
 			return coefficient * context.owner_mult
 		Source.PORTFOLIO:

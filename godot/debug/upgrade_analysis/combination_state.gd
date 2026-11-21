@@ -18,6 +18,8 @@ var rerolls: int = 0
 var prior_category: StringName = &""
 ## Number of prior paid shop refreshes for Roulette.
 var refreshes: int = 0
+## Earlier rounds cleared with a High Die while One-man Band was owned.
+var high_die_clears: int = 0
 ## Whether this play clears the target, for the Stonks round-end event.
 var clears_round: bool = false
 
@@ -70,6 +72,12 @@ static func for_item(item: BuildDefinition, faces: PackedInt32Array, input_categ
 				state.prior_plays = 1
 				state.prior_category = category
 				state.label = "previous_" + report if category == input_category else "previous_other"
+				states.append(state)
+		&"one-man-band":
+			for n: int in [1, 5]:
+				var state: AnalysisPlayState = AnalysisPlayState.new()
+				state.high_die_clears = n
+				state.label = "high_die_clears_%d" % n
 				states.append(state)
 		&"roulette":
 			for n: int in range(1, refresh_limit + 1):

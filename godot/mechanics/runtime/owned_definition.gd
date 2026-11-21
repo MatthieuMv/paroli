@@ -16,6 +16,8 @@ var base_sell_value: int = 0
 var sell_growth: int = 0
 ## Roulette growth survives round resets but disappears on sale.
 var accumulated_mult: int = 0
+## One-man Band growth survives between rounds while this instance is owned.
+var accumulated_points: int = 0
 
 # --- Member functions ---
 

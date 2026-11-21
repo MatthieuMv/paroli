@@ -5,7 +5,7 @@ class_name RuntimeDeltaCommand
 # --- Types ---
 
 ## Persistent growth targets an owned instance; allowances target the current round.
-enum Kind { COINS, SELL_VALUE, ACCUMULATED_MULT, VALIDATIONS, REROLLS, STRAIGHT_GAPS }
+enum Kind { COINS, SELL_VALUE, ACCUMULATED_MULT, VALIDATIONS, REROLLS, STRAIGHT_GAPS, ACCUMULATED_POINTS }
 
 # --- Member variables ---
 

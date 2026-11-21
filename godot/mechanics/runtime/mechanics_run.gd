@@ -314,6 +314,7 @@ func _plan(event: StringName, event_id: StringName, selected: Array[StringName] 
 		context.rerolls_remaining = rerolls_remaining
 		context.previous_validations = previous_validations
 		context.previous_combination = previous_combination
+		context.owner_points = item.accumulated_points
 		context.owner_mult = item.accumulated_mult
 		context.joker_sell_total = sell_total
 		context.round_succeeded = succeeded
@@ -339,6 +340,8 @@ func _commit(commands: Array[EffectCommand]) -> void:
 					coins += delta.amount
 				RuntimeDeltaCommand.Kind.SELL_VALUE:
 					find_owned(delta.owner_id).sell_growth += delta.amount
+				RuntimeDeltaCommand.Kind.ACCUMULATED_POINTS:
+					find_owned(delta.owner_id).accumulated_points += delta.amount
 				RuntimeDeltaCommand.Kind.ACCUMULATED_MULT:
 					find_owned(delta.owner_id).accumulated_mult += delta.amount
 				RuntimeDeltaCommand.Kind.VALIDATIONS:

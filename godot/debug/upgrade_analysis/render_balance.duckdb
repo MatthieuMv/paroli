@@ -55,7 +55,7 @@ SELECT effect AS "Effect",
        round(max(direct_gain), 2) AS "Highest", first(scenario ORDER BY round(direct_gain, 10) DESC, scenario) AS "Example high state"
 FROM balance_scenarios GROUP BY effect
 HAVING round(max(direct_gain) - min(direct_gain), 8) > 0
-ORDER BY max(direct_gain) DESC, effect;
+ORDER BY round(max(direct_gain), 8) DESC, effect;
 .print
 .print '## Economy and round allowances'
 .print

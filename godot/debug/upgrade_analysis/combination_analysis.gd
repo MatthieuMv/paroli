@@ -159,6 +159,9 @@ func _replay(item: BuildDefinition, family: String, state: AnalysisPlayState, ha
 	if not errors.is_empty():
 		push_error("; ".join(errors))
 		return false
+	for n: int in state.high_die_clears:
+		if not _valid(session.begin(1.0)) or not _valid(session.open()) or not _valid(session.play([owner.id]).result):
+			return false
 	for n: int in state.refreshes:
 		# Give the fixture funds for this paid event; acquisition costs are outside play income.
 		run.coins += 1

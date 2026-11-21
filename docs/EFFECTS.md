@@ -4,6 +4,8 @@
 
 ## Combination
 
+The standard run and its seeded win rates are documented in the [run balance report](../godot/debug/upgrade_analysis/run_balance.md).
+
 **Why:** Make each combination a viable build focus, with larger rewards for harder outcomes.
 
 **How:** Pair a dedicated +Mult die bonus with a points Joker for each combination.
@@ -12,9 +14,9 @@
 
 | Combination | Die bonus | Added Mult | Joker | Added points |
 | --------------- | -------------- | ---------: | --------------- | -----------: |
-| Single die | Top Hat | +6 | One-man Band | +30 |
-| Pair | Sock Mate | +6 | Lovebirds | +40 |
-| Two pairs | Double Vision | +8 | Double Date | +60 |
+| Single die | Top Hat | +6 | One-man Band | +30, growing by +10 per round cleared with Single die while owned |
+| Pair | Sock Mate | +6 | Lovebirds | +70 |
+| Two pairs | Double Vision | +8 | Double Date | +85 |
 | Three of a kind | Peas in a Pod | +10 | Trio | +80 |
 | Short straight | Shortcut | +10 | Conga Line | +100 |
 | Full house | Couch Surfer | +12 | Sardine Tin | +120 |
@@ -30,12 +32,12 @@ Ordered by provisional difficulty: Single die is always selectable; other catego
 
 **How:** Use concentrated faces, rewards per matching die, and support for both single and split groups.
 
-**What:** All for one and Copycat count **other validated dice matching the attached die's current value**, without requiring combination membership. House builder requires Full house membership. Matchmaker counts only members of the recognized matching combination, including both groups of Two pairs or Full house.
+**What:** All for one and Copycat count **other validated dice matching the attached die's current value**, without requiring combination membership. House builder rewards membership in either Two pairs or Full house. Matchmaker counts only members of the recognized matching combination, including both groups of Two pairs or Full house.
 
 | Effect | Family | Faces | Reward |
 | ------------- | ------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------- |
 | All for one | Upgrade | 1,1,1,3,3,3 | +25% Mult per other matching die: +25%, +50%, +75%, +100% for 1–4 matches. |
-| House builder | Upgrade | 2,2,3,3,3,3 | +50% Mult when this die belongs to a Full house, in either the pair or triple. |
+| House builder | Upgrade | 2,2,3,3,3,3 | +25% Mult when this die belongs to Two pairs or +50% Mult when it belongs to a Full house. |
 | Copycat | Bonus | Unchanged | +2 Mult per other matching die; up to +8 Mult. |
 | Matchmaker | Joker | — | +15 points per matching member: Pair +30; Three of a kind +45; Two pairs or Four of a kind +60; Full house or Five of a kind +75. |
 
@@ -117,8 +119,8 @@ Zero matches give no reward. Matchmaker gives nothing for Single die or straight
 | Effect | Family | Faces | Reward |
 | --- | --- | --- | --- |
 | Guardian | Upgrade | 1,1,2,2,6,6 | While held, +50% Mult if at least one validated die matches its value. |
-| Power Reserve | Bonus | Unchanged | +2 Mult while this die is held, on each validation. |
-| Bench Warmers | Joker | — | +15 points per held die whose value matches at least one validated die. Count each held die once; up to +60 points. |
+| Power Reserve | Bonus | Unchanged | +6 Mult while this die is held, on each validation. |
+| Bench Warmers | Joker | — | +45 points per held die whose value matches at least one validated die. Count each held die once, up to +180 points. |
 
 ## Economy
 

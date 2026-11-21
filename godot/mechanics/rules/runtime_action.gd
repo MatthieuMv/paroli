@@ -35,6 +35,16 @@ class SellValue:
 	func _init(value: int) -> void:
 		super(RuntimeDeltaCommand.Kind.SELL_VALUE, &"action.sell_value", value)
 
+## Earn points for later plays while this instance remains owned.
+class AccumulatePoints:
+	extends RuntimeAction
+
+	# --- Member functions ---
+
+	## Apply after scoring the qualifying round clear.
+	func _init(value: int) -> void:
+		super(RuntimeDeltaCommand.Kind.ACCUMULATED_POINTS, &"action.accumulate_points", value)
+
 ## Increase the owned Joker's persistent Mult for future validations.
 class AccumulateMult:
 	extends RuntimeAction

@@ -44,11 +44,11 @@ Edit it in the Inspector; shop prices stay in [shop_rules.tres](#rules-you-can-t
 | `starting_coins` | 0 | Purse at the start of a run |
 | `coins_per_round` | 4 | Coins for clearing a round, however many plays it took |
 | `coins_per_unused_play` | 1 | Extra coins for each play left when a round is cleared (D-021) |
-| `first_target` / `target_growth` | 100 / 1.6 | Round 1's target, and the factor from each round to the next |
+| `first_target` / `target_growth` | 100 / 1.45 | Round 1's target, and the factor from each round to the next |
 
-Targets are rounded to two significant digits and always rise (D-017): 100, 160, 260, 410,
-660, 1 000 … 72 000 for the fifteenth round. These are placeholders taken from the round
-prototype, not balance. Fixture decisions made so a run is playable, all in
+Targets are rounded to two significant digits and always rise (D-017). The five bosses ask
+for 210, 640, 2 000, 6 000, and 18 000 points. [Seeded run comparisons](debug/upgrade_analysis/run_balance.md)
+record the tuning evidence. Fixture decisions for a playable run are in
 [run_session.gd](game/session/run_session.gd): a boss is a plain round with the next
 target, because the design has not defined boss rules yet (so nothing is revealed after
 the upgrade choice); an upgrade a die already wears is never offered again; plays and
@@ -662,8 +662,8 @@ so its action stays in reach. Displays that report cutouts get matching margins.
   [synth_sfx.py](../docs/audio_explorations/round_sfx/synth_sfx.py) into
   `round_interface/audio/sfx/`. The WAV files are the runtime source; replace them
   freely. Pitched ticks share a C5 root so chains can climb by `pitch_scale`.
-- `RoundSession.coins_per_round` and `coins_per_unused_play`, the fixture targets and their 1.6× growth,
-  and fixture sell values are test inputs. The design has not fixed these values.
+- The standalone round prototype uses a 1.6× target multiplier. The standard game uses the
+  1.45× curve in `RunRules`. Round rewards and shop sell values remain tunable.
 - Interface copy (captions, hints, the result card, the shop's help lines and refusals)
   lives in the glossary under `ui.*` keys in `game_keywords.gd`, in English and French,
   and follows the game locale like every other term. The debug panels stay in English.

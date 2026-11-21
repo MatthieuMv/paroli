@@ -26,7 +26,7 @@ var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 ## The whole route, in order.
 var stops: Array[RunStop] = []
 ## Content source for upgrade offers.
-var _catalog: EffectsCatalog = EffectsCatalog.new()
+var _catalog: EffectsCatalog
 ## Position on the route; equal to `stops.size()` once the run is complete.
 var _index: int = 0
 ## Offers of the current upgrade choice, sampled once so reopening it never rerolls them.
@@ -58,13 +58,14 @@ static func route(rules_: RunRules) -> Array[RunStop]:
 
 ## Start a run at its first stop, the opening upgrade choice. A zero seed keeps each
 ## generator's own random seed; any other value makes the whole run repeatable.
-func _init(rules_: RunRules = null, shop_rules: ShopRules = null, seed_: int = 0) -> void:
+func _init(rules_: RunRules = null, shop_rules: ShopRules = null, seed_: int = 0, catalog: EffectsCatalog = null) -> void:
+	_catalog = catalog if catalog else EffectsCatalog.new()
 	rules = rules_ if rules_ else RunRules.new()
 	mechanics = MechanicsRun.new(rules.starting_coins)
 	rounds = RoundSession.new(mechanics, seed_)
 	rounds.coins_per_unused_play = rules.coins_per_unused_play
 	rounds.coins_per_round = rules.coins_per_round
-	shop = ShopSession.new(mechanics, shop_rules, seed_ + 1 if seed_ != 0 else 0)
+	shop = ShopSession.new(mechanics, shop_rules, seed_ + 1 if seed_ != 0 else 0, _catalog)
 	if seed_ != 0:
 		rng.seed = seed_ + 2
 	stops = route(rules)
